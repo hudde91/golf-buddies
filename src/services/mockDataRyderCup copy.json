@@ -1,0 +1,2635 @@
+// default mock
+[
+  {
+    "id": "b607e668-89a3-4e35-a026-b6a0f6a20434",
+    "name": "Ryder Cup 2025",
+    "startDate": "2025-03-15",
+    "endDate": "2025-03-17",
+    "location": "Marstrand",
+    "description": "Annual Ryder Cup tournament with 12 elite golfers!",
+    "createdBy": "user_2uHNrS8Ei3sitQFeEwt8EKsg6Qo",
+    "createdAt": "2025-03-15T13:37:19.014Z",
+    "players":  [
+        {
+        "id": "user_2uHNrS8Ei3sitQFeEwt8EKsg6Qo",
+        "name": "Martin Silfver",
+        "email": "martin.pettersson1@gmail.com",
+        "avatarUrl": "https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZmFjZWJvb2svaW1nXzJ1SE5yT3htbjhSS0piSXh2eTBKbHA5NUFJOCJ9",
+        "bio": "Famous for having the worst swing among my golf friends.",
+        "profileImage": "",
+        "question1": "22",
+        "question2": "7 iron",
+        "question3": "-1",
+        "question4": "When I said \"Snyggt\" to Ginger when he missed a putt in Marbella "
+      },
+      {
+        "id": "user_3vKLm9TpRj4n7BxFzWs1PLxr5Aa",
+        "name": "James Thompson",
+        "email": "jthompson@gmail.com",
+        "avatarUrl": "https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZ29vZ2xlL2ltZ18zdktMbUZrNTZyOVRIeUpmUjEifQ",
+        "bio": "Collegiate golfer turned tech entrepreneur. Still plays competitively in regional tournaments.",
+        "profileImage": "",
+        "question1": "2.3",
+        "question2": "Scotty Cameron Newport Putter",
+        "question3": "2",
+        "question4": "Hitting a double eagle on a par 5 during the 2023 California Amateur"
+      },
+      {
+        "id": "user_4mPQs8Yx5rShN2VeDw9JaLzt3Cd",
+        "name": "Henrik Stenson",
+        "email": "hstenson@golf.se",
+        "avatarUrl": "https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZmFjZWJvb2svaW1nXzRtUFFzOFl4NUxzdnRuIn0",
+        "bio": "Swedish professional golfer and 2016 Open Champion known for his precision iron play.",
+        "profileImage": "",
+        "question1": "-6.2",
+        "question2": "Callaway 3-wood",
+        "question3": "0",
+        "question4": "Winning the 2016 Open Championship at Royal Troon with a record score"
+      },
+      {
+        "id": "user_5pTxR7Zw6nUqO3WfE0BKbMuc4De",
+        "name": "Jon Rahm",
+        "email": "jrahm@golf.es",
+        "avatarUrl": "https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZ29vZ2xlL2ltZ181cFR4UjdPcGt0In0",
+        "bio": "Spanish golf star and major champion known for his powerful swing and passionate play.",
+        "profileImage": "",
+        "question1": "-8.1",
+        "question2": "TaylorMade P770 7-iron",
+        "question3": "0",
+        "question4": "The 72nd hole birdie putt to win my first major at the 2021 U.S. Open"
+      },
+      {
+        "id": "user_6qUyS8Ax7oVpP4XgF1CLcNvd5Ef",
+        "name": "Justin Thomas",
+        "email": "jthomas@golf.com",
+        "avatarUrl": "https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZmFjZWJvb2svaW1nXzZxVXlTOFZrTG1OIn0",
+        "bio": "American professional golfer with multiple major championships and a reputation for clutch putting.",
+        "profileImage": "",
+        "question1": "-7.8",
+        "question2": "Titleist Vokey 56° wedge",
+        "question3": "0",
+        "question4": "The playoff victory at the 2022 PGA Championship at Southern Hills"
+      },
+      {
+        "id": "user_7rVzT9By8pWqQ5YhG2DMdOwf6Fg",
+        "name": "Rory McIlroy",
+        "email": "rmcilroy@golf.co.uk",
+        "avatarUrl": "https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZ29vZ2xlL2ltZ183clZ6VDlCdjZGIn0",
+        "bio": "Northern Irish golfing superstar with four major championships and a dynamic, athletic swing.",
+        "profileImage": "",
+        "question1": "-8.4",
+        "question2": "TaylorMade Stealth Plus Driver",
+        "question3": "0",
+        "question4": "Winning the 2014 Ryder Cup with Team Europe at Gleneagles"
+      },
+      {
+        "id": "user_8sWaU0Cz9qXrR6ZiH3ENePxg7Gh",
+        "name": "Brooks Koepka",
+        "email": "bkoepka@golf.com",
+        "avatarUrl": "https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZmFjZWJvb2svaW1nXzhzV2FVMHJIcGt4In0",
+        "bio": "American golfer known for dominating major championships and his competitive mindset.",
+        "profileImage": "",
+        "question1": "-7.9",
+        "question2": "Srixon ZX7 4-iron",
+        "question3": "1",
+        "question4": "Going back-to-back at the U.S. Open in 2017 and 2018"
+      },
+      {
+        "id": "user_9tXbV1Da0rYsS7ajI4FOfQyi8Hi",
+        "name": "Tommy Fleetwood",
+        "email": "tfleetwood@golf.co.uk",
+        "avatarUrl": "https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZ29vZ2xlL2ltZ185dFhiVjFzbXRoIn0",
+        "bio": "English pro golfer with flowing locks and a smooth swing, known for his Ryder Cup heroics.",
+        "profileImage": "",
+        "question1": "-6.5",
+        "question2": "Odyssey White Hot OG Putter",
+        "question3": "0",
+        "question4": "Going 4-0 with Francesco Molinari at the 2018 Ryder Cup in Paris"
+      },
+      {
+        "id": "user_0uYcW2Eb1sZtT8bkJ5GPgRzj9Ij",
+        "name": "Dustin Johnson",
+        "email": "djohnson@golf.com",
+        "avatarUrl": "https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZmFjZWJvb2svaW1nXzB1WWNXMnhybnRJIn0",
+        "bio": "American golf star with a powerful swing and laid-back demeanor, Masters champion and former world #1.",
+        "profileImage": "",
+        "question1": "-7.7",
+        "question2": "TaylorMade Spider Putter",
+        "question3": "2",
+        "question4": "Winning the 2020 Masters at Augusta with a record score"
+      },
+      {
+        "id": "user_1vZdX3Fc2taUu9clK6HQhSak0Jk",
+        "name": "Viktor Hovland",
+        "email": "vhovland@golf.no",
+        "avatarUrl": "https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZ29vZ2xlL2ltZ18xdlpkWDNwY3RLIn0",
+        "bio": "Norwegian golf phenom with an infectious smile and stellar iron play.",
+        "profileImage": "",
+        "question1": "-7.1",
+        "question2": "PING i210 8-iron",
+        "question3": "0",
+        "question4": "Winning the 2022 Tour Championship and FedEx Cup"
+      },
+      {
+        "id": "user_2wAeY4Gd3ubVv0dmL7IRiTbl1Kl",
+        "name": "Patrick Cantlay",
+        "email": "pcantlay@golf.com",
+        "avatarUrl": "https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZmFjZWJvb2svaW1nXzJ3QWVZNHJuYkxLIn0",
+        "bio": "American pro known for his stoic demeanor and methodical approach to the game.",
+        "profileImage": "",
+        "question1": "-7.3",
+        "question2": "Titleist TS3 3-wood",
+        "question3": "0",
+        "question4": "My playoff victory at the 2021 BMW Championship over Bryson DeChambeau"
+      },
+      {
+        "id": "user_3xBfZ5He4vcWw1enM8JSjUcm2Lm",
+        "name": "Sergio Garcia",
+        "email": "sgarcia@golf.es",
+        "avatarUrl": "https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZ29vZ2xlL2ltZ18zeEJmWjVrbXRMIn0",
+        "bio": "Spanish golf legend and Masters champion with Ryder Cup passion and incredible ball-striking.",
+        "profileImage": "",
+        "question1": "-6.8",
+        "question2": "Callaway Apex MB 9-iron",
+        "question3": "1",
+        "question4": "Finally winning my first major at the 2017 Masters after so many close calls"
+      }],
+    "teams": [
+      {
+        "id": "team_usa_4cDgA6If5wdXx0foN9KTkVdn3Mn",
+        "name": "Team USA",
+        "players": [
+          "user_3vKLm9TpRj4n7BxFzWs1PLxr5Aa",
+          "user_6qUyS8Ax7oVpP4XgF1CLcNvd5Ef",
+          "user_8sWaU0Cz9qXrR6ZiH3ENePxg7Gh",
+          "user_0uYcW2Eb1sZtT8bkJ5GPgRzj9Ij",
+          "user_2wAeY4Gd3ubVv0dmL7IRiTbl1Kl",
+          "user_2uHNrS8Ei3sitQFeEwt8EKsg6Qo"
+        ],
+        "captain": "user_0uYcW2Eb1sZtT8bkJ5GPgRzj9Ij",
+        "color": "#0057B7"
+      },
+      {
+        "id": "team_europe_5dEhB7Jg6xeYy1gpO0LUlWeo4No",
+        "name": "Team Europe",
+        "players": [
+          "user_4mPQs8Yx5rShN2VeDw9JaLzt3Cd",
+          "user_5pTxR7Zw6nUqO3WfE0BKbMuc4De",
+          "user_7rVzT9By8pWqQ5YhG2DMdOwf6Fg",
+          "user_9tXbV1Da0rYsS7ajI4FOfQyi8Hi",
+          "user_1vZdX3Fc2taUu9clK6HQhSak0Jk",
+          "user_3xBfZ5He4vcWw1enM8JSjUcm2Lm"
+        ],
+        "captain": "user_7rVzT9By8pWqQ5YhG2DMdOwf6Fg",
+        "color": "#FFCC00"
+      }
+    ],
+    "rounds": [],
+    "invitations": [],
+    "isTeamEvent": true,
+    "scoringType": "both",
+    "status": "active"
+  }
+]
+
+// with rounds and score
+[
+    {
+        "id": "b607e668-89a3-4e35-a026-b6a0f6a20434",
+        "name": "Ryder Cup 2025",
+        "startDate": "2025-03-15",
+        "endDate": "2025-03-15",
+        "location": "Marstrand",
+        "description": "Annual Ryder Cup tournament with 12 elite golfers!",
+        "createdBy": "user_2uHNrS8Ei3sitQFeEwt8EKsg6Qo",
+        "createdAt": "2025-03-15T13:37:19.014Z",
+        "players": [
+            {
+                "id": "user_2uHNrS8Ei3sitQFeEwt8EKsg6Qo",
+                "name": "Martin Silfver",
+                "email": "martin.pettersson1@gmail.com",
+                "avatarUrl": "https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZmFjZWJvb2svaW1nXzJ1SE5yT3htbjhSS0piSXh2eTBKbHA5NUFJOCJ9",
+                "bio": "Famous for having the worst swing among my golf friends.",
+                "profileImage": "",
+                "question1": "22",
+                "question2": "7 iron",
+                "question3": "-1",
+                "question4": "When I said \"Snyggt\" to Ginger when he missed a putt in Marbella ",
+                "teamId": "team_usa_4cDgA6If5wdXx0foN9KTkVdn3Mn"
+            },
+            {
+                "id": "user_3vKLm9TpRj4n7BxFzWs1PLxr5Aa",
+                "name": "James Thompson",
+                "email": "jthompson@gmail.com",
+                "avatarUrl": "https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZ29vZ2xlL2ltZ18zdktMbUZrNTZyOVRIeUpmUjEifQ",
+                "bio": "Collegiate golfer turned tech entrepreneur. Still plays competitively in regional tournaments.",
+                "profileImage": "",
+                "question1": "2.3",
+                "question2": "Scotty Cameron Newport Putter",
+                "question3": "2",
+                "question4": "Hitting a double eagle on a par 5 during the 2023 California Amateur",
+                "teamId": "team_usa_4cDgA6If5wdXx0foN9KTkVdn3Mn"
+            },
+            {
+                "id": "user_4mPQs8Yx5rShN2VeDw9JaLzt3Cd",
+                "name": "Henrik Stenson",
+                "email": "hstenson@golf.se",
+                "avatarUrl": "https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZmFjZWJvb2svaW1nXzRtUFFzOFl4NUxzdnRuIn0",
+                "bio": "Swedish professional golfer and 2016 Open Champion known for his precision iron play.",
+                "profileImage": "",
+                "question1": "-6.2",
+                "question2": "Callaway 3-wood",
+                "question3": "0",
+                "question4": "Winning the 2016 Open Championship at Royal Troon with a record score",
+                "teamId": "team_usa_4cDgA6If5wdXx0foN9KTkVdn3Mn"
+            },
+            {
+                "id": "user_5pTxR7Zw6nUqO3WfE0BKbMuc4De",
+                "name": "Jon Rahm",
+                "email": "jrahm@golf.es",
+                "avatarUrl": "https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZ29vZ2xlL2ltZ181cFR4UjdPcGt0In0",
+                "bio": "Spanish golf star and major champion known for his powerful swing and passionate play.",
+                "profileImage": "",
+                "question1": "-8.1",
+                "question2": "TaylorMade P770 7-iron",
+                "question3": "0",
+                "question4": "The 72nd hole birdie putt to win my first major at the 2021 U.S. Open",
+                "teamId": "team_usa_4cDgA6If5wdXx0foN9KTkVdn3Mn"
+            },
+            {
+                "id": "user_6qUyS8Ax7oVpP4XgF1CLcNvd5Ef",
+                "name": "Justin Thomas",
+                "email": "jthomas@golf.com",
+                "avatarUrl": "https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZmFjZWJvb2svaW1nXzZxVXlTOFZrTG1OIn0",
+                "bio": "American professional golfer with multiple major championships and a reputation for clutch putting.",
+                "profileImage": "",
+                "question1": "-7.8",
+                "question2": "Titleist Vokey 56° wedge",
+                "question3": "0",
+                "question4": "The playoff victory at the 2022 PGA Championship at Southern Hills",
+                "teamId": "team_usa_4cDgA6If5wdXx0foN9KTkVdn3Mn"
+            },
+            {
+                "id": "user_7rVzT9By8pWqQ5YhG2DMdOwf6Fg",
+                "name": "Rory McIlroy",
+                "email": "rmcilroy@golf.co.uk",
+                "avatarUrl": "https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZ29vZ2xlL2ltZ183clZ6VDlCdjZGIn0",
+                "bio": "Northern Irish golfing superstar with four major championships and a dynamic, athletic swing.",
+                "profileImage": "",
+                "question1": "-8.4",
+                "question2": "TaylorMade Stealth Plus Driver",
+                "question3": "0",
+                "question4": "Winning the 2014 Ryder Cup with Team Europe at Gleneagles",
+                "teamId": "team_usa_4cDgA6If5wdXx0foN9KTkVdn3Mn"
+            },
+            {
+                "id": "user_8sWaU0Cz9qXrR6ZiH3ENePxg7Gh",
+                "name": "Brooks Koepka",
+                "email": "bkoepka@golf.com",
+                "avatarUrl": "https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZmFjZWJvb2svaW1nXzhzV2FVMHJIcGt4In0",
+                "bio": "American golfer known for dominating major championships and his competitive mindset.",
+                "profileImage": "",
+                "question1": "-7.9",
+                "question2": "Srixon ZX7 4-iron",
+                "question3": "1",
+                "question4": "Going back-to-back at the U.S. Open in 2017 and 2018",
+                "teamId": "team_europe_5dEhB7Jg6xeYy1gpO0LUlWeo4No"
+            },
+            {
+                "id": "user_9tXbV1Da0rYsS7ajI4FOfQyi8Hi",
+                "name": "Tommy Fleetwood",
+                "email": "tfleetwood@golf.co.uk",
+                "avatarUrl": "https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZ29vZ2xlL2ltZ185dFhiVjFzbXRoIn0",
+                "bio": "English pro golfer with flowing locks and a smooth swing, known for his Ryder Cup heroics.",
+                "profileImage": "",
+                "question1": "-6.5",
+                "question2": "Odyssey White Hot OG Putter",
+                "question3": "0",
+                "question4": "Going 4-0 with Francesco Molinari at the 2018 Ryder Cup in Paris",
+                "teamId": "team_europe_5dEhB7Jg6xeYy1gpO0LUlWeo4No"
+            },
+            {
+                "id": "user_0uYcW2Eb1sZtT8bkJ5GPgRzj9Ij",
+                "name": "Dustin Johnson",
+                "email": "djohnson@golf.com",
+                "avatarUrl": "https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZmFjZWJvb2svaW1nXzB1WWNXMnhybnRJIn0",
+                "bio": "American golf star with a powerful swing and laid-back demeanor, Masters champion and former world #1.",
+                "profileImage": "",
+                "question1": "-7.7",
+                "question2": "TaylorMade Spider Putter",
+                "question3": "2",
+                "question4": "Winning the 2020 Masters at Augusta with a record score",
+                "teamId": "team_europe_5dEhB7Jg6xeYy1gpO0LUlWeo4No"
+            },
+            {
+                "id": "user_1vZdX3Fc2taUu9clK6HQhSak0Jk",
+                "name": "Viktor Hovland",
+                "email": "vhovland@golf.no",
+                "avatarUrl": "https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZ29vZ2xlL2ltZ18xdlpkWDNwY3RLIn0",
+                "bio": "Norwegian golf phenom with an infectious smile and stellar iron play.",
+                "profileImage": "",
+                "question1": "-7.1",
+                "question2": "PING i210 8-iron",
+                "question3": "0",
+                "question4": "Winning the 2022 Tour Championship and FedEx Cup",
+                "teamId": "team_europe_5dEhB7Jg6xeYy1gpO0LUlWeo4No"
+            },
+            {
+                "id": "user_2wAeY4Gd3ubVv0dmL7IRiTbl1Kl",
+                "name": "Patrick Cantlay",
+                "email": "pcantlay@golf.com",
+                "avatarUrl": "https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZmFjZWJvb2svaW1nXzJ3QWVZNHJuYkxLIn0",
+                "bio": "American pro known for his stoic demeanor and methodical approach to the game.",
+                "profileImage": "",
+                "question1": "-7.3",
+                "question2": "Titleist TS3 3-wood",
+                "question3": "0",
+                "question4": "My playoff victory at the 2021 BMW Championship over Bryson DeChambeau",
+                "teamId": "team_europe_5dEhB7Jg6xeYy1gpO0LUlWeo4No"
+            },
+            {
+                "id": "user_3xBfZ5He4vcWw1enM8JSjUcm2Lm",
+                "name": "Sergio Garcia",
+                "email": "sgarcia@golf.es",
+                "avatarUrl": "https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZ29vZ2xlL2ltZ18zeEJmWjVrbXRMIn0",
+                "bio": "Spanish golf legend and Masters champion with Ryder Cup passion and incredible ball-striking.",
+                "profileImage": "",
+                "question1": "-6.8",
+                "question2": "Callaway Apex MB 9-iron",
+                "question3": "1",
+                "question4": "Finally winning my first major at the 2017 Masters after so many close calls",
+                "teamId": "team_europe_5dEhB7Jg6xeYy1gpO0LUlWeo4No"
+            }
+        ],
+        "teams": [
+            {
+                "id": "team_usa_4cDgA6If5wdXx0foN9KTkVdn3Mn",
+                "name": "Team USA",
+                "players": [
+                    "user_3vKLm9TpRj4n7BxFzWs1PLxr5Aa",
+                    "user_6qUyS8Ax7oVpP4XgF1CLcNvd5Ef",
+                    "user_8sWaU0Cz9qXrR6ZiH3ENePxg7Gh",
+                    "user_0uYcW2Eb1sZtT8bkJ5GPgRzj9Ij",
+                    "user_2wAeY4Gd3ubVv0dmL7IRiTbl1Kl",
+                    "user_2uHNrS8Ei3sitQFeEwt8EKsg6Qo"
+                ],
+                "captain": "user_2uHNrS8Ei3sitQFeEwt8EKsg6Qo",
+                "color": "#0057B7"
+            },
+            {
+                "id": "team_europe_5dEhB7Jg6xeYy1gpO0LUlWeo4No",
+                "name": "Team Europe",
+                "players": [
+                    "user_4mPQs8Yx5rShN2VeDw9JaLzt3Cd",
+                    "user_5pTxR7Zw6nUqO3WfE0BKbMuc4De",
+                    "user_7rVzT9By8pWqQ5YhG2DMdOwf6Fg",
+                    "user_9tXbV1Da0rYsS7ajI4FOfQyi8Hi",
+                    "user_1vZdX3Fc2taUu9clK6HQhSak0Jk",
+                    "user_3xBfZ5He4vcWw1enM8JSjUcm2Lm"
+                ],
+                "captain": "user_7rVzT9By8pWqQ5YhG2DMdOwf6Fg",
+                "color": "#FFCC00"
+            }
+        ],
+        "rounds": [
+            {
+                "id": "9b999368-b053-42b2-a3b4-76b4d8c63c18",
+                "name": "Snuskmaster dag 1",
+                "date": "2025-03-15",
+                "format": "Stroke Play",
+                "courseDetails": {
+                    "name": "Guldbringa Golf Club",
+                    "holes": 18,
+                    "par": 72
+                },
+                "scores": {
+                    "user_2uHNrS8Ei3sitQFeEwt8EKsg6Qo": [
+                        {
+                            "hole": 1,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 2,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 3,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 4,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 5,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 6,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 7,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 8,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 9,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 10,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 11,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 12,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 13,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 14,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 15,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 16,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 17,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 18,
+                            "par": 4,
+                            "score": 2
+                        }
+                    ],
+                    "user_3vKLm9TpRj4n7BxFzWs1PLxr5Aa": [
+                        {
+                            "hole": 1,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 2,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 3,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 4,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 5,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 6,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 7,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 8,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 9,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 10,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 11,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 12,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 13,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 14,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 15,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 16,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 17,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 18,
+                            "par": 4,
+                            "score": 2
+                        }
+                    ],
+                    "user_4mPQs8Yx5rShN2VeDw9JaLzt3Cd": [
+                        {
+                            "hole": 1,
+                            "par": 4,
+                            "score": 5
+                        },
+                        {
+                            "hole": 2,
+                            "par": 4,
+                            "score": 5
+                        },
+                        {
+                            "hole": 3,
+                            "par": 4,
+                            "score": 5
+                        },
+                        {
+                            "hole": 4,
+                            "par": 4,
+                            "score": 5
+                        },
+                        {
+                            "hole": 5,
+                            "par": 4,
+                            "score": 5
+                        },
+                        {
+                            "hole": 6,
+                            "par": 4,
+                            "score": 5
+                        },
+                        {
+                            "hole": 7,
+                            "par": 4,
+                            "score": 5
+                        },
+                        {
+                            "hole": 8,
+                            "par": 4,
+                            "score": 5
+                        },
+                        {
+                            "hole": 9,
+                            "par": 4,
+                            "score": 5
+                        },
+                        {
+                            "hole": 10,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 11,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 12,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 13,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 14,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 15,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 16,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 17,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 18,
+                            "par": 4,
+                            "score": 1
+                        }
+                    ],
+                    "user_5pTxR7Zw6nUqO3WfE0BKbMuc4De": [
+                        {
+                            "hole": 1,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 2,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 3,
+                            "par": 4,
+                            "score": 4
+                        },
+                        {
+                            "hole": 4,
+                            "par": 4,
+                            "score": 5
+                        },
+                        {
+                            "hole": 5,
+                            "par": 4,
+                            "score": 6
+                        },
+                        {
+                            "hole": 6,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 7,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 8,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 9,
+                            "par": 4,
+                            "score": 7
+                        },
+                        {
+                            "hole": 10,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 11,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 12,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 13,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 14,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 15,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 16,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 17,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 18,
+                            "par": 4,
+                            "score": 2
+                        }
+                    ],
+                    "user_6qUyS8Ax7oVpP4XgF1CLcNvd5Ef": [
+                        {
+                            "hole": 1,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 2,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 3,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 4,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 5,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 6,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 7,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 8,
+                            "par": 4,
+                            "score": 4
+                        },
+                        {
+                            "hole": 9,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 10,
+                            "par": 4,
+                            "score": 4
+                        },
+                        {
+                            "hole": 11,
+                            "par": 4,
+                            "score": 5
+                        },
+                        {
+                            "hole": 12,
+                            "par": 4,
+                            "score": 5
+                        },
+                        {
+                            "hole": 13,
+                            "par": 4,
+                            "score": 4
+                        },
+                        {
+                            "hole": 14,
+                            "par": 4,
+                            "score": 5
+                        },
+                        {
+                            "hole": 15,
+                            "par": 4,
+                            "score": 5
+                        },
+                        {
+                            "hole": 16,
+                            "par": 4,
+                            "score": 4
+                        },
+                        {
+                            "hole": 17,
+                            "par": 4,
+                            "score": 5
+                        },
+                        {
+                            "hole": 18,
+                            "par": 4,
+                            "score": 5
+                        }
+                    ],
+                    "user_7rVzT9By8pWqQ5YhG2DMdOwf6Fg": [
+                        {
+                            "hole": 1,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 2,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 3,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 4,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 5,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 6,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 7,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 8,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 9,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 10,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 11,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 12,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 13,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 14,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 15,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 16,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 17,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 18,
+                            "par": 4,
+                            "score": 2
+                        }
+                    ],
+                    "user_8sWaU0Cz9qXrR6ZiH3ENePxg7Gh": [
+                        {
+                            "hole": 1,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 2,
+                            "par": 4,
+                            "score": 4
+                        },
+                        {
+                            "hole": 3,
+                            "par": 4,
+                            "score": 5
+                        },
+                        {
+                            "hole": 4,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 5,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 6,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 7,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 8,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 9,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 10,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 11,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 12,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 13,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 14,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 15,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 16,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 17,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 18,
+                            "par": 4,
+                            "score": 1
+                        }
+                    ],
+                    "user_9tXbV1Da0rYsS7ajI4FOfQyi8Hi": [
+                        {
+                            "hole": 1,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 2,
+                            "par": 4,
+                            "score": 4
+                        },
+                        {
+                            "hole": 3,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 4,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 5,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 6,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 7,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 8,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 9,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 10,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 11,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 12,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 13,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 14,
+                            "par": 4,
+                            "score": 4
+                        },
+                        {
+                            "hole": 15,
+                            "par": 4,
+                            "score": 4
+                        },
+                        {
+                            "hole": 16,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 17,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 18,
+                            "par": 4,
+                            "score": 3
+                        }
+                    ],
+                    "user_0uYcW2Eb1sZtT8bkJ5GPgRzj9Ij": [
+                        {
+                            "hole": 1,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 2,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 3,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 4,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 5,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 6,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 7,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 8,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 9,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 10,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 11,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 12,
+                            "par": 4,
+                            "score": 4
+                        },
+                        {
+                            "hole": 13,
+                            "par": 4,
+                            "score": 4
+                        },
+                        {
+                            "hole": 14,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 15,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 16,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 17,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 18,
+                            "par": 4,
+                            "score": 4
+                        }
+                    ],
+                    "user_1vZdX3Fc2taUu9clK6HQhSak0Jk": [
+                        {
+                            "hole": 1,
+                            "par": 4,
+                            "score": 4
+                        },
+                        {
+                            "hole": 2,
+                            "par": 4,
+                            "score": 5
+                        },
+                        {
+                            "hole": 3,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 4,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 5,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 6,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 7,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 8,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 9,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 10,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 11,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 12,
+                            "par": 4,
+                            "score": 4
+                        },
+                        {
+                            "hole": 13,
+                            "par": 4,
+                            "score": 5
+                        },
+                        {
+                            "hole": 14,
+                            "par": 4,
+                            "score": 5
+                        },
+                        {
+                            "hole": 15,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 16,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 17,
+                            "par": 4,
+                            "score": 4
+                        },
+                        {
+                            "hole": 18,
+                            "par": 4,
+                            "score": 2
+                        }
+                    ],
+                    "user_2wAeY4Gd3ubVv0dmL7IRiTbl1Kl": [
+                        {
+                            "hole": 1,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 2,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 3,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 4,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 5,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 6,
+                            "par": 4,
+                            "score": 4
+                        },
+                        {
+                            "hole": 7,
+                            "par": 4,
+                            "score": 4
+                        },
+                        {
+                            "hole": 8,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 9,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 10,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 11,
+                            "par": 4,
+                            "score": 4
+                        },
+                        {
+                            "hole": 12,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 13,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 14,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 15,
+                            "par": 4,
+                            "score": 4
+                        },
+                        {
+                            "hole": 16,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 17,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 18,
+                            "par": 4,
+                            "score": 2
+                        }
+                    ],
+                    "user_3xBfZ5He4vcWw1enM8JSjUcm2Lm": [
+                        {
+                            "hole": 1,
+                            "par": 4,
+                            "score": 4
+                        },
+                        {
+                            "hole": 2,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 3,
+                            "par": 4,
+                            "score": 4
+                        },
+                        {
+                            "hole": 4,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 5,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 6,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 7,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 8,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 9,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 10,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 11,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 12,
+                            "par": 4,
+                            "score": 4
+                        },
+                        {
+                            "hole": 13,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 14,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 15,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 16,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 17,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 18,
+                            "par": 4,
+                            "score": 3
+                        }
+                    ]
+                }
+            },
+            {
+                "id": "9b999368-b053-42b2-a3b4-76b4d8c63qwe9",
+                "name": "Snuskmaster dag 2",
+                "date": "2025-03-15",
+                "format": "Stroke Play",
+                "courseDetails": {
+                    "name": "Arlandastad",
+                    "holes": 18,
+                    "par": 72
+                },
+                "scores": {
+                    "user_2uHNrS8Ei3sitQFeEwt8EKsg6Qo": [
+                        {
+                            "hole": 1,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 2,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 3,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 4,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 5,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 6,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 7,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 8,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 9,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 10,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 11,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 12,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 13,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 14,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 15,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 16,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 17,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 18,
+                            "par": 4,
+                            "score": 2
+                        }
+                    ],
+                    "user_3vKLm9TpRj4n7BxFzWs1PLxr5Aa": [
+                        {
+                            "hole": 1,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 2,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 3,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 4,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 5,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 6,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 7,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 8,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 9,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 10,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 11,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 12,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 13,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 14,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 15,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 16,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 17,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 18,
+                            "par": 4,
+                            "score": 2
+                        }
+                    ],
+                    "user_4mPQs8Yx5rShN2VeDw9JaLzt3Cd": [
+                        {
+                            "hole": 1,
+                            "par": 4,
+                            "score": 5
+                        },
+                        {
+                            "hole": 2,
+                            "par": 4,
+                            "score": 5
+                        },
+                        {
+                            "hole": 3,
+                            "par": 4,
+                            "score": 5
+                        },
+                        {
+                            "hole": 4,
+                            "par": 4,
+                            "score": 5
+                        },
+                        {
+                            "hole": 5,
+                            "par": 4,
+                            "score": 5
+                        },
+                        {
+                            "hole": 6,
+                            "par": 4,
+                            "score": 5
+                        },
+                        {
+                            "hole": 7,
+                            "par": 4,
+                            "score": 5
+                        },
+                        {
+                            "hole": 8,
+                            "par": 4,
+                            "score": 5
+                        },
+                        {
+                            "hole": 9,
+                            "par": 4,
+                            "score": 5
+                        },
+                        {
+                            "hole": 10,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 11,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 12,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 13,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 14,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 15,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 16,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 17,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 18,
+                            "par": 4,
+                            "score": 1
+                        }
+                    ],
+                    "user_5pTxR7Zw6nUqO3WfE0BKbMuc4De": [
+                        {
+                            "hole": 1,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 2,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 3,
+                            "par": 4,
+                            "score": 4
+                        },
+                        {
+                            "hole": 4,
+                            "par": 4,
+                            "score": 5
+                        },
+                        {
+                            "hole": 5,
+                            "par": 4,
+                            "score": 6
+                        },
+                        {
+                            "hole": 6,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 7,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 8,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 9,
+                            "par": 4,
+                            "score": 7
+                        },
+                        {
+                            "hole": 10,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 11,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 12,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 13,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 14,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 15,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 16,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 17,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 18,
+                            "par": 4,
+                            "score": 2
+                        }
+                    ],
+                    "user_6qUyS8Ax7oVpP4XgF1CLcNvd5Ef": [
+                        {
+                            "hole": 1,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 2,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 3,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 4,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 5,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 6,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 7,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 8,
+                            "par": 4,
+                            "score": 4
+                        },
+                        {
+                            "hole": 9,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 10,
+                            "par": 4,
+                            "score": 4
+                        },
+                        {
+                            "hole": 11,
+                            "par": 4,
+                            "score": 5
+                        },
+                        {
+                            "hole": 12,
+                            "par": 4,
+                            "score": 5
+                        },
+                        {
+                            "hole": 13,
+                            "par": 4,
+                            "score": 4
+                        },
+                        {
+                            "hole": 14,
+                            "par": 4,
+                            "score": 5
+                        },
+                        {
+                            "hole": 15,
+                            "par": 4,
+                            "score": 5
+                        },
+                        {
+                            "hole": 16,
+                            "par": 4,
+                            "score": 4
+                        },
+                        {
+                            "hole": 17,
+                            "par": 4,
+                            "score": 5
+                        },
+                        {
+                            "hole": 18,
+                            "par": 4,
+                            "score": 5
+                        }
+                    ],
+                    "user_7rVzT9By8pWqQ5YhG2DMdOwf6Fg": [
+                        {
+                            "hole": 1,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 2,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 3,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 4,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 5,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 6,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 7,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 8,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 9,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 10,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 11,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 12,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 13,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 14,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 15,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 16,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 17,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 18,
+                            "par": 4,
+                            "score": 2
+                        }
+                    ],
+                    "user_8sWaU0Cz9qXrR6ZiH3ENePxg7Gh": [
+                        {
+                            "hole": 1,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 2,
+                            "par": 4,
+                            "score": 4
+                        },
+                        {
+                            "hole": 3,
+                            "par": 4,
+                            "score": 5
+                        },
+                        {
+                            "hole": 4,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 5,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 6,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 7,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 8,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 9,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 10,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 11,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 12,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 13,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 14,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 15,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 16,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 17,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 18,
+                            "par": 4,
+                            "score": 1
+                        }
+                    ],
+                    "user_9tXbV1Da0rYsS7ajI4FOfQyi8Hi": [
+                        {
+                            "hole": 1,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 2,
+                            "par": 4,
+                            "score": 4
+                        },
+                        {
+                            "hole": 3,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 4,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 5,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 6,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 7,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 8,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 9,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 10,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 11,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 12,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 13,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 14,
+                            "par": 4,
+                            "score": 4
+                        },
+                        {
+                            "hole": 15,
+                            "par": 4,
+                            "score": 4
+                        },
+                        {
+                            "hole": 16,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 17,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 18,
+                            "par": 4,
+                            "score": 3
+                        }
+                    ],
+                    "user_0uYcW2Eb1sZtT8bkJ5GPgRzj9Ij": [
+                        {
+                            "hole": 1,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 2,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 3,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 4,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 5,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 6,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 7,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 8,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 9,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 10,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 11,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 12,
+                            "par": 4,
+                            "score": 4
+                        },
+                        {
+                            "hole": 13,
+                            "par": 4,
+                            "score": 4
+                        },
+                        {
+                            "hole": 14,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 15,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 16,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 17,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 18,
+                            "par": 4,
+                            "score": 4
+                        }
+                    ],
+                    "user_1vZdX3Fc2taUu9clK6HQhSak0Jk": [
+                        {
+                            "hole": 1,
+                            "par": 4,
+                            "score": 4
+                        },
+                        {
+                            "hole": 2,
+                            "par": 4,
+                            "score": 5
+                        },
+                        {
+                            "hole": 3,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 4,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 5,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 6,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 7,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 8,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 9,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 10,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 11,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 12,
+                            "par": 4,
+                            "score": 4
+                        },
+                        {
+                            "hole": 13,
+                            "par": 4,
+                            "score": 5
+                        },
+                        {
+                            "hole": 14,
+                            "par": 4,
+                            "score": 5
+                        },
+                        {
+                            "hole": 15,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 16,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 17,
+                            "par": 4,
+                            "score": 4
+                        },
+                        {
+                            "hole": 18,
+                            "par": 4,
+                            "score": 2
+                        }
+                    ],
+                    "user_2wAeY4Gd3ubVv0dmL7IRiTbl1Kl": [
+                        {
+                            "hole": 1,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 2,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 3,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 4,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 5,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 6,
+                            "par": 4,
+                            "score": 4
+                        },
+                        {
+                            "hole": 7,
+                            "par": 4,
+                            "score": 4
+                        },
+                        {
+                            "hole": 8,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 9,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 10,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 11,
+                            "par": 4,
+                            "score": 4
+                        },
+                        {
+                            "hole": 12,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 13,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 14,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 15,
+                            "par": 4,
+                            "score": 4
+                        },
+                        {
+                            "hole": 16,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 17,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 18,
+                            "par": 4,
+                            "score": 2
+                        }
+                    ],
+                    "user_3xBfZ5He4vcWw1enM8JSjUcm2Lm": [
+                        {
+                            "hole": 1,
+                            "par": 4,
+                            "score": 4
+                        },
+                        {
+                            "hole": 2,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 3,
+                            "par": 4,
+                            "score": 4
+                        },
+                        {
+                            "hole": 4,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 5,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 6,
+                            "par": 4,
+                            "score": 1
+                        },
+                        {
+                            "hole": 7,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 8,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 9,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 10,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 11,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 12,
+                            "par": 4,
+                            "score": 4
+                        },
+                        {
+                            "hole": 13,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 14,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 15,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 16,
+                            "par": 4,
+                            "score": 2
+                        },
+                        {
+                            "hole": 17,
+                            "par": 4,
+                            "score": 3
+                        },
+                        {
+                            "hole": 18,
+                            "par": 4,
+                            "score": 3
+                        }
+                    ]
+                }
+            }
+        ],
+        "invitations": [],
+        "isTeamEvent": true,
+        "scoringType": "both",
+        "status": "completed"
+    }
+]
