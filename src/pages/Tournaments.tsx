@@ -14,10 +14,10 @@ import {
 import { useNavigate } from "react-router-dom";
 import tournamentService from "../services/tournamentService";
 import { Tournament, Player } from "../types/tournament";
-import TournamentForm from "../components/tournamentDetails/TournamentForm";
+import TournamentForm from "../components/tournament/TournamentForm";
 import TournamentHeader from "../components/tournament/TournamentHeader";
 import TournamentGrid from "../components/tournament/TournamentGrid";
-import InvitationList from "../components/tournament/InvitationList";
+import InvitationList from "../components/tournament/invitation/InvitationList";
 import TabPanel from "../components/tournament/TabPanel";
 import LoadingState from "../components/tournament/LoadingState";
 

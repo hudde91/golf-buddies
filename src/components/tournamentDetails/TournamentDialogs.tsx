@@ -12,7 +12,7 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { Tournament, RoundFormData } from "../../types/tournament";
-import TournamentForm from "./TournamentForm";
+import TournamentForm from "../tournament/TournamentForm";
 import RoundForm from "./RoundForm";
 
 interface TournamentDialogsProps {

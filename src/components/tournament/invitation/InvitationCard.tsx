@@ -16,7 +16,7 @@ import {
   CalendarToday as CalendarIcon,
   LocationOn as LocationIcon,
 } from "@mui/icons-material";
-import { Tournament } from "../../types/tournament";
+import { Tournament } from "../../../types/tournament";
 
 interface InvitationCardProps {
   tournament: Tournament;
