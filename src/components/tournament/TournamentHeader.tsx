@@ -1,6 +1,8 @@
+// src/components/tournament/TournamentHeader.tsx
 import React from "react";
 import { Box, Typography, Button } from "@mui/material";
 import { Add as AddIcon } from "@mui/icons-material";
+import { useTournamentStyles } from "../../theme/hooks";
 
 interface TournamentHeaderProps {
   onCreateTournament: () => void;
@@ -9,6 +11,8 @@ interface TournamentHeaderProps {
 const TournamentHeader: React.FC<TournamentHeaderProps> = ({
   onCreateTournament,
 }) => {
+  const styles = useTournamentStyles();
+
   return (
     <Box
       sx={{
@@ -20,7 +24,7 @@ const TournamentHeader: React.FC<TournamentHeaderProps> = ({
         gap: 2,
       }}
     >
-      <Typography variant="h4" sx={{ color: "white", fontWeight: 500 }}>
+      <Typography variant="h4" sx={styles.tournamentTypography.header}>
         Golf Tournaments
       </Typography>
 

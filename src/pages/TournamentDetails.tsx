@@ -1,4 +1,3 @@
-// src/pages/TournamentDetail.tsx
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
@@ -16,13 +15,8 @@ import {
   Tooltip,
 } from "@mui/material";
 import { Star as StarIcon } from "@mui/icons-material";
-import tournamentService from "../services/tournamentService";
-import {
-  Tournament,
-  RoundFormData,
-  HoleScore,
-  Player,
-} from "../types/tournament";
+import tournamentService from "../services/eventService";
+import { Tournament, RoundFormData, HoleScore, Player } from "../types/event";
 import TournamentHeader from "../components/tournamentDetails/TournamentHeader";
 import TournamentInfo from "../components/tournamentDetails/TournamentInfo";
 import LeaderboardTab from "../components/tournamentDetails/leaderboardTab/LeaderboardTab";
@@ -31,28 +25,7 @@ import PlayersTab from "../components/tournamentDetails/playersTab/PlayersTab";
 import TournamentDialogs from "../components/tournamentDetails/TournamentDialogs";
 import NotFoundView from "../components/tournamentDetails/NotFoundView";
 import TeamManagement from "../components/tournamentDetails/teamsTab/TeamManagement";
-
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
-
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`tournament-detail-tabpanel-${index}`}
-      aria-labelledby={`tournament-detail-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box sx={{ py: 3 }}>{children}</Box>}
-    </div>
-  );
-}
+import { TabPanel } from "../components/common/index";
 
 const CaptainBadge: React.FC<{
   player: Player;
@@ -179,7 +152,7 @@ const TournamentDetail: React.FC = () => {
   };
 
   const handleBackClick = () => {
-    navigate("/tournaments");
+    navigate(-1);
   };
 
   // Handler functions that modify the tournament data
@@ -249,7 +222,7 @@ const TournamentDetail: React.FC = () => {
       return;
 
     tournamentService.deleteTournament(id);
-    navigate("/tournaments");
+    navigate("/events");
   };
 
   const handleUpdateTournament = (data: any) => {
@@ -530,7 +503,7 @@ const TournamentDetail: React.FC = () => {
             </Tabs>
           </Box>
 
-          <TabPanel value={tabValue} index={0}>
+          <TabPanel id="tournament-detail" value={tabValue} index={0}>
             <LeaderboardTab
               tournament={tournament}
               isCreator={isCreator}
@@ -550,7 +523,7 @@ const TournamentDetail: React.FC = () => {
             />
           </TabPanel>
 
-          <TabPanel value={tabValue} index={1}>
+          <TabPanel id="tournament-detail" value={tabValue} index={1}>
             <RoundsTab
               tournament={tournament}
               isCreator={isCreator}
@@ -573,12 +546,12 @@ const TournamentDetail: React.FC = () => {
             />
           </TabPanel>
 
-          <TabPanel value={tabValue} index={2}>
+          <TabPanel id="tournament-detail" value={tabValue} index={2}>
             <EnhancedPlayersTab />
           </TabPanel>
 
           {tournament.isTeamEvent && (
-            <TabPanel value={tabValue} index={3}>
+            <TabPanel id="tournament-detail" value={tabValue} index={3}>
               <Box>
                 <TeamManagement
                   teams={tournament.teams}

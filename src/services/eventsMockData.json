@@ -1,0 +1,167 @@
+[
+  {
+    "id": "287978cc-42bb-4431-96a1-64e64ddf3c17",
+    "type": "tournament",
+    "data": {
+      "id": "287978cc-42bb-4431-96a1-64e64ddf3c17",
+      "name": "Snuskmaster",
+      "format": "Standard",
+      "startDate": "2025-03-18",
+      "endDate": "2025-03-18",
+      "location": "Marstrand",
+      "description": "",
+      "createdBy": "user_2uHNrS8Ei3sitQFeEwt8EKsg6Qo",
+      "createdAt": "2025-03-18T19:22:02.433Z",
+      "players": [
+        {
+          "id": "user_2uHNrS8Ei3sitQFeEwt8EKsg6Qo",
+          "name": "Martin Silfver",
+          "email": "martin.pettersson1@gmail.com",
+          "avatarUrl": "https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZmFjZWJvb2svaW1nXzJ1SE5yT3htbjhSS0piSXh2eTBKbHA5NUFJOCJ9",
+          "bio": "Famous for having the worst swing among my golf friends.",
+          "profileImage": "",
+          "question1": "22",
+          "question2": "7 iron",
+          "question3": "-1",
+          "question4": "When I said \"Snyggt\" to Ginger when he missed a putt in Marbella "
+        }
+      ],
+      "teams": [],
+      "rounds": [
+        {
+          "id": "41d1b054-611d-4dcb-b3fb-b0f93cbc365e",
+          "name": "Dag 1",
+          "date": "2025-03-18",
+          "format": "Stroke Play",
+          "courseDetails": {
+            "name": "Augusta National Golf Club, Augusta, USA",
+            "holes": 18,
+            "par": 72
+          },
+          "scores": {
+            "user_2uHNrS8Ei3sitQFeEwt8EKsg6Qo": [
+              {
+                "hole": 1,
+                "par": 4,
+                "score": 1
+              },
+              {
+                "hole": 2,
+                "par": 4,
+                "score": 1
+              },
+              {
+                "hole": 3,
+                "par": 4
+              },
+              {
+                "hole": 4,
+                "par": 4
+              },
+              {
+                "hole": 5,
+                "par": 4
+              },
+              {
+                "hole": 6,
+                "par": 4
+              },
+              {
+                "hole": 7,
+                "par": 4
+              },
+              {
+                "hole": 8,
+                "par": 4
+              },
+              {
+                "hole": 9,
+                "par": 4
+              },
+              {
+                "hole": 10,
+                "par": 4
+              },
+              {
+                "hole": 11,
+                "par": 4
+              },
+              {
+                "hole": 12,
+                "par": 4
+              },
+              {
+                "hole": 13,
+                "par": 4
+              },
+              {
+                "hole": 14,
+                "par": 4
+              },
+              {
+                "hole": 15,
+                "par": 4
+              },
+              {
+                "hole": 16,
+                "par": 4
+              },
+              {
+                "hole": 17,
+                "par": 4
+              },
+              {
+                "hole": 18,
+                "par": 4
+              }
+            ]
+          }
+        }
+      ],
+      "invitations": [],
+      "isTeamEvent": false,
+      "scoringType": "individual",
+      "status": "active"
+    }
+  },
+  {
+    "id": "0235f191-bbd9-4046-9a57-997a301b35eb",
+    "type": "tour",
+    "data": {
+      "id": "0235f191-bbd9-4046-9a57-997a301b35eb",
+      "name": "The great Tour",
+      "startDate": "2025-03-19",
+      "endDate": "2025-06-19",
+      "description": "",
+      "createdBy": "user_2uHNrS8Ei3sitQFeEwt8EKsg6Qo",
+      "createdAt": "2025-03-19T06:19:33.715Z",
+      "tournaments": [],
+      "players": [
+        {
+          "id": "user_2uHNrS8Ei3sitQFeEwt8EKsg6Qo",
+          "name": "Martin Silfver",
+          "email": "",
+          "avatarUrl": "",
+          "teamId": "",
+          "bio": "",
+          "question1": "",
+          "question2": "",
+          "question3": "",
+          "question4": ""
+        }
+      ],
+      "status": "active",
+      "pointsSystem": {
+        "win": 100,
+        "topFinish": {
+          "1": 100,
+          "2": 80,
+          "3": 60,
+          "4": 40,
+          "5": 20
+        },
+        "participation": 10
+      }
+    }
+  }
+]

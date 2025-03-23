@@ -1,61 +1,70 @@
-// App.tsx
-import React, { useState, useEffect, useRef } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import eventService from "./services/eventService";
+import React, { useState, useEffect } from "react";
 import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import {
+  ClerkProvider,
   ClerkLoaded,
   ClerkLoading,
   SignedIn,
   SignedOut,
 } from "@clerk/clerk-react";
-import { ThemeProvider, CssBaseline, Fade } from "@mui/material";
-import { createTheme } from "@mui/material/styles";
+import { Fade } from "@mui/material";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+
+// Import custom theme provider
+import { AppThemeProvider } from "./theme/ThemeProvider";
+
+// Components
 import Header from "./components/Header";
 import Home from "./pages/Home";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
-import Tournaments from "./pages/Tournaments";
-import TournamentDetail from "./pages/TournamentDetails";
+import Events from "./pages/Events";
+import TournamentDetails from "./pages/TournamentDetails";
+import TourDetails from "./pages/TourDetails";
 import SignInPage from "./pages/SignInPage";
 import NotFound from "./pages/NotFound";
 import Loading from "./components/Loading";
 import SplashScreen from "./components/splashScreen/SplashScreen";
 import BackgroundService from "./services/backgroundService";
 
-// Create a theme
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: "#1976d2",
-    },
-    secondary: {
-      main: "#dc004e",
-    },
-  },
-  components: {
-    MuiPaper: {
-      styleOverrides: {
-        root: {
-          backgroundColor: "rgba(255, 255, 255, 0.95)",
-        },
-      },
-    },
-    MuiCard: {
-      styleOverrides: {
-        root: {
-          backgroundColor: "rgba(255, 255, 255, 0.95)",
-        },
-      },
-    },
-    MuiAppBar: {
-      styleOverrides: {
-        root: {
-          backgroundColor: "#1976d2",
-          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
-        },
-      },
-    },
-  },
-});
+// Clerk public key
+const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || "";
+
+if (!clerkPubKey) {
+  throw new Error(
+    "Missing Clerk Publishable Key. Please set VITE_CLERK_PUBLISHABLE_KEY in your .env file"
+  );
+}
+
+// Layout component that wraps the app content with Header
+const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  return (
+    <>
+      <Header />
+      {children}
+    </>
+  );
+};
+
+// Protected route component
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <>
+      <SignedIn>{children}</SignedIn>
+      <SignedOut>
+        <Navigate to="/sign-in" replace />
+      </SignedOut>
+    </>
+  );
+};
 
 const App: React.FC = () => {
   const [showSplash, setShowSplash] = useState<boolean>(true);
@@ -91,89 +100,127 @@ const App: React.FC = () => {
   };
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
+    <ClerkProvider publishableKey={clerkPubKey}>
+      {/* Use our custom theme provider instead of Material UI's ThemeProvider */}
+      <AppThemeProvider>
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          {showSplash && (
+            <SplashScreen
+              onFinish={handleSplashFinish}
+              duration={3000}
+              backgroundImage={splashImage}
+              logoText={splashText}
+            />
+          )}
 
-      {showSplash && (
-        <SplashScreen
-          onFinish={handleSplashFinish}
-          duration={3000}
-          backgroundImage={splashImage}
-          logoText={splashText}
-        />
-      )}
+          <Fade in={contentLoaded} timeout={800}>
+            <div style={{ visibility: contentLoaded ? "visible" : "hidden" }}>
+              <Router>
+                <ClerkLoading>
+                  <Loading />
+                </ClerkLoading>
+                <ClerkLoaded>
+                  <Layout>
+                    <Routes>
+                      <Route path="/" element={<Home />} />
 
-      <Fade in={contentLoaded} timeout={800}>
-        <div style={{ visibility: contentLoaded ? "visible" : "hidden" }}>
-          <BrowserRouter>
-            <Header />
-            <ClerkLoading>
-              <Loading />
-            </ClerkLoading>
-            <ClerkLoaded>
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route
-                  path="/profile"
-                  element={
-                    <>
-                      <SignedIn>
-                        <Profile />
-                      </SignedIn>
-                      <SignedOut>
-                        <Navigate to="/sign-in" replace />
-                      </SignedOut>
-                    </>
-                  }
-                />
-                <Route
-                  path="/settings"
-                  element={
-                    <>
-                      <SignedIn>
-                        <Settings />
-                      </SignedIn>
-                      <SignedOut>
-                        <Navigate to="/sign-in" replace />
-                      </SignedOut>
-                    </>
-                  }
-                />
-                <Route
-                  path="/tournaments"
-                  element={
-                    <>
-                      <SignedIn>
-                        <Tournaments />
-                      </SignedIn>
-                      <SignedOut>
-                        <Navigate to="/sign-in" replace />
-                      </SignedOut>
-                    </>
-                  }
-                />
-                <Route
-                  path="/tournaments/:id"
-                  element={
-                    <>
-                      <SignedIn>
-                        <TournamentDetail />
-                      </SignedIn>
-                      <SignedOut>
-                        <Navigate to="/sign-in" replace />
-                      </SignedOut>
-                    </>
-                  }
-                />
-                <Route path="/sign-in" element={<SignInPage />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </ClerkLoaded>
-          </BrowserRouter>
-        </div>
-      </Fade>
-    </ThemeProvider>
+                      <Route
+                        path="/profile"
+                        element={
+                          <ProtectedRoute>
+                            <Profile />
+                          </ProtectedRoute>
+                        }
+                      />
+
+                      <Route
+                        path="/settings"
+                        element={
+                          <ProtectedRoute>
+                            <Settings />
+                          </ProtectedRoute>
+                        }
+                      />
+
+                      <Route
+                        path="/events"
+                        element={
+                          <ProtectedRoute>
+                            <Events />
+                          </ProtectedRoute>
+                        }
+                      />
+
+                      {/* Route that determines whether to show TournamentDetails or TourDetails */}
+                      <Route
+                        path="/events/:id"
+                        element={
+                          <ProtectedRoute>
+                            <EventDetailsRouter />
+                          </ProtectedRoute>
+                        }
+                      />
+
+                      {/* Explicit route for Tournament Details */}
+                      <Route
+                        path="/tournaments/:id"
+                        element={
+                          <ProtectedRoute>
+                            <TournamentDetails />
+                          </ProtectedRoute>
+                        }
+                      />
+
+                      <Route path="/sign-in" element={<SignInPage />} />
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                  </Layout>
+                </ClerkLoaded>
+              </Router>
+            </div>
+          </Fade>
+        </LocalizationProvider>
+      </AppThemeProvider>
+    </ClerkProvider>
   );
+};
+
+// Component to route to either TournamentDetails or TourDetails based on event type
+const EventDetailsRouter: React.FC = () => {
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [eventType, setEventType] = useState<string | null>(null);
+  const { id } = useParams<{ id: string }>();
+
+  useEffect(() => {
+    if (!id) return;
+
+    const fetchEventType = async () => {
+      setIsLoading(true);
+      try {
+        const event = eventService.getEventById(id);
+        if (event) {
+          setEventType(event.type);
+        }
+      } catch (error) {
+        console.error("Error fetching event type:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchEventType();
+  }, [id]);
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  // Route to the appropriate component based on event type
+  if (eventType === "tour") {
+    return <TourDetails />;
+  } else {
+    return <TournamentDetails />;
+  }
 };
 
 export default App;

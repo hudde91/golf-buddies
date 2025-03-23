@@ -5,16 +5,18 @@ import {
   IconButton,
   Button,
   Chip,
-  useTheme,
-  alpha,
   useMediaQuery,
+  alpha,
+  useTheme,
 } from "@mui/material";
 import {
   ArrowBack as ArrowBackIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
 } from "@mui/icons-material";
-import { Tournament } from "../../types/tournament";
+import { Tournament } from "../../types/event";
+import { useTournamentStyles } from "../../theme/hooks";
+import { getColorBasedOnStatus } from "../util";
 
 interface TournamentHeaderProps {
   tournament: Tournament;
@@ -31,22 +33,10 @@ const TournamentHeader: React.FC<TournamentHeaderProps> = ({
   onDeleteTournament,
   onEditTournament,
 }) => {
+  const styles = useTournamentStyles();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "active":
-        return "success";
-      case "upcoming":
-        return "primary";
-      case "completed":
-        return "info";
-      default:
-        return "default";
-    }
-  };
 
   return (
     <Box
@@ -84,10 +74,7 @@ const TournamentHeader: React.FC<TournamentHeaderProps> = ({
         <Typography
           variant="h4"
           component="h1"
-          sx={{
-            color: "white",
-            mr: 2,
-          }}
+          sx={styles.tournamentTypography.header}
         >
           {tournament.name}
         </Typography>
@@ -97,7 +84,7 @@ const TournamentHeader: React.FC<TournamentHeaderProps> = ({
             tournament.status.charAt(0).toUpperCase() +
             tournament.status.slice(1)
           }
-          color={getStatusColor(tournament.status)}
+          color={getColorBasedOnStatus(tournament.status)}
           size={isMobile ? "small" : "medium"}
         />
       </Box>

@@ -12,17 +12,17 @@ import {
   ListItemSecondaryAction,
   Avatar,
   IconButton,
-  useTheme,
-  alpha,
   useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import {
   AddCircle as AddCircleIcon,
   Event as EventIcon,
   Delete as DeleteIcon,
 } from "@mui/icons-material";
-import { Tournament, HoleScore } from "../../../types/tournament";
+import { Tournament, HoleScore } from "../../../types/event";
 import RoundScorecard from "./RoundScorecard";
+import { useTournamentScorecardStyles } from "../../../theme/hooks";
 
 interface RoundsTabProps {
   tournament: Tournament;
@@ -49,6 +49,7 @@ const RoundsTab: React.FC<RoundsTabProps> = ({
 }) => {
   const theme = useTheme();
   const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
+  const styles = useTournamentScorecardStyles();
 
   const getSelectedRound = () => {
     if (!selectedRoundId) return null;
@@ -59,30 +60,19 @@ const RoundsTab: React.FC<RoundsTabProps> = ({
 
   if (tournament.rounds.length === 0) {
     return (
-      <Box
-        sx={{
-          textAlign: "center",
-          py: 6,
-          backgroundColor: alpha(theme.palette.common.black, 0.2),
-          borderRadius: 2,
-          border: `1px dashed ${alpha(theme.palette.common.white, 0.2)}`,
-        }}
-      >
-        <EventIcon
-          sx={{
-            fontSize: 60,
-            color: alpha(theme.palette.common.white, 0.3),
-            mb: 2,
-          }}
-        />
-        <Typography variant="h6" gutterBottom sx={{ color: "white" }}>
+      <Box sx={styles.roundsTab.emptyState}>
+        <EventIcon sx={styles.roundsTab.emptyStateIcon} />
+        <Typography
+          variant="h6"
+          gutterBottom
+          sx={styles.roundsTab.emptyStateTitle}
+        >
           No Rounds Added Yet
         </Typography>
         <Typography
           variant="body2"
-          color={alpha(theme.palette.common.white, 0.7)}
           paragraph
-          sx={{ maxWidth: 500, mx: "auto" }}
+          sx={styles.roundsTab.emptyStateMessage}
         >
           Add rounds to track scores for this tournament.
         </Typography>
@@ -102,17 +92,8 @@ const RoundsTab: React.FC<RoundsTabProps> = ({
 
   return (
     <Box>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          mb: 3,
-          alignItems: { xs: "flex-start", sm: "center" },
-          flexDirection: { xs: "column", sm: "row" },
-          gap: 2,
-        }}
-      >
-        <Typography variant="h6" sx={{ color: "white" }}>
+      <Box sx={styles.roundsTab.header}>
+        <Typography variant="h6" sx={styles.header.title}>
           Tournament Rounds
         </Typography>
 
@@ -134,18 +115,7 @@ const RoundsTab: React.FC<RoundsTabProps> = ({
           <List
             component={Paper}
             variant="outlined"
-            sx={{
-              mb: 2,
-              bgcolor: alpha(theme.palette.common.black, 0.2),
-              border: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
-              borderRadius: 2,
-              maxHeight: { xs: "auto", md: 500 },
-              overflow: { xs: "auto", md: "auto" },
-              display: { xs: "flex", md: "block" },
-              flexDirection: { xs: "row", md: "column" },
-              overflowX: { xs: "auto", md: "hidden" },
-              whiteSpace: { xs: "nowrap", md: "normal" },
-            }}
+            sx={styles.roundsTab.roundsList}
           >
             {[...tournament.rounds]
               .sort(
@@ -158,46 +128,23 @@ const RoundsTab: React.FC<RoundsTabProps> = ({
                   button
                   selected={selectedRoundId === round.id}
                   onClick={() => onSelectRound(round.id)}
-                  sx={{
-                    borderBottom: `1px solid ${alpha(
-                      theme.palette.common.white,
-                      0.05
-                    )}`,
-                    minWidth: { xs: 200, md: "auto" },
-                    px: { xs: 2, md: 3 },
-                    py: { xs: 1, md: 2 },
-                    "&.Mui-selected": {
-                      bgcolor: alpha(theme.palette.primary.main, 0.2),
-                      "&:hover": {
-                        bgcolor: alpha(theme.palette.primary.main, 0.3),
-                      },
-                    },
-                    "&:hover": {
-                      bgcolor: alpha(theme.palette.common.white, 0.05),
-                    },
-                  }}
+                  sx={styles.roundsTab.roundItem}
                 >
-                  <ListItemAvatar sx={{ minWidth: { xs: 36, md: 56 } }}>
-                    <Avatar
-                      sx={{
-                        bgcolor: "primary.dark",
-                        width: { xs: 28, md: 40 },
-                        height: { xs: 28, md: 40 },
-                      }}
-                    >
+                  <ListItemAvatar sx={styles.roundsTab.roundItemAvatar}>
+                    <Avatar sx={styles.roundsTab.avatar}>
                       <EventIcon />
                     </Avatar>
                   </ListItemAvatar>
                   <ListItemText
                     primary={
-                      <Typography sx={{ color: "white" }}>
+                      <Typography sx={styles.roundsTab.roundName}>
                         {round.name}
                       </Typography>
                     }
                     secondary={
                       <Typography
                         variant="body2"
-                        sx={{ color: alpha(theme.palette.common.white, 0.6) }}
+                        sx={styles.roundsTab.roundDate}
                       >
                         {new Date(round.date).toLocaleDateString()}
                       </Typography>
@@ -209,12 +156,7 @@ const RoundsTab: React.FC<RoundsTabProps> = ({
                         edge="end"
                         aria-label="delete"
                         onClick={() => onDeleteRound(round.id)}
-                        sx={{
-                          color: theme.palette.error.light,
-                          "&:hover": {
-                            bgcolor: alpha(theme.palette.error.main, 0.1),
-                          },
-                        }}
+                        sx={styles.roundsTab.deleteButton}
                       >
                         <DeleteIcon />
                       </IconButton>
@@ -234,19 +176,8 @@ const RoundsTab: React.FC<RoundsTabProps> = ({
               onUpdateScores={onUpdateScores}
             />
           ) : (
-            <Box
-              sx={{
-                p: 3,
-                textAlign: "center",
-                bgcolor: alpha(theme.palette.common.black, 0.2),
-                border: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
-                borderRadius: 2,
-              }}
-            >
-              <Typography
-                variant="h6"
-                sx={{ color: alpha(theme.palette.common.white, 0.7) }}
-              >
+            <Box sx={styles.roundsTab.noSelection}>
+              <Typography variant="h6" sx={styles.roundsTab.noSelectionText}>
                 Select a round to view its scorecard
               </Typography>
             </Box>

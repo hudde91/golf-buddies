@@ -1,10 +1,11 @@
 // src/components/profile/QuestionsSection.tsx
 import React from "react";
-import { Box, Typography, useTheme, alpha, Button } from "@mui/material";
+import { Box, Typography, Button } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import HandicapField from "./HandicapField";
 import ProfileTextField from "./ProfileTextField";
 import ProfileQuestion from "./ProfileQuestion";
+import { useProfileStyles } from "../../theme/hooks";
 
 interface QuestionData {
   q1: string;
@@ -46,18 +47,15 @@ const QuestionsSection: React.FC<QuestionsSectionProps> = ({
   onQuestion4Change,
   onSave,
 }) => {
-  const theme = useTheme();
+  const styles = useProfileStyles();
 
   const sectionTitle = (
     <Typography
       variant="h5"
       sx={{
-        mt: editing ? 5 : 5,
-        mb: editing ? 3 : 3,
-        color: "white",
-        fontWeight: 600,
-        borderBottom: `2px solid ${alpha(theme.palette.primary.main, 0.5)}`,
-        paddingBottom: "8px",
+        ...styles.profileSectionTitle,
+        mt: 5,
+        mb: 3,
       }}
     >
       Additional Information
@@ -109,11 +107,7 @@ const QuestionsSection: React.FC<QuestionsSectionProps> = ({
             onClick={onSave}
             startIcon={<SaveIcon />}
             size="large"
-            sx={{
-              padding: "12px 24px",
-              fontSize: "1.1rem",
-              fontWeight: 600,
-            }}
+            sx={styles.profileButtons.save}
           >
             Save Profile
           </Button>

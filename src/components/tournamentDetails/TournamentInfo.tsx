@@ -5,8 +5,8 @@ import {
   Box,
   Chip,
   Divider,
-  useTheme,
   alpha,
+  useTheme,
 } from "@mui/material";
 import {
   CalendarToday as CalendarIcon,
@@ -14,14 +14,16 @@ import {
   Event as EventIcon,
   PersonAdd as PersonAddIcon,
 } from "@mui/icons-material";
-import { Tournament } from "../../types/tournament";
+import { Tournament } from "../../types/event";
+import { useTournamentStyles } from "../../theme/hooks";
 
 interface TournamentInfoProps {
   tournament: Tournament;
 }
 
 const TournamentInfo: React.FC<TournamentInfoProps> = ({ tournament }) => {
-  const theme = useTheme();
+  const styles = useTournamentStyles();
+  const theme = useTheme(); // Need theme for some dynamic chip colors
 
   return (
     <Box
@@ -34,35 +36,34 @@ const TournamentInfo: React.FC<TournamentInfoProps> = ({ tournament }) => {
     >
       <Grid container spacing={3}>
         <Grid item xs={12} md={6}>
-          <Box
-            sx={{ display: "flex", alignItems: "center", mb: { xs: 1, md: 2 } }}
-          >
-            <CalendarIcon
-              sx={{ mr: 1, color: alpha(theme.palette.common.white, 0.7) }}
-            />
-            <Typography variant="subtitle1" sx={{ color: "white" }}>
+          <Box sx={{ ...styles.infoItem, mb: { xs: 1, md: 2 } }}>
+            <CalendarIcon />
+            <Typography
+              variant="subtitle1"
+              sx={styles.tournamentTypography.body}
+            >
               Dates: {new Date(tournament.startDate).toLocaleDateString()}
               {tournament.startDate !== tournament.endDate &&
                 ` to ${new Date(tournament.endDate).toLocaleDateString()}`}
             </Typography>
           </Box>
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <LocationIcon
-              sx={{ mr: 1, color: alpha(theme.palette.common.white, 0.7) }}
-            />
-            <Typography variant="subtitle1" sx={{ color: "white" }}>
+          <Box sx={styles.infoItem}>
+            <LocationIcon />
+            <Typography
+              variant="subtitle1"
+              sx={styles.tournamentTypography.body}
+            >
               Location: {tournament.location}
             </Typography>
           </Box>
         </Grid>
         <Grid item xs={12} md={6}>
-          <Box
-            sx={{ display: "flex", alignItems: "center", mb: { xs: 1, md: 2 } }}
-          >
-            <EventIcon
-              sx={{ mr: 1, color: alpha(theme.palette.common.white, 0.7) }}
-            />
-            <Typography variant="subtitle1" sx={{ color: "white" }}>
+          <Box sx={{ ...styles.infoItem, mb: { xs: 1, md: 2 } }}>
+            <EventIcon />
+            <Typography
+              variant="subtitle1"
+              sx={styles.tournamentTypography.body}
+            >
               Creator:{" "}
               {tournament.players.find((p) => p.id === tournament.createdBy)
                 ?.name || "Unknown"}
@@ -120,20 +121,18 @@ const TournamentInfo: React.FC<TournamentInfoProps> = ({ tournament }) => {
         </Grid>
         {tournament.description && (
           <Grid item xs={12}>
-            <Divider
-              sx={{ my: 1, bgcolor: alpha(theme.palette.common.white, 0.1) }}
-            />
+            <Divider sx={styles.tournamentDivider} />
             <Typography
               variant="subtitle1"
               gutterBottom
-              sx={{ color: "white", mt: 1 }}
+              sx={{ ...styles.tournamentTypography.body, mt: 1 }}
             >
               Description:
             </Typography>
             <Typography
               variant="body1"
               paragraph
-              sx={{ color: alpha(theme.palette.common.white, 0.9) }}
+              sx={styles.tournamentTypography.body}
             >
               {tournament.description}
             </Typography>

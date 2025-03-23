@@ -20,33 +20,12 @@ import {
 } from "@mui/material";
 import ImageIcon from "@mui/icons-material/Image";
 import splashService, { SplashPreset } from "../../services/splashService";
+import { TabPanel } from "../common/index";
 
 interface SplashConfigProps {
   onSave: (image: string, text: string) => void;
   currentImage: string;
   currentText: string;
-}
-
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
-
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`splash-tabpanel-${index}`}
-      aria-labelledby={`splash-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
-    </div>
-  );
 }
 
 const SplashConfig: React.FC<SplashConfigProps> = ({
@@ -233,7 +212,7 @@ const SplashConfig: React.FC<SplashConfigProps> = ({
             </Tabs>
           </Box>
 
-          <TabPanel value={tabValue} index={0}>
+          <TabPanel id="splash" value={tabValue} index={0}>
             <Grid container spacing={2}>
               {presets.map((preset) => (
                 <Grid item xs={12} sm={6} md={4} key={preset.id}>
@@ -280,7 +259,7 @@ const SplashConfig: React.FC<SplashConfigProps> = ({
             </Grid>
           </TabPanel>
 
-          <TabPanel value={tabValue} index={1}>
+          <TabPanel id="splash" value={tabValue} index={1}>
             <Box sx={{ textAlign: "center", py: 2 }}>
               <Button
                 variant="outlined"

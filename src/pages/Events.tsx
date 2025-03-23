@@ -10,42 +10,47 @@ import {
   Dialog,
   useTheme,
   alpha,
+  Button,
+  ButtonGroup,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import tournamentService from "../services/tournamentService";
-import { Tournament, Player } from "../types/tournament";
+import eventService from "../services/eventService";
+import { Event, Tournament, Player } from "../types/event";
 import TournamentForm from "../components/tournament/TournamentForm";
-import TournamentHeader from "../components/tournament/TournamentHeader";
-import TournamentGrid from "../components/tournament/TournamentGrid";
-import InvitationList from "../components/tournament/invitation/InvitationList";
-import TabPanel from "../components/tournament/TabPanel";
+import TourForm from "../components/tour/TourForm";
+import EventHeader from "../components/EventHeader";
+import EventGrid from "../components/EventGrid";
+import InvitationList from "../components/invitation/InvitationList";
 import LoadingState from "../components/tournament/LoadingState";
+import { TabPanel } from "../components/common/index";
 
-const Tournaments: React.FC = () => {
+const Events: React.FC = () => {
   const { user, isLoaded } = useUser();
   const navigate = useNavigate();
   const theme = useTheme();
 
-  const [tournaments, setTournaments] = useState<Tournament[]>([]);
+  const [events, setEvents] = useState<Event[]>([]);
   const [invitations, setInvitations] = useState<Tournament[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [tabValue, setTabValue] = useState(0);
-  const [openNewTournament, setOpenNewTournament] = useState(false);
+  const [openNewEvent, setOpenNewEvent] = useState(false);
+  const [eventType, setEventType] = useState<"tournament" | "tour" | null>(
+    null
+  );
 
-  // Effects
   useEffect(() => {
     if (!isLoaded || !user) return;
 
     const fetchData = () => {
       setIsLoading(true);
 
-      // Get user's tournaments and invitations
-      const userTournaments = tournamentService.getUserTournaments(user.id);
-      const userInvitations = tournamentService.getUserInvitations(
+      // Get user's events and invitations
+      const userEvents = eventService.getUserEvents(user.id);
+      const userInvitations = eventService.getUserInvitations(
         user.primaryEmailAddress?.emailAddress || ""
       );
 
-      setTournaments(userTournaments);
+      setEvents(userEvents);
       setInvitations(userInvitations);
       setIsLoading(false);
     };
@@ -58,12 +63,17 @@ const Tournaments: React.FC = () => {
     setTabValue(newValue);
   };
 
-  const handleCreateTournament = () => {
-    setOpenNewTournament(true);
+  const handleCreateEvent = () => {
+    setOpenNewEvent(true);
   };
 
-  const handleTournamentFormClose = () => {
-    setOpenNewTournament(false);
+  const handleEventTypeSelect = (type: "tournament" | "tour") => {
+    setEventType(type);
+  };
+
+  const handleEventFormClose = () => {
+    setOpenNewEvent(false);
+    setEventType(null);
   };
 
   const handleTournamentSubmit = (tournamentData: any) => {
@@ -76,16 +86,27 @@ const Tournaments: React.FC = () => {
       avatarUrl: user.imageUrl || undefined,
     };
 
-    const newTournament = tournamentService.createTournament(
-      tournamentData,
-      currentUser
-    );
-    setTournaments([...tournaments, newTournament]);
-    setOpenNewTournament(false);
+    const newEvent = eventService.createTournament(tournamentData, currentUser);
+    setEvents([...events, newEvent]);
+    setOpenNewEvent(false);
+    setEventType(null);
   };
 
-  const handleViewTournament = (tournamentId: string) => {
-    navigate(`/tournaments/${tournamentId}`);
+  const handleTourSubmit = (tourData: any) => {
+    if (!user) return;
+
+    const newEvent = eventService.createTour(
+      tourData,
+      user.id,
+      user.fullName || "Unknown User"
+    );
+    setEvents([...events, newEvent]);
+    setOpenNewEvent(false);
+    setEventType(null);
+  };
+
+  const handleViewEvent = (eventId: string) => {
+    navigate(`/events/${eventId}`);
   };
 
   const handleAcceptInvitation = (tournamentId: string) => {
@@ -98,24 +119,29 @@ const Tournaments: React.FC = () => {
       avatarUrl: user.imageUrl || undefined,
     };
 
-    tournamentService.acceptInvitation(tournamentId, currentUser);
+    const acceptedEvent = eventService.acceptInvitation(
+      tournamentId,
+      currentUser
+    );
 
-    // Update state
-    const updatedInvitations = invitations.filter((t) => t.id !== tournamentId);
-    const acceptedTournament =
-      tournamentService.getTournamentById(tournamentId);
+    if (acceptedEvent) {
+      // Update state
+      const updatedInvitations = invitations.filter(
+        (t) => t.id !== tournamentId
+      );
+      setInvitations(updatedInvitations);
 
-    if (acceptedTournament) {
-      setTournaments([...tournaments, acceptedTournament]);
+      // Check if the event is already in our events list
+      if (!events.some((e) => e.id === acceptedEvent.id)) {
+        setEvents([...events, acceptedEvent]);
+      }
     }
-
-    setInvitations(updatedInvitations);
   };
 
   const handleDeclineInvitation = (tournamentId: string) => {
     if (!user) return;
 
-    tournamentService.declineInvitation(
+    eventService.declineInvitation(
       tournamentId,
       user.primaryEmailAddress?.emailAddress || ""
     );
@@ -148,7 +174,7 @@ const Tournaments: React.FC = () => {
             border: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
           }}
         >
-          <TournamentHeader onCreateTournament={handleCreateTournament} />
+          <EventHeader onCreateEvent={handleCreateEvent} />
 
           <Box
             sx={{
@@ -159,13 +185,13 @@ const Tournaments: React.FC = () => {
             <Tabs
               value={tabValue}
               onChange={handleTabChange}
-              aria-label="tournament tabs"
+              aria-label="event tabs"
               textColor="inherit"
               TabIndicatorProps={{
                 style: { background: "white" },
               }}
             >
-              <Tab label="My Tournaments" sx={{ color: "white" }} />
+              <Tab label="My Events" sx={{ color: "white" }} />
               <Tab
                 label={
                   <Badge
@@ -180,16 +206,16 @@ const Tournaments: React.FC = () => {
             </Tabs>
           </Box>
 
-          <TabPanel value={tabValue} index={0}>
-            <TournamentGrid
-              tournaments={tournaments}
+          <TabPanel id="events" value={tabValue} index={0}>
+            <EventGrid
+              events={events}
               userId={user?.id || ""}
-              onViewDetails={handleViewTournament}
-              onCreateTournament={handleCreateTournament}
+              onViewDetails={handleViewEvent}
+              onCreateEvent={handleCreateEvent}
             />
           </TabPanel>
 
-          <TabPanel value={tabValue} index={1}>
+          <TabPanel id="events" value={tabValue} index={1}>
             <InvitationList
               invitations={invitations}
               onAcceptInvitation={handleAcceptInvitation}
@@ -199,9 +225,10 @@ const Tournaments: React.FC = () => {
         </Box>
       </Container>
 
+      {/* Create New Event Dialog */}
       <Dialog
-        open={openNewTournament}
-        onClose={handleTournamentFormClose}
+        open={openNewEvent}
+        onClose={handleEventFormClose}
         maxWidth="md"
         fullWidth
         PaperProps={{
@@ -213,13 +240,52 @@ const Tournaments: React.FC = () => {
           },
         }}
       >
-        <TournamentForm
-          onSubmit={handleTournamentSubmit}
-          onCancel={handleTournamentFormClose}
-        />
+        {!eventType ? (
+          <Box sx={{ p: 4, textAlign: "center" }}>
+            <Typography variant="h5" color="white" gutterBottom>
+              Create New Event
+            </Typography>
+            <Typography variant="body1" color="white" sx={{ mb: 4 }}>
+              Choose the type of event you want to create
+            </Typography>
+            <ButtonGroup variant="contained" size="large" sx={{ mb: 2 }}>
+              <Button
+                onClick={() => handleEventTypeSelect("tournament")}
+                sx={{ p: 2, minWidth: "180px" }}
+              >
+                Single Tournament
+              </Button>
+              <Button
+                onClick={() => handleEventTypeSelect("tour")}
+                sx={{ p: 2, minWidth: "180px" }}
+              >
+                Tournament Series (Tour)
+              </Button>
+            </ButtonGroup>
+            <Box sx={{ mt: 4 }}>
+              <Button
+                variant="outlined"
+                color="inherit"
+                onClick={handleEventFormClose}
+              >
+                Cancel
+              </Button>
+            </Box>
+          </Box>
+        ) : eventType === "tournament" ? (
+          <TournamentForm
+            onSubmit={handleTournamentSubmit}
+            onCancel={handleEventFormClose}
+          />
+        ) : (
+          <TourForm
+            onSubmit={handleTourSubmit}
+            onCancel={handleEventFormClose}
+          />
+        )}
       </Dialog>
     </Box>
   );
 };
 
-export default Tournaments;
+export default Events;

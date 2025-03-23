@@ -8,10 +8,9 @@ import {
   IconButton,
   Tooltip,
   FormHelperText,
-  useTheme,
-  alpha,
 } from "@mui/material";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import { useProfileStyles } from "../../theme/hooks";
 
 interface HandicapFieldProps {
   question: string;
@@ -28,25 +27,18 @@ const HandicapField: React.FC<HandicapFieldProps> = ({
   onChange,
   onInputChange,
 }) => {
-  const theme = useTheme();
+  const styles = useProfileStyles();
 
   return (
     <Box sx={{ mb: 4 }}>
       <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-        <Typography
-          variant="subtitle1"
-          sx={{
-            color: theme.palette.primary.light,
-            fontSize: "1.1rem",
-            fontWeight: 600,
-          }}
-        >
+        <Typography variant="subtitle1" sx={styles.profileTypography.subtitle}>
           {question}
         </Typography>
         <Tooltip title="A golf handicap is a numerical measure of a golfer's potential ability. Lower numbers indicate better players (scratch golfers have 0). Beginners typically have handicaps between 20-30.">
           <IconButton
             size="small"
-            sx={{ ml: 1, color: alpha(theme.palette.common.white, 0.6) }}
+            sx={{ ml: 1, color: styles.profileTypography.muted.color }}
           >
             <HelpOutlineIcon fontSize="small" />
           </IconButton>
@@ -70,22 +62,7 @@ const HandicapField: React.FC<HandicapFieldProps> = ({
           helperText={error}
           sx={{
             width: "100px",
-            "& .MuiOutlinedInput-root": {
-              "& fieldset": {
-                borderColor: alpha(theme.palette.common.white, 0.3),
-                borderWidth: "2px",
-              },
-              "&:hover fieldset": {
-                borderColor: alpha(theme.palette.common.white, 0.5),
-              },
-              "&.Mui-focused fieldset": {
-                borderColor: theme.palette.primary.main,
-              },
-            },
-            "& .MuiFormHelperText-root": {
-              color: theme.palette.error.light,
-              fontSize: "0.9rem",
-            },
+            ...styles.formField,
           }}
         />
         <Box sx={{ flexGrow: 1, px: 2 }}>
@@ -96,6 +73,7 @@ const HandicapField: React.FC<HandicapFieldProps> = ({
             max={54}
             step={0.1}
             valueLabelDisplay="auto"
+            sx={styles.profileSlider}
             marks={[
               { value: -10, label: "-10" },
               { value: 0, label: "0" },
@@ -106,13 +84,7 @@ const HandicapField: React.FC<HandicapFieldProps> = ({
           />
         </Box>
       </Box>
-      <FormHelperText
-        sx={{
-          color: alpha(theme.palette.common.white, 0.6),
-          mt: 1,
-          fontSize: "0.95rem",
-        }}
-      >
+      <FormHelperText sx={styles.profileTypography.muted}>
         Pro golfers can have negative handicaps. Beginners usually start around
         20-30.
       </FormHelperText>

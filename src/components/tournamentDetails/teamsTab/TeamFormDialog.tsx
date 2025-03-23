@@ -14,16 +14,15 @@ import {
   ListItemAvatar,
   ListItemText,
   Radio,
-  useTheme,
-  alpha,
   SelectChangeEvent,
 } from "@mui/material";
 import {
   Star as StarIcon,
   StarBorder as StarBorderIcon,
 } from "@mui/icons-material";
-import { Team, Player, TeamFormData } from "../../../types/tournament";
-import { teamColors } from "../../../services/tournamentService";
+import { Team, Player, TeamFormData } from "../../../types/event";
+import { teamColors } from "../../../services/eventService";
+import { useTournamentTeamStyles } from "../../../theme/hooks";
 
 interface TeamFormDialogProps {
   open: boolean;
@@ -50,7 +49,7 @@ const TeamFormDialog: React.FC<TeamFormDialogProps> = ({
   onSubmit,
   isMobile,
 }) => {
-  const theme = useTheme();
+  const styles = useTournamentTeamStyles();
 
   const handleTeamFormChange = (
     e: React.ChangeEvent<HTMLInputElement> | SelectChangeEvent
@@ -69,20 +68,10 @@ const TeamFormDialog: React.FC<TeamFormDialogProps> = ({
       maxWidth="sm"
       fullWidth
       PaperProps={{
-        sx: {
-          backgroundColor: alpha(theme.palette.common.black, 0.8),
-          backdropFilter: "blur(20px)",
-          border: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
-          borderRadius: 2,
-        },
+        sx: styles.dialogPaper,
       }}
     >
-      <DialogTitle
-        sx={{
-          color: "white",
-          borderBottom: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
-        }}
-      >
+      <DialogTitle sx={styles.dialogTitle}>
         {team ? "Edit Team" : "Add New Team"}
       </DialogTitle>
       <DialogContent>
@@ -96,30 +85,16 @@ const TeamFormDialog: React.FC<TeamFormDialogProps> = ({
             required
             margin="normal"
             InputLabelProps={{
-              style: { color: alpha(theme.palette.common.white, 0.7) },
+              style: styles.formField.label,
             }}
             InputProps={{
-              style: { color: "white" },
-              sx: {
-                "& .MuiOutlinedInput-notchedOutline": {
-                  borderColor: alpha(theme.palette.common.white, 0.3),
-                },
-                "&:hover .MuiOutlinedInput-notchedOutline": {
-                  borderColor: alpha(theme.palette.common.white, 0.5),
-                },
-                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                  borderColor: theme.palette.primary.main,
-                },
-              },
+              style: styles.formField.input,
+              sx: styles.formField.outline,
             }}
           />
 
           <Box sx={{ mt: 3 }}>
-            <Typography
-              variant="subtitle1"
-              gutterBottom
-              sx={{ color: "white" }}
-            >
+            <Typography variant="subtitle1" gutterBottom sx={styles.teamName}>
               Team Color
             </Typography>
             <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
@@ -127,22 +102,7 @@ const TeamFormDialog: React.FC<TeamFormDialogProps> = ({
                 <Box
                   key={color}
                   onClick={() => setTeamForm((prev) => ({ ...prev, color }))}
-                  sx={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: "50%",
-                    bgcolor: color,
-                    cursor: "pointer",
-                    border:
-                      teamForm.color === color
-                        ? "3px solid white"
-                        : "3px solid transparent",
-                    "&:hover": {
-                      opacity: 0.8,
-                      transform: "scale(1.1)",
-                    },
-                    transition: "all 0.2s ease",
-                  }}
+                  sx={styles.getColorSwatch(color, teamForm.color === color)}
                 />
               ))}
             </Box>
@@ -151,20 +111,10 @@ const TeamFormDialog: React.FC<TeamFormDialogProps> = ({
           {/* Captain Selection */}
           {team && teamPlayers.length > 0 && (
             <Box sx={{ mt: 3 }}>
-              <Typography
-                variant="subtitle1"
-                gutterBottom
-                sx={{ color: "white" }}
-              >
+              <Typography variant="subtitle1" gutterBottom sx={styles.teamName}>
                 Team Captain
               </Typography>
-              <List
-                sx={{
-                  bgcolor: alpha(theme.palette.common.black, 0.2),
-                  borderRadius: 1,
-                  border: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
-                }}
-              >
+              <List sx={styles.playersList}>
                 {teamPlayers.map((player) => (
                   <ListItem
                     key={player.id}
@@ -174,19 +124,10 @@ const TeamFormDialog: React.FC<TeamFormDialogProps> = ({
                         selectedCaptain === player.id ? null : player.id
                       )
                     }
-                    sx={{
-                      borderBottom: `1px solid ${alpha(
-                        theme.palette.common.white,
-                        0.05
-                      )}`,
-                      "&:last-child": {
-                        borderBottom: "none",
-                      },
-                      backgroundColor:
-                        selectedCaptain === player.id
-                          ? alpha(teamForm.color, 0.2)
-                          : "transparent",
-                    }}
+                    sx={styles.getPlayerListItem(
+                      selectedCaptain === player.id,
+                      teamForm.color
+                    )}
                   >
                     <ListItemAvatar>
                       <Avatar src={player.avatarUrl} alt={player.name}>
@@ -195,7 +136,7 @@ const TeamFormDialog: React.FC<TeamFormDialogProps> = ({
                     </ListItemAvatar>
                     <ListItemText
                       primary={
-                        <Typography sx={{ color: "white" }}>
+                        <Typography sx={styles.teamName}>
                           {player.name}
                         </Typography>
                       }
@@ -205,12 +146,10 @@ const TeamFormDialog: React.FC<TeamFormDialogProps> = ({
                       onChange={() => {}}
                       icon={<StarBorderIcon />}
                       checkedIcon={<StarIcon />}
-                      sx={{
-                        color: alpha(theme.palette.common.white, 0.5),
-                        "&.Mui-checked": {
-                          color: teamForm.color,
-                        },
-                      }}
+                      sx={styles.getCaptainIcon(
+                        selectedCaptain === player.id,
+                        teamForm.color
+                      )}
                     />
                   </ListItem>
                 ))}
@@ -218,45 +157,18 @@ const TeamFormDialog: React.FC<TeamFormDialogProps> = ({
             </Box>
           )}
 
-          <Box
-            sx={{
-              mt: 3,
-              p: 2,
-              border: `1px dashed ${alpha(theme.palette.common.white, 0.2)}`,
-              borderRadius: 1,
-              bgcolor: alpha(theme.palette.common.black, 0.2),
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            <Avatar sx={{ bgcolor: teamForm.color, mr: 2 }}>
+          <Box sx={styles.previewBox}>
+            <Avatar sx={styles.getTeamAvatar(teamForm.color)}>
               {teamForm.name ? teamForm.name[0].toUpperCase() : "T"}
             </Avatar>
-            <Typography variant="h6" sx={{ color: "white" }}>
+            <Typography variant="h6" sx={styles.teamName}>
               {teamForm.name || "Team Name"}
             </Typography>
           </Box>
         </Box>
       </DialogContent>
-      <DialogActions
-        sx={{
-          borderTop: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
-          px: 3,
-          py: 2,
-          flexDirection: { xs: "column", sm: "row" },
-          alignItems: "stretch",
-          "& > button": {
-            m: { xs: 0.5, sm: 0 },
-          },
-        }}
-      >
-        <Button
-          onClick={onClose}
-          sx={{
-            color: alpha(theme.palette.common.white, 0.9),
-            order: { xs: 2, sm: 1 },
-          }}
-        >
+      <DialogActions sx={styles.dialogActions}>
+        <Button onClick={onClose} sx={styles.cancelButton}>
           Cancel
         </Button>
         <Button
@@ -265,9 +177,7 @@ const TeamFormDialog: React.FC<TeamFormDialogProps> = ({
           color="primary"
           disabled={!teamForm.name.trim()}
           fullWidth={isMobile}
-          sx={{
-            order: { xs: 1, sm: 2 },
-          }}
+          sx={styles.submitButton}
         >
           {team ? "Update Team" : "Add Team"}
         </Button>

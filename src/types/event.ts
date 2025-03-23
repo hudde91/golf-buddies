@@ -70,6 +70,33 @@ export interface Tournament {
   status: "upcoming" | "active" | "completed";
 }
 
+export interface Tour {
+  id: string;
+  name: string;
+  description?: string;
+  startDate: string;
+  endDate: string;
+  createdBy: string;
+  createdAt: string;
+  tournaments: Tournament[];
+  players?: Player[]; // Optional shared player roster across tournaments
+  teams?: Team[]; // Optional shared teams across tournaments
+  invitations?: string[]; // Optional shared invitations
+  status: "upcoming" | "active" | "completed";
+  pointsSystem?: {
+    // Optional points system for tour rankings
+    win: number;
+    topFinish: { [position: number]: number }; // e.g., {1: 100, 2: 75, 3: 60}
+    participation: number;
+  };
+}
+
+export interface Event {
+  id: string;
+  type: "tournament" | "tour";
+  data: Tournament | Tour;
+}
+
 export interface TournamentFormData {
   name: string;
   startDate: string;
@@ -94,4 +121,11 @@ export interface TeamFormData {
   color: string;
   logo?: string;
   captain?: string;
+}
+
+export interface TourFormData {
+  name: string;
+  startDate: string;
+  endDate: string;
+  description: string;
 }
