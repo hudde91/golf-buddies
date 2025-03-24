@@ -14,8 +14,6 @@ import {
   ListItemAvatar,
   ListItemText,
   Badge,
-  useTheme,
-  alpha,
 } from "@mui/material";
 import {
   Delete as DeleteIcon,
@@ -23,7 +21,8 @@ import {
   GroupAdd as GroupAddIcon,
   Star as StarIcon,
 } from "@mui/icons-material";
-import { Team, Player } from "../../../types/tournament";
+import { Team, Player } from "../../../types/event";
+import { useTournamentTeamStyles } from "../../../theme/hooks";
 
 interface TeamCardProps {
   team: Team;
@@ -44,58 +43,24 @@ const TeamCard: React.FC<TeamCardProps> = ({
   onDelete,
   onManagePlayers,
 }) => {
-  const theme = useTheme();
+  const styles = useTournamentTeamStyles();
 
   return (
-    <Card
-      variant="outlined"
-      sx={{
-        borderLeft: `5px solid ${team.color}`,
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        backgroundColor: alpha(theme.palette.common.black, 0.3),
-        backdropFilter: "blur(8px)",
-        border: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
-        borderRadius: 2,
-        transition: "transform 0.2s ease",
-        "&:hover": {
-          transform: "translateY(-4px)",
-          boxShadow: `0 8px 16px ${alpha(theme.palette.common.black, 0.3)}`,
-        },
-      }}
-    >
+    <Card variant="outlined" sx={styles.getTeamCard(team.color)}>
       <CardContent sx={{ flexGrow: 1 }}>
-        <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-          <Avatar sx={{ bgcolor: team.color, mr: 2 }}>
+        <Box sx={styles.teamHeader}>
+          <Avatar sx={styles.getTeamAvatar(team.color)}>
             {team.name[0].toUpperCase()}
           </Avatar>
-          <Typography variant="h6" sx={{ color: "white" }}>
+          <Typography variant="h6" sx={styles.teamName}>
             {team.name}
           </Typography>
         </Box>
 
-        <Divider
-          sx={{
-            my: 1,
-            bgcolor: alpha(theme.palette.common.white, 0.1),
-          }}
-        />
+        <Divider sx={styles.teamDivider} />
 
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            mb: 1,
-          }}
-        >
-          <Typography
-            variant="subtitle2"
-            sx={{
-              color: alpha(theme.palette.common.white, 0.9),
-            }}
-          >
+        <Box sx={styles.teamInfoHeader}>
+          <Typography variant="subtitle2" sx={styles.teamInfoText}>
             Players: {players.length}
           </Typography>
 
@@ -104,31 +69,15 @@ const TeamCard: React.FC<TeamCardProps> = ({
               icon={<StarIcon sx={{ fontSize: "0.9rem" }} />}
               label={`Captain: ${captain.name}`}
               size="small"
-              sx={{
-                bgcolor: alpha(team.color, 0.2),
-                color: "white",
-                border: `1px solid ${alpha(team.color, 0.5)}`,
-                "& .MuiChip-icon": {
-                  color: team.color,
-                },
-              }}
+              sx={styles.getCaptainChip(team.color)}
             />
           )}
         </Box>
 
         {players.length > 0 ? (
-          <List
-            dense
-            sx={{
-              maxHeight: 200,
-              overflow: "auto",
-              bgcolor: alpha(theme.palette.common.black, 0.2),
-              borderRadius: 1,
-              border: `1px solid ${alpha(theme.palette.common.white, 0.05)}`,
-            }}
-          >
+          <List dense sx={styles.playersList}>
             {players.map((player) => (
-              <ListItem key={player.id}>
+              <ListItem key={player.id} sx={styles.playerItem}>
                 <ListItemAvatar>
                   <Badge
                     overlap="circular"
@@ -138,16 +87,7 @@ const TeamCard: React.FC<TeamCardProps> = ({
                     }}
                     badgeContent={
                       player.id === team.captain ? (
-                        <StarIcon
-                          sx={{
-                            color: team.color,
-                            bgcolor: alpha(theme.palette.common.black, 0.7),
-                            borderRadius: "50%",
-                            padding: "2px",
-                            width: 16,
-                            height: 16,
-                          }}
-                        />
+                        <StarIcon sx={styles.getCaptainBadge(team.color)} />
                       ) : null
                     }
                   >
@@ -160,20 +100,13 @@ const TeamCard: React.FC<TeamCardProps> = ({
                   primary={
                     <Typography
                       variant="body2"
-                      sx={{
-                        color: alpha(theme.palette.common.white, 0.9),
-                        fontWeight: player.id === team.captain ? 700 : 400,
-                      }}
+                      sx={styles.getPlayerName(player.id === team.captain)}
                     >
                       {player.name}
                       {player.id === team.captain && (
                         <Typography
                           component="span"
-                          sx={{
-                            ml: 1,
-                            fontSize: "0.75rem",
-                            color: team.color,
-                          }}
+                          sx={styles.getCaptainLabel(team.color)}
                         >
                           (Captain)
                         </Typography>
@@ -185,36 +118,18 @@ const TeamCard: React.FC<TeamCardProps> = ({
             ))}
           </List>
         ) : (
-          <Typography
-            variant="body2"
-            color={alpha(theme.palette.common.white, 0.7)}
-          >
+          <Typography variant="body2" sx={styles.noPlayersText}>
             No players assigned yet
           </Typography>
         )}
       </CardContent>
       {isCreator && (
-        <CardActions
-          sx={{
-            borderTop: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
-            px: 2,
-            py: 1.5,
-            flexWrap: "wrap",
-            gap: 1,
-          }}
-        >
+        <CardActions sx={styles.cardActions}>
           <Button
             size="small"
             startIcon={<GroupAddIcon />}
             onClick={onManagePlayers}
-            sx={{
-              color: "white",
-              borderColor: alpha(theme.palette.common.white, 0.3),
-              "&:hover": {
-                borderColor: "white",
-                backgroundColor: alpha(theme.palette.common.white, 0.1),
-              },
-            }}
+            sx={styles.managePlayersButton}
             variant="outlined"
           >
             Manage Players
@@ -223,14 +138,7 @@ const TeamCard: React.FC<TeamCardProps> = ({
             size="small"
             startIcon={<EditIcon />}
             onClick={onEdit}
-            sx={{
-              color: theme.palette.primary.light,
-              borderColor: alpha(theme.palette.primary.light, 0.5),
-              "&:hover": {
-                borderColor: theme.palette.primary.light,
-                backgroundColor: alpha(theme.palette.primary.light, 0.1),
-              },
-            }}
+            sx={styles.editButton}
             variant="outlined"
           >
             Edit
@@ -240,13 +148,7 @@ const TeamCard: React.FC<TeamCardProps> = ({
             color="error"
             startIcon={<DeleteIcon />}
             onClick={onDelete}
-            sx={{
-              borderColor: alpha(theme.palette.error.light, 0.5),
-              "&:hover": {
-                borderColor: theme.palette.error.light,
-                backgroundColor: alpha(theme.palette.error.light, 0.1),
-              },
-            }}
+            sx={styles.deleteButton}
             variant="outlined"
           >
             Delete

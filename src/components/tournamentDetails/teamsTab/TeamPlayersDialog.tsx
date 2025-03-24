@@ -17,15 +17,14 @@ import {
   IconButton,
   Chip,
   Tooltip,
-  useTheme,
-  alpha,
 } from "@mui/material";
 import {
   Delete as DeleteIcon,
   Star as StarIcon,
   StarBorder as StarBorderIcon,
 } from "@mui/icons-material";
-import { Team, Player } from "../../../types/tournament";
+import { Team, Player } from "../../../types/event";
+import { useTournamentTeamStyles } from "../../../theme/hooks";
 
 interface TeamPlayersDialogProps {
   open: boolean;
@@ -48,7 +47,7 @@ const TeamPlayersDialog: React.FC<TeamPlayersDialogProps> = ({
   onSetCaptain,
   onAssignPlayer,
 }) => {
-  const theme = useTheme();
+  const styles = useTournamentTeamStyles();
 
   if (!team) return null;
 
@@ -59,22 +58,12 @@ const TeamPlayersDialog: React.FC<TeamPlayersDialogProps> = ({
       maxWidth="md"
       fullWidth
       PaperProps={{
-        sx: {
-          backgroundColor: alpha(theme.palette.common.black, 0.8),
-          backdropFilter: "blur(20px)",
-          border: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
-          borderRadius: 2,
-        },
+        sx: styles.dialogPaper,
       }}
     >
-      <DialogTitle
-        sx={{
-          color: "white",
-          borderBottom: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
-        }}
-      >
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          <Avatar sx={{ bgcolor: team.color, mr: 2 }}>
+      <DialogTitle sx={styles.dialogTitle}>
+        <Box sx={styles.teamHeader}>
+          <Avatar sx={styles.getTeamAvatar(team.color)}>
             {team.name[0].toUpperCase()}
           </Avatar>
           Manage Players for {team.name}
@@ -83,15 +72,8 @@ const TeamPlayersDialog: React.FC<TeamPlayersDialogProps> = ({
       <DialogContent>
         <Grid container spacing={3} sx={{ mt: 0.5 }}>
           <Grid item xs={12} md={6}>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                mb: 2,
-              }}
-            >
-              <Typography variant="subtitle1" sx={{ color: "white" }}>
+            <Box sx={styles.teamInfoHeader}>
+              <Typography variant="subtitle1" sx={styles.teamName}>
                 Current Team Members ({teamPlayers.length})
               </Typography>
 
@@ -101,10 +83,7 @@ const TeamPlayersDialog: React.FC<TeamPlayersDialogProps> = ({
                   label="Select Captain"
                   size="small"
                   variant="outlined"
-                  sx={{
-                    color: alpha(theme.palette.common.white, 0.9),
-                    borderColor: alpha(theme.palette.common.white, 0.3),
-                  }}
+                  sx={styles.getCaptainChip(team.color)}
                 />
               </Tooltip>
             </Box>
@@ -113,30 +92,15 @@ const TeamPlayersDialog: React.FC<TeamPlayersDialogProps> = ({
               <List
                 component={Paper}
                 variant="outlined"
-                sx={{
-                  maxHeight: { xs: 200, md: 300 },
-                  overflow: "auto",
-                  backgroundColor: alpha(theme.palette.common.black, 0.3),
-                  border: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
-                  borderRadius: 1,
-                }}
+                sx={styles.playersListDialog}
               >
                 {teamPlayers.map((player) => (
                   <ListItem
                     key={player.id}
-                    sx={{
-                      borderBottom: `1px solid ${alpha(
-                        theme.palette.common.white,
-                        0.05
-                      )}`,
-                      "&:last-child": {
-                        borderBottom: "none",
-                      },
-                      backgroundColor:
-                        selectedCaptain === player.id
-                          ? alpha(team.color, 0.2)
-                          : "transparent",
-                    }}
+                    sx={styles.getPlayerListItem(
+                      selectedCaptain === player.id,
+                      team.color
+                    )}
                   >
                     <ListItemAvatar>
                       <Avatar src={player.avatarUrl} alt={player.name}>
@@ -145,16 +109,12 @@ const TeamPlayersDialog: React.FC<TeamPlayersDialogProps> = ({
                     </ListItemAvatar>
                     <ListItemText
                       primary={
-                        <Typography sx={{ color: "white" }}>
+                        <Typography sx={styles.teamName}>
                           {player.name}
                           {selectedCaptain === player.id && (
                             <Typography
                               component="span"
-                              sx={{
-                                ml: 1,
-                                fontSize: "0.75rem",
-                                color: team.color,
-                              }}
+                              sx={styles.getCaptainLabel(team.color)}
                             >
                               (Captain)
                             </Typography>
@@ -162,12 +122,7 @@ const TeamPlayersDialog: React.FC<TeamPlayersDialogProps> = ({
                         </Typography>
                       }
                       secondary={
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            color: alpha(theme.palette.common.white, 0.6),
-                          }}
-                        >
+                        <Typography variant="body2" sx={styles.noPlayersText}>
                           {player.email}
                         </Typography>
                       }
@@ -176,17 +131,10 @@ const TeamPlayersDialog: React.FC<TeamPlayersDialogProps> = ({
                       <IconButton
                         edge="end"
                         onClick={() => onSetCaptain(player.id)}
-                        sx={{
-                          color:
-                            selectedCaptain === player.id
-                              ? team.color
-                              : alpha(theme.palette.common.white, 0.4),
-                          mr: 1,
-                          "&:hover": {
-                            color: team.color,
-                            bgcolor: alpha(team.color, 0.1),
-                          },
-                        }}
+                        sx={styles.getCaptainIcon(
+                          selectedCaptain === player.id,
+                          team.color
+                        )}
                       >
                         {selectedCaptain === player.id ? (
                           <StarIcon />
@@ -198,12 +146,7 @@ const TeamPlayersDialog: React.FC<TeamPlayersDialogProps> = ({
                       <IconButton
                         edge="end"
                         onClick={() => onAssignPlayer(player.id, undefined)}
-                        sx={{
-                          color: theme.palette.error.light,
-                          "&:hover": {
-                            bgcolor: alpha(theme.palette.error.main, 0.1),
-                          },
-                        }}
+                        sx={styles.removePlayerIcon}
                       >
                         <DeleteIcon />
                       </IconButton>
@@ -212,17 +155,8 @@ const TeamPlayersDialog: React.FC<TeamPlayersDialogProps> = ({
                 ))}
               </List>
             ) : (
-              <Paper
-                variant="outlined"
-                sx={{
-                  p: 2,
-                  textAlign: "center",
-                  backgroundColor: alpha(theme.palette.common.black, 0.2),
-                  border: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
-                  borderRadius: 1,
-                }}
-              >
-                <Typography color={alpha(theme.palette.common.white, 0.7)}>
+              <Paper variant="outlined" sx={styles.emptyListPaper}>
+                <Typography sx={styles.noPlayersText}>
                   No players in this team
                 </Typography>
               </Paper>
@@ -230,11 +164,7 @@ const TeamPlayersDialog: React.FC<TeamPlayersDialogProps> = ({
           </Grid>
 
           <Grid item xs={12} md={6}>
-            <Typography
-              variant="subtitle1"
-              gutterBottom
-              sx={{ color: "white" }}
-            >
+            <Typography variant="subtitle1" gutterBottom sx={styles.teamName}>
               Available Players ({unassignedPlayers.length})
             </Typography>
 
@@ -242,31 +172,14 @@ const TeamPlayersDialog: React.FC<TeamPlayersDialogProps> = ({
               <List
                 component={Paper}
                 variant="outlined"
-                sx={{
-                  maxHeight: { xs: 200, md: 300 },
-                  overflow: "auto",
-                  backgroundColor: alpha(theme.palette.common.black, 0.3),
-                  border: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
-                  borderRadius: 1,
-                }}
+                sx={styles.playersList}
               >
                 {unassignedPlayers.map((player) => (
                   <ListItem
                     key={player.id}
                     button
                     onClick={() => onAssignPlayer(player.id, team.id)}
-                    sx={{
-                      borderBottom: `1px solid ${alpha(
-                        theme.palette.common.white,
-                        0.05
-                      )}`,
-                      "&:last-child": {
-                        borderBottom: "none",
-                      },
-                      "&:hover": {
-                        backgroundColor: alpha(theme.palette.primary.main, 0.1),
-                      },
-                    }}
+                    sx={styles.getPlayerListItem(false, team.color)}
                   >
                     <ListItemAvatar>
                       <Avatar src={player.avatarUrl} alt={player.name}>
@@ -275,17 +188,12 @@ const TeamPlayersDialog: React.FC<TeamPlayersDialogProps> = ({
                     </ListItemAvatar>
                     <ListItemText
                       primary={
-                        <Typography sx={{ color: "white" }}>
+                        <Typography sx={styles.teamName}>
                           {player.name}
                         </Typography>
                       }
                       secondary={
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            color: alpha(theme.palette.common.white, 0.6),
-                          }}
-                        >
+                        <Typography variant="body2" sx={styles.noPlayersText}>
                           {player.email}
                         </Typography>
                       }
@@ -295,22 +203,14 @@ const TeamPlayersDialog: React.FC<TeamPlayersDialogProps> = ({
                       size="small"
                       color="primary"
                       variant="outlined"
+                      sx={styles.addPlayerChip}
                     />
                   </ListItem>
                 ))}
               </List>
             ) : (
-              <Paper
-                variant="outlined"
-                sx={{
-                  p: 2,
-                  textAlign: "center",
-                  backgroundColor: alpha(theme.palette.common.black, 0.2),
-                  border: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
-                  borderRadius: 1,
-                }}
-              >
-                <Typography color={alpha(theme.palette.common.white, 0.7)}>
+              <Paper variant="outlined" sx={styles.emptyListPaper}>
+                <Typography sx={styles.noPlayersText}>
                   No unassigned players available
                 </Typography>
               </Paper>
@@ -318,23 +218,11 @@ const TeamPlayersDialog: React.FC<TeamPlayersDialogProps> = ({
           </Grid>
         </Grid>
       </DialogContent>
-      <DialogActions
-        sx={{
-          borderTop: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
-          p: 2,
-        }}
-      >
+      <DialogActions sx={styles.dialogActions}>
         <Button
           onClick={onClose}
           variant="outlined"
-          sx={{
-            color: "white",
-            borderColor: alpha(theme.palette.common.white, 0.3),
-            "&:hover": {
-              borderColor: "white",
-              backgroundColor: alpha(theme.palette.common.white, 0.1),
-            },
-          }}
+          sx={styles.managePlayersButton}
         >
           Close
         </Button>

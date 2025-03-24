@@ -1,6 +1,6 @@
 import React from "react";
 import { Grid } from "@mui/material";
-import { Tournament } from "../../types/tournament";
+import { Tournament } from "../../types/event";
 import TournamentCard from "./TournamentCard";
 import TournamentEmptyState from "./TournamentEmptyState";
 

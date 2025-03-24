@@ -16,11 +16,12 @@ import {
   Switch,
   Typography,
   Alert,
-  useTheme,
   alpha,
   useMediaQuery,
 } from "@mui/material";
-import { TournamentFormData } from "../../types/tournament";
+import { TournamentFormData } from "../../types/event";
+import { useTournamentStyles } from "../../theme/hooks";
+import { useTheme } from "@mui/material";
 
 interface TournamentFormProps {
   onSubmit: (data: TournamentFormData) => void;
@@ -39,6 +40,7 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
   onCancel,
   initialData = {},
 }) => {
+  const styles = useTournamentStyles();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const today = new Date().toISOString().split("T")[0];
@@ -121,33 +123,9 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
     }
   };
 
-  const inputProps = {
-    style: { color: "white" },
-    sx: {
-      "& .MuiOutlinedInput-notchedOutline": {
-        borderColor: alpha(theme.palette.common.white, 0.3),
-      },
-      "&:hover .MuiOutlinedInput-notchedOutline": {
-        borderColor: alpha(theme.palette.common.white, 0.5),
-      },
-      "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-        borderColor: theme.palette.primary.main,
-      },
-    },
-  };
-
-  const labelProps = {
-    style: { color: alpha(theme.palette.common.white, 0.7) },
-  };
-
   return (
     <>
-      <DialogTitle
-        sx={{
-          color: "white",
-          borderBottom: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
-        }}
-      >
+      <DialogTitle sx={styles.dialogStyles.title}>
         {initialData.name ? "Edit Tournament" : "Create New Tournament"}
       </DialogTitle>
       <DialogContent>
@@ -163,8 +141,8 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
                 error={!!errors.name}
                 helperText={errors.name}
                 required
-                InputLabelProps={labelProps}
-                InputProps={inputProps}
+                InputLabelProps={styles.formStyles.labelProps}
+                InputProps={styles.formStyles.inputProps}
               />
             </Grid>
 
@@ -179,8 +157,11 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
                 error={!!errors.startDate}
                 helperText={errors.startDate}
                 required
-                InputLabelProps={{ ...labelProps, shrink: true }}
-                InputProps={inputProps}
+                InputLabelProps={{
+                  ...styles.formStyles.labelProps,
+                  shrink: true,
+                }}
+                InputProps={styles.formStyles.inputProps}
               />
             </Grid>
 
@@ -198,9 +179,12 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
                   "Can be the same as start date for one-day events"
                 }
                 required
-                InputLabelProps={{ ...labelProps, shrink: true }}
+                InputLabelProps={{
+                  ...styles.formStyles.labelProps,
+                  shrink: true,
+                }}
                 InputProps={{
-                  ...inputProps,
+                  ...styles.formStyles.inputProps,
                   inputProps: { min: formData.startDate },
                 }}
               />
@@ -216,8 +200,8 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
                 error={!!errors.location}
                 helperText={errors.location}
                 required
-                InputLabelProps={labelProps}
-                InputProps={inputProps}
+                InputLabelProps={styles.formStyles.labelProps}
+                InputProps={styles.formStyles.inputProps}
               />
             </Grid>
 
@@ -363,25 +347,14 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
                 onChange={handleChange}
                 error={!!errors.description}
                 helperText={errors.description}
-                InputLabelProps={labelProps}
-                InputProps={inputProps}
+                InputLabelProps={styles.formStyles.labelProps}
+                InputProps={styles.formStyles.inputProps}
               />
             </Grid>
           </Grid>
         </Box>
       </DialogContent>
-      <DialogActions
-        sx={{
-          borderTop: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
-          px: 3,
-          py: 2,
-          flexDirection: { xs: "column", sm: "row" },
-          alignItems: "stretch",
-          "& > button": {
-            m: { xs: 0.5, sm: 0 },
-          },
-        }}
-      >
+      <DialogActions sx={styles.dialogStyles.actions}>
         <Button
           onClick={onCancel}
           sx={{

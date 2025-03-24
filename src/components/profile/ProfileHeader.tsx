@@ -1,16 +1,16 @@
-// src/components/profile/ProfileHeader.tsx
 import React from "react";
 import {
   Box,
   Avatar,
   Typography,
   IconButton,
-  useTheme,
-  alpha,
   Grid,
+  alpha,
+  useTheme,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
+import { useProfileStyles } from "../../theme/hooks";
 
 interface ProfileHeaderProps {
   fullName: string;
@@ -31,6 +31,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
   onEditToggle,
   onImageUpload,
 }) => {
+  const styles = useProfileStyles();
   const theme = useTheme();
 
   return (
@@ -44,12 +45,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
         <Box sx={{ position: "relative" }}>
           <Avatar
             src={editing ? uploadedImage || profileImage : profileImage}
-            sx={{
-              width: 220,
-              height: 220,
-              border: `4px solid ${alpha(theme.palette.common.white, 0.2)}`,
-              boxShadow: "0 8px 16px rgba(0,0,0,0.3)",
-            }}
+            sx={styles.profileAvatar}
             alt={fullName || "User"}
           />
           {editing && (
@@ -90,28 +86,14 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
             alignItems: "center",
           }}
         >
-          <Typography
-            variant="h3"
-            sx={{
-              color: "white",
-              fontWeight: 600,
-              textShadow: "0 2px 4px rgba(0,0,0,0.2)",
-              fontSize: { xs: "2rem", sm: "2.5rem", md: "3rem" },
-            }}
-          >
+          <Typography variant="h3" sx={styles.profileTypography.heading}>
             {fullName || "User Profile"}
           </Typography>
 
           <IconButton
             color="primary"
             onClick={onEditToggle}
-            sx={{
-              bgcolor: alpha(theme.palette.common.white, 0.1),
-              padding: "12px",
-              "&:hover": {
-                bgcolor: alpha(theme.palette.common.white, 0.2),
-              },
-            }}
+            sx={styles.profileButtons.edit}
           >
             <EditIcon sx={{ color: "white", fontSize: "1.5rem" }} />
           </IconButton>
@@ -120,10 +102,11 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
         <Typography
           variant="body1"
           sx={{
-            color: alpha(theme.palette.common.white, 0.7),
+            ...styles.profileTypography.muted,
             mb: 4,
             fontSize: "1.1rem",
             letterSpacing: "0.5px",
+            color: alpha(theme.palette.common.white, 0.7),
           }}
         >
           {email}

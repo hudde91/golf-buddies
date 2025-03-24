@@ -1,6 +1,8 @@
+// src/components/tournament/TournamentEmptyState.tsx
 import React from "react";
-import { Box, Typography, Button, useTheme, alpha } from "@mui/material";
+import { Box, Typography, Button } from "@mui/material";
 import { Add as AddIcon, EmojiEvents as TrophyIcon } from "@mui/icons-material";
+import { useTournamentStyles } from "../../theme/hooks";
 
 interface TournamentEmptyStateProps {
   onCreateTournament: () => void;
@@ -9,32 +11,22 @@ interface TournamentEmptyStateProps {
 const TournamentEmptyState: React.FC<TournamentEmptyStateProps> = ({
   onCreateTournament,
 }) => {
-  const theme = useTheme();
+  const styles = useTournamentStyles();
 
   return (
-    <Box
-      sx={{
-        textAlign: "center",
-        py: 6,
-        backgroundColor: alpha(theme.palette.common.black, 0.2),
-        borderRadius: 2,
-        border: `1px dashed ${alpha(theme.palette.common.white, 0.2)}`,
-      }}
-    >
-      <TrophyIcon
-        sx={{
-          fontSize: 60,
-          color: alpha(theme.palette.common.white, 0.3),
-          mb: 2,
-        }}
-      />
-      <Typography variant="h6" gutterBottom sx={{ color: "white" }}>
+    <Box sx={styles.emptyState}>
+      <TrophyIcon sx={styles.emptyStateIcon} />
+      <Typography
+        variant="h6"
+        gutterBottom
+        sx={styles.tournamentTypography.title}
+      >
         No Tournaments Yet
       </Typography>
       <Typography
         variant="body2"
         sx={{
-          color: alpha(theme.palette.common.white, 0.7),
+          ...styles.tournamentTypography.muted,
           mb: 3,
           maxWidth: 500,
           mx: "auto",

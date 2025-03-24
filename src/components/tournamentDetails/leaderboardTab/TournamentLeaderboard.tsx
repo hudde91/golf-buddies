@@ -11,12 +11,12 @@ import {
   Box,
   Avatar,
   Chip,
-  useTheme,
-  alpha,
   useMediaQuery,
 } from "@mui/material";
-import { Tournament } from "../../../types/tournament";
-import tournamentService from "../../../services/tournamentService";
+import { Tournament } from "../../../types/event";
+import tournamentService from "../../../services/eventService";
+import { useTournamentLeaderboardStyles } from "../../../theme/hooks";
+import { useTheme } from "@mui/material";
 
 interface TournamentLeaderboardProps {
   tournament: Tournament;
@@ -25,6 +25,7 @@ interface TournamentLeaderboardProps {
 const TournamentLeaderboard: React.FC<TournamentLeaderboardProps> = ({
   tournament,
 }) => {
+  const styles = useTournamentLeaderboardStyles();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const isXsScreen = useMediaQuery(theme.breakpoints.down("sm"));
@@ -47,27 +48,6 @@ const TournamentLeaderboard: React.FC<TournamentLeaderboardProps> = ({
     return total + (round.courseDetails?.par || 0);
   }, 0);
 
-  // Helper to format score relative to par
-  const formatScoreToPar = (score: number, par: number): string => {
-    const diff = score - par;
-    if (diff === 0) return "E";
-    return diff > 0 ? `+${diff}` : `${diff}`;
-  };
-
-  const getScoreDisplay = (score: number, index: number) => {
-    // For the first place player, or if there's no par info
-    if (index === 0 || !hasParInfo || totalPar === 0) {
-      return score.toString();
-    }
-
-    // For other players, show the difference from the leader
-    const leaderScore = leaderboard[0].total;
-    const diff = score - leaderScore;
-
-    if (diff === 0) return score.toString();
-    return `${score} (+${diff})`;
-  };
-
   // For mobile views, we might need to show fewer columns
   const displayRounds = isXsScreen
     ? [] // On very small screens, don't show individual rounds
@@ -83,96 +63,45 @@ const TournamentLeaderboard: React.FC<TournamentLeaderboardProps> = ({
 
   return (
     <Box>
-      <Typography variant="h6" gutterBottom sx={{ color: "white", mb: 2 }}>
+      <Typography
+        variant="h6"
+        gutterBottom
+        sx={styles.leaderboardTypography.title}
+      >
         Leaderboard
       </Typography>
 
       <TableContainer
         component={Paper}
         variant="outlined"
-        sx={{
-          overflowX: "auto",
-          bgcolor: "transparent",
-          border: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
-          borderRadius: 1,
-          boxShadow: `0 4px 8px ${alpha(theme.palette.common.black, 0.3)}`,
-        }}
+        sx={styles.tableContainer}
       >
         <Table size="medium">
           <TableHead>
             <TableRow>
-              <TableCell
-                sx={{
-                  fontWeight: "bold",
-                  width: 50,
-                  color: alpha(theme.palette.common.white, 0.9),
-                  borderBottomColor: alpha(theme.palette.common.white, 0.2),
-                  bgcolor: alpha(theme.palette.common.black, 0.4),
-                }}
-              >
-                Pos
-              </TableCell>
-              <TableCell
-                sx={{
-                  fontWeight: "bold",
-                  color: alpha(theme.palette.common.white, 0.9),
-                  borderBottomColor: alpha(theme.palette.common.white, 0.2),
-                  bgcolor: alpha(theme.palette.common.black, 0.4),
-                }}
-              >
-                Player
-              </TableCell>
+              <TableCell sx={styles.positionHeaderCell}>Pos</TableCell>
+              <TableCell sx={styles.headerCell}>Player</TableCell>
 
               {!isXsScreen && tournament.isTeamEvent && (
-                <TableCell
-                  sx={{
-                    fontWeight: "bold",
-                    color: alpha(theme.palette.common.white, 0.9),
-                    borderBottomColor: alpha(theme.palette.common.white, 0.2),
-                    bgcolor: alpha(theme.palette.common.black, 0.4),
-                  }}
-                >
-                  Team
-                </TableCell>
+                <TableCell sx={styles.headerCell}>Team</TableCell>
               )}
 
               {displayRounds.map((round) => (
                 <TableCell
                   key={`round-${round.id}`}
                   align="center"
-                  sx={{
-                    fontWeight: "bold",
-                    color: alpha(theme.palette.common.white, 0.9),
-                    borderBottomColor: alpha(theme.palette.common.white, 0.2),
-                    bgcolor: alpha(theme.palette.common.black, 0.4),
-                  }}
+                  sx={styles.headerCell}
                 >
                   {round.name}
                 </TableCell>
               ))}
 
-              <TableCell
-                align="center"
-                sx={{
-                  fontWeight: "bold",
-                  color: alpha(theme.palette.common.white, 0.9),
-                  borderBottomColor: alpha(theme.palette.common.white, 0.2),
-                  bgcolor: alpha(theme.palette.common.black, 0.4),
-                }}
-              >
+              <TableCell align="center" sx={styles.headerCell}>
                 Total
               </TableCell>
 
               {hasParInfo && totalPar > 0 && !isXsScreen && (
-                <TableCell
-                  align="center"
-                  sx={{
-                    fontWeight: "bold",
-                    color: alpha(theme.palette.common.white, 0.9),
-                    borderBottomColor: alpha(theme.palette.common.white, 0.2),
-                    bgcolor: alpha(theme.palette.common.black, 0.4),
-                  }}
-                >
+                <TableCell align="center" sx={styles.headerCell}>
                   vs Par
                 </TableCell>
               )}
@@ -188,7 +117,7 @@ const TournamentLeaderboard: React.FC<TournamentLeaderboardProps> = ({
 
               const vsPar =
                 hasParInfo && totalPar > 0
-                  ? formatScoreToPar(player.total, totalPar)
+                  ? styles.formatScoreToPar(player.total, totalPar)
                   : null;
 
               const playerObj = tournament.players.find(
@@ -201,100 +130,49 @@ const TournamentLeaderboard: React.FC<TournamentLeaderboardProps> = ({
               return (
                 <TableRow
                   key={`leaderboard-${player.playerId}`}
-                  sx={{
-                    bgcolor:
-                      index % 2 === 0
-                        ? alpha(theme.palette.common.black, 0.1)
-                        : "transparent",
-                    "&:hover": {
-                      bgcolor: alpha(theme.palette.primary.main, 0.1),
-                    },
-                  }}
+                  sx={styles.getTableRowStyle(index)}
                 >
-                  <TableCell
-                    sx={{
-                      borderBottomColor: alpha(theme.palette.common.white, 0.1),
-                      color: alpha(theme.palette.common.white, 0.9),
-                      textAlign: "center",
-                    }}
-                  >
+                  <TableCell sx={styles.centeredDataCell}>
                     {position}
                     {index === 0 && tournament.status === "completed" && (
                       <Chip
                         label="Winner"
                         color="primary"
                         size="small"
-                        sx={{ ml: 1, height: 20, fontSize: "0.6rem" }}
+                        sx={styles.winnerChip}
                       />
                     )}
                   </TableCell>
-                  <TableCell
-                    sx={{
-                      borderBottomColor: alpha(theme.palette.common.white, 0.1),
-                      color: alpha(theme.palette.common.white, 0.9),
-                    }}
-                  >
+                  <TableCell sx={styles.dataCell}>
                     <Box sx={{ display: "flex", alignItems: "center" }}>
                       <Avatar
                         src={playerObj?.avatarUrl}
                         alt={player.playerName}
-                        sx={{
-                          width: 24,
-                          height: 24,
-                          mr: 1,
-                          border: playerTeam
-                            ? `1px solid ${playerTeam.color}`
-                            : `1px solid ${alpha(
-                                theme.palette.common.white,
-                                0.2
-                              )}`,
-                        }}
+                        sx={styles.getPlayerAvatar(playerTeam?.color)}
                       />
                       {player.playerName}
                       {isPlayerCaptain(player.playerId) && (
                         <Chip
                           label="Captain"
                           size="small"
-                          sx={{
-                            ml: 1,
-                            height: 20,
-                            fontSize: "0.6rem",
-                            bgcolor: alpha(theme.palette.success.main, 0.1),
-                            color: theme.palette.success.light,
-                            border: `1px solid ${alpha(
-                              theme.palette.success.light,
-                              0.3
-                            )}`,
-                          }}
+                          sx={styles.captainChip}
                         />
                       )}
                     </Box>
                   </TableCell>
 
                   {!isXsScreen && tournament.isTeamEvent && (
-                    <TableCell
-                      sx={{
-                        borderBottomColor: alpha(
-                          theme.palette.common.white,
-                          0.1
-                        ),
-                        color: alpha(theme.palette.common.white, 0.9),
-                      }}
-                    >
+                    <TableCell sx={styles.dataCell}>
                       {playerTeam ? (
                         <Chip
                           size="small"
                           label={playerTeam.name}
-                          sx={{
-                            bgcolor: alpha(playerTeam.color, 0.2),
-                            color: playerTeam.color,
-                            border: `1px solid ${alpha(playerTeam.color, 0.5)}`,
-                          }}
+                          sx={styles.getTeamChip(playerTeam.color)}
                         />
                       ) : (
                         <Typography
                           variant="body2"
-                          sx={{ color: alpha(theme.palette.common.white, 0.5) }}
+                          sx={styles.leaderboardTypography.noTeamText}
                         >
                           No team
                         </Typography>
@@ -306,13 +184,7 @@ const TournamentLeaderboard: React.FC<TournamentLeaderboardProps> = ({
                     <TableCell
                       key={`${player.playerId}-round-${round.id}`}
                       align="center"
-                      sx={{
-                        borderBottomColor: alpha(
-                          theme.palette.common.white,
-                          0.1
-                        ),
-                        color: alpha(theme.palette.common.white, 0.9),
-                      }}
+                      sx={styles.dataCell}
                     >
                       {player.roundTotals[round.id] || "-"}
                     </TableCell>
@@ -321,28 +193,22 @@ const TournamentLeaderboard: React.FC<TournamentLeaderboardProps> = ({
                   <TableCell
                     align="center"
                     sx={{
+                      ...styles.dataCell,
                       fontWeight: "bold",
-                      borderBottomColor: alpha(theme.palette.common.white, 0.1),
-                      color: alpha(theme.palette.common.white, 0.9),
                     }}
                   >
-                    {getScoreDisplay(player.total, index)}
+                    {styles.getScoreDisplay(player.total, index, leaderboard)}
                   </TableCell>
 
                   {hasParInfo && totalPar > 0 && !isXsScreen && (
                     <TableCell
                       align="center"
                       sx={{
+                        ...styles.dataCell,
                         fontWeight: "bold",
-                        borderBottomColor: alpha(
-                          theme.palette.common.white,
-                          0.1
-                        ),
-                        color: vsPar?.startsWith("+")
-                          ? theme.palette.error.light
-                          : vsPar?.startsWith("-")
-                          ? theme.palette.success.light
-                          : alpha(theme.palette.common.white, 0.9),
+                        color: vsPar
+                          ? styles.getScoreVsParColor(vsPar)
+                          : undefined,
                       }}
                     >
                       {vsPar}
@@ -356,15 +222,7 @@ const TournamentLeaderboard: React.FC<TournamentLeaderboardProps> = ({
       </TableContainer>
 
       {isMobile && sortedRounds.length > 2 && (
-        <Typography
-          variant="caption"
-          sx={{
-            display: "block",
-            textAlign: "center",
-            mt: 1,
-            color: alpha(theme.palette.common.white, 0.7),
-          }}
-        >
+        <Typography variant="caption" sx={styles.mobileInfoText}>
           {isXsScreen
             ? "Individual round scores are hidden on small screens. View on a larger screen to see all rounds."
             : `Showing only the last ${displayRounds.length} rounds. View on a larger screen to see all rounds.`}

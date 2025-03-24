@@ -10,7 +10,7 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { Add as AddIcon, GroupAdd as GroupAddIcon } from "@mui/icons-material";
-import { Team, Player, TeamFormData } from "../../../types/tournament";
+import { Team, Player, TeamFormData } from "../../../types/event";
 
 // Component imports
 import TeamCard from "./TeamCard";

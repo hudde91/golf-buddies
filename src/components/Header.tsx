@@ -31,7 +31,7 @@ import {
   useUser,
   useAuth,
 } from "@clerk/clerk-react";
-import tournamentService from "../services/tournamentService";
+import tournamentService from "../services/eventService";
 
 interface ElevationScrollProps {
   children: React.ReactElement;
@@ -181,7 +181,7 @@ const Header: React.FC = () => {
                 <Button
                   color="inherit"
                   component={RouterLink}
-                  to="/tournaments"
+                  to="/events"
                   startIcon={
                     <Badge
                       badgeContent={pendingInvitations}
@@ -197,8 +197,8 @@ const Header: React.FC = () => {
                     "&:hover": {
                       backgroundColor: alpha(theme.palette.common.white, 0.1),
                     },
-                    ...((isActive("/tournaments") ||
-                      location.pathname.startsWith("/tournaments/")) && {
+                    ...((isActive("/events") ||
+                      location.pathname.startsWith("/events/")) && {
                       backgroundColor: alpha(theme.palette.common.white, 0.15),
                       "&:hover": {
                         backgroundColor: alpha(theme.palette.common.white, 0.2),
@@ -206,7 +206,7 @@ const Header: React.FC = () => {
                     }),
                   }}
                 >
-                  Tournaments
+                  Events
                 </Button>
               </SignedIn>
             </Box>
@@ -354,10 +354,10 @@ const Header: React.FC = () => {
                     <MenuItem
                       onClick={handleClose}
                       component={RouterLink}
-                      to="/tournaments"
+                      to="/events"
                       selected={
-                        isActive("/tournaments") ||
-                        location.pathname.startsWith("/tournaments/")
+                        isActive("/events") ||
+                        location.pathname.startsWith("/events/")
                       }
                       sx={{
                         "&.Mui-selected": {
@@ -381,7 +381,7 @@ const Header: React.FC = () => {
                       >
                         <EmojiEventsIcon fontSize="small" sx={{ mr: 2 }} />
                       </Badge>
-                      Tournaments
+                      Events
                     </MenuItem>
 
                     <MenuItem

@@ -7,13 +7,14 @@ import {
   Button,
   TextField,
   Typography,
-  useTheme,
-  alpha,
   useMediaQuery,
+  alpha,
+  useTheme,
 } from "@mui/material";
-import { Tournament, RoundFormData } from "../../types/tournament";
+import { Tournament, RoundFormData } from "../../types/event";
 import TournamentForm from "../tournament/TournamentForm";
 import RoundForm from "./RoundForm";
+import { useTournamentStyles } from "../../theme/hooks";
 
 interface TournamentDialogsProps {
   tournament: Tournament;
@@ -41,6 +42,7 @@ const TournamentDialogs: React.FC<TournamentDialogsProps> = ({
   dialogState,
   handlers,
 }) => {
+  const styles = useTournamentStyles();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -61,18 +63,11 @@ const TournamentDialogs: React.FC<TournamentDialogsProps> = ({
         fullWidth
         PaperProps={{ sx: dialogPaperStyles }}
       >
-        <DialogTitle
-          sx={{
-            color: "white",
-            borderBottom: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
-          }}
-        >
-          Invite Players
-        </DialogTitle>
+        <DialogTitle sx={styles.dialogStyles.title}>Invite Players</DialogTitle>
         <DialogContent>
           <Typography
             variant="body2"
-            sx={{ mb: 2, mt: 2, color: alpha(theme.palette.common.white, 0.9) }}
+            sx={{ mb: 2, mt: 2, ...styles.tournamentTypography.body }}
           >
             Enter email addresses of players you want to invite to this
             tournament. Separate multiple emails with commas.
@@ -88,37 +83,11 @@ const TournamentDialogs: React.FC<TournamentDialogsProps> = ({
             placeholder="example@email.com, another@email.com"
             error={!!dialogState.inviteError}
             helperText={dialogState.inviteError}
-            InputLabelProps={{
-              style: { color: alpha(theme.palette.common.white, 0.7) },
-            }}
-            InputProps={{
-              style: { color: "white" },
-              sx: {
-                "& .MuiOutlinedInput-notchedOutline": {
-                  borderColor: alpha(theme.palette.common.white, 0.3),
-                },
-                "&:hover .MuiOutlinedInput-notchedOutline": {
-                  borderColor: alpha(theme.palette.common.white, 0.5),
-                },
-                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                  borderColor: theme.palette.primary.main,
-                },
-              },
-            }}
+            InputLabelProps={styles.formStyles.labelProps}
+            InputProps={styles.formStyles.inputProps}
           />
         </DialogContent>
-        <DialogActions
-          sx={{
-            borderTop: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
-            px: 3,
-            py: 2,
-            flexDirection: { xs: "column", sm: "row" },
-            alignItems: "stretch",
-            "& > button": {
-              m: { xs: 0.5, sm: 0 },
-            },
-          }}
-        >
+        <DialogActions sx={styles.dialogStyles.actions}>
           <Button
             onClick={handlers.closeInvite}
             sx={{

@@ -15,15 +15,16 @@ import {
   Typography,
   Tooltip,
   IconButton,
-  useTheme,
-  alpha,
   useMediaQuery,
   Autocomplete,
   CircularProgress,
+  alpha,
+  useTheme,
 } from "@mui/material";
 import InfoIcon from "@mui/icons-material/Info";
-import { RoundFormData } from "../../types/tournament";
-import { roundFormats } from "../../services/tournamentService";
+import { RoundFormData } from "../../types/event";
+import { roundFormats } from "../../services/eventService";
+import { useTournamentStyles } from "../../theme/hooks";
 
 interface RoundFormProps {
   onSubmit: (data: RoundFormData) => void;
@@ -66,8 +67,6 @@ const formatDescriptions: Record<string, string> = {
 
 // Mock function to fetch golf clubs - replace with actual API call
 const fetchGolfClubs = async (query: string): Promise<GolfClub[]> => {
-  // return await fetch(`/api/golf-clubs?search=${query}`).then(res => res.json());
-
   // Simulated delay to showcase loading state
   await new Promise((resolve) => setTimeout(resolve, 500));
 
@@ -174,6 +173,7 @@ const RoundForm: React.FC<RoundFormProps> = ({
   tournamentEndDate,
   isTeamEvent = false,
 }) => {
+  const styles = useTournamentStyles();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -201,11 +201,6 @@ const RoundForm: React.FC<RoundFormProps> = ({
   // Load golf clubs when the input changes
   useEffect(() => {
     let active = true;
-
-    // if (inputValue === "") {
-    //   setOptions([]);
-    //   return undefined;
-    // }
 
     setLoading(true);
     fetchGolfClubs(inputValue)
@@ -317,33 +312,9 @@ const RoundForm: React.FC<RoundFormProps> = ({
         (format) => !["Four-ball", "Foursomes"].includes(format)
       );
 
-  const inputProps = {
-    style: { color: "white" },
-    sx: {
-      "& .MuiOutlinedInput-notchedOutline": {
-        borderColor: alpha(theme.palette.common.white, 0.3),
-      },
-      "&:hover .MuiOutlinedInput-notchedOutline": {
-        borderColor: alpha(theme.palette.common.white, 0.5),
-      },
-      "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-        borderColor: theme.palette.primary.main,
-      },
-    },
-  };
-
-  const labelProps = {
-    style: { color: alpha(theme.palette.common.white, 0.7) },
-  };
-
   return (
     <>
-      <DialogTitle
-        sx={{
-          color: "white",
-          borderBottom: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
-        }}
-      >
+      <DialogTitle sx={styles.dialogStyles.title}>
         {initialData.name ? "Edit Round" : "Add New Round"}
       </DialogTitle>
       <DialogContent>
@@ -361,8 +332,8 @@ const RoundForm: React.FC<RoundFormProps> = ({
                   errors.name || 'e.g., "Round 1", "Morning Round", etc.'
                 }
                 required
-                InputLabelProps={labelProps}
-                InputProps={inputProps}
+                InputLabelProps={styles.formStyles.labelProps}
+                InputProps={styles.formStyles.inputProps}
               />
             </Grid>
 
@@ -377,9 +348,12 @@ const RoundForm: React.FC<RoundFormProps> = ({
                 error={!!errors.date}
                 helperText={errors.date}
                 required
-                InputLabelProps={{ ...labelProps, shrink: true }}
+                InputLabelProps={{
+                  ...styles.formStyles.labelProps,
+                  shrink: true,
+                }}
                 InputProps={{
-                  ...inputProps,
+                  ...styles.formStyles.inputProps,
                   inputProps: {
                     min: tournamentStartDate,
                     max: tournamentEndDate,
@@ -428,10 +402,10 @@ const RoundForm: React.FC<RoundFormProps> = ({
                     name="courseName"
                     label="Golf Course"
                     helperText="Select the golf course for this round"
-                    InputLabelProps={labelProps}
+                    InputLabelProps={styles.formStyles.labelProps}
                     InputProps={{
                       ...params.InputProps,
-                      ...inputProps,
+                      ...styles.formStyles.inputProps,
                       endAdornment: (
                         <React.Fragment>
                           {loading ? (
@@ -667,9 +641,9 @@ const RoundForm: React.FC<RoundFormProps> = ({
                 onChange={handleChange}
                 inputProps={{ min: 30, max: 80 }}
                 helperText="Standard par for the course"
-                InputLabelProps={labelProps}
+                InputLabelProps={styles.formStyles.labelProps}
                 InputProps={{
-                  ...inputProps,
+                  ...styles.formStyles.inputProps,
                   inputProps: { min: 30, max: 80, style: { color: "white" } },
                 }}
               />
@@ -677,18 +651,7 @@ const RoundForm: React.FC<RoundFormProps> = ({
           </Grid>
         </Box>
       </DialogContent>
-      <DialogActions
-        sx={{
-          borderTop: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
-          px: 3,
-          py: 2,
-          flexDirection: { xs: "column", sm: "row" },
-          alignItems: "stretch",
-          "& > button": {
-            m: { xs: 0.5, sm: 0 },
-          },
-        }}
-      >
+      <DialogActions sx={styles.dialogStyles.actions}>
         <Button
           onClick={onCancel}
           sx={{

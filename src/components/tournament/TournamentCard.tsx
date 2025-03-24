@@ -1,3 +1,4 @@
+// src/components/tournament/TournamentCard.tsx
 import React from "react";
 import {
   Card,
@@ -8,15 +9,16 @@ import {
   Box,
   Button,
   Chip,
-  useTheme,
   alpha,
+  useTheme,
 } from "@mui/material";
 import {
   CalendarToday as CalendarIcon,
   LocationOn as LocationIcon,
   Group as GroupIcon,
 } from "@mui/icons-material";
-import { Tournament } from "../../types/tournament";
+import { Tournament } from "../../types/event";
+import { useTournamentStyles } from "../../theme/hooks";
 
 interface TournamentCardProps {
   tournament: Tournament;
@@ -29,16 +31,20 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
   userId,
   onViewDetails,
 }) => {
-  const theme = useTheme();
+  const styles = useTournamentStyles();
+  const theme = useTheme(); // Still need theme for some dynamic colors
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
+  // Helper function for chip colors
+  const getColorBasedOnStatus = (status: string) => {
+    switch (status.toLowerCase()) {
+      case "upcoming":
+        return "info";
       case "active":
         return "success";
-      case "upcoming":
-        return "primary";
       case "completed":
-        return "info";
+        return "primary";
+      case "cancelled":
+        return "error";
       default:
         return "default";
     }
@@ -46,41 +52,10 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
 
   return (
     <Card
-      sx={{
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        backgroundColor: alpha(theme.palette.common.black, 0.4),
-        backdropFilter: "blur(8px)",
-        borderRadius: 2,
-        border: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
-        transition: "transform 0.3s ease",
-        "&:hover": {
-          transform: "translateY(-4px)",
-          boxShadow: `0 12px 20px -10px ${alpha("#000", 0.5)}`,
-        },
-      }}
+      sx={styles.tournamentCard}
       onClick={() => onViewDetails(tournament.id)}
     >
-      <CardMedia
-        sx={{
-          height: 140,
-          backgroundImage:
-            "url(https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?auto=format&fit=crop&w=800)",
-          backgroundSize: "cover",
-          position: "relative",
-          "&::before": {
-            content: '""',
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            backgroundImage:
-              "linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.7) 100%)",
-          },
-        }}
-      >
+      <CardMedia sx={styles.tournamentCardMedia}>
         <Box
           sx={{
             position: "absolute",
@@ -95,7 +70,7 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
               tournament.status.charAt(0).toUpperCase() +
               tournament.status.slice(1)
             }
-            color={getStatusColor(tournament.status)}
+            color={getColorBasedOnStatus(tournament.status)}
             sx={{ fontWeight: "medium" }}
           />
         </Box>
@@ -110,11 +85,7 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
           <Typography
             variant="h6"
             component="div"
-            sx={{
-              color: "white",
-              fontWeight: 500,
-              textShadow: "0 2px 4px rgba(0,0,0,0.5)",
-            }}
+            sx={styles.tournamentTypography.cardTitle}
             noWrap
           >
             {tournament.name}
@@ -122,53 +93,25 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
         </Box>
       </CardMedia>
       <CardContent sx={{ flexGrow: 1, py: 2 }}>
-        <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-          <CalendarIcon
-            fontSize="small"
-            sx={{
-              mr: 1,
-              color: alpha(theme.palette.common.white, 0.7),
-            }}
-          />
-          <Typography
-            variant="body2"
-            sx={{ color: alpha(theme.palette.common.white, 0.9) }}
-          >
+        <Box sx={styles.infoItem}>
+          <CalendarIcon fontSize="small" />
+          <Typography variant="body2">
             {new Date(tournament.startDate).toLocaleDateString()}
             {tournament.startDate !== tournament.endDate &&
               ` - ${new Date(tournament.endDate).toLocaleDateString()}`}
           </Typography>
         </Box>
 
-        <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-          <LocationIcon
-            fontSize="small"
-            sx={{
-              mr: 1,
-              color: alpha(theme.palette.common.white, 0.7),
-            }}
-          />
-          <Typography
-            variant="body2"
-            sx={{ color: alpha(theme.palette.common.white, 0.9) }}
-            noWrap
-          >
+        <Box sx={styles.infoItem}>
+          <LocationIcon fontSize="small" />
+          <Typography variant="body2" noWrap>
             {tournament.location}
           </Typography>
         </Box>
 
-        <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-          <GroupIcon
-            fontSize="small"
-            sx={{
-              mr: 1,
-              color: alpha(theme.palette.common.white, 0.7),
-            }}
-          />
-          <Typography
-            variant="body2"
-            sx={{ color: alpha(theme.palette.common.white, 0.9) }}
-          >
+        <Box sx={styles.infoItem}>
+          <GroupIcon fontSize="small" />
+          <Typography variant="body2">
             {tournament.players.length} players
           </Typography>
         </Box>
@@ -214,14 +157,7 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
           size="small"
           fullWidth
           variant="outlined"
-          sx={{
-            color: "white",
-            borderColor: alpha(theme.palette.common.white, 0.5),
-            "&:hover": {
-              borderColor: "white",
-              backgroundColor: alpha(theme.palette.common.white, 0.1),
-            },
-          }}
+          sx={styles.outlinedButton}
         >
           View Details
         </Button>
