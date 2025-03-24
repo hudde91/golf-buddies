@@ -244,6 +244,28 @@ export const useProfileStyles = () => {
         border: `2px solid ${theme.palette.primary.main}`,
       },
     },
+
+    // Achievement styles
+    achievements: {
+      container: profileStyles.achievements.container(theme),
+      title: profileStyles.achievements.title(theme),
+      list: profileStyles.achievements.list(theme),
+      emptyState: profileStyles.achievements.emptyState(theme),
+      item: profileStyles.achievements.item(theme),
+      getItemBackground: (position: number) =>
+        profileStyles.achievements.getItemBackground(theme, position),
+      positionBadge: {
+        base: profileStyles.achievements.positionBadge.base(theme),
+        first: profileStyles.achievements.positionBadge.first(theme),
+        second: profileStyles.achievements.positionBadge.second(theme),
+        third: profileStyles.achievements.positionBadge.third(theme),
+      },
+      iconContainer: profileStyles.achievements.iconContainer(theme),
+      textContainer: profileStyles.achievements.textContainer(theme),
+      displayText: profileStyles.achievements.displayText(theme),
+      dateText: profileStyles.achievements.dateText(theme),
+      divider: profileStyles.achievements.divider(theme),
+    },
   };
 };
 

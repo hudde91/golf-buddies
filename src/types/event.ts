@@ -1,4 +1,5 @@
-import { User } from "@clerk/clerk-react";
+// import { User } from "@clerk/clerk-react";
+import { Achievement } from ".";
 
 export interface Player {
   id: string;
@@ -11,6 +12,7 @@ export interface Player {
   question2?: string;
   question3?: string;
   question4?: string;
+  achievements?: Achievement[];
 }
 
 export interface Team {

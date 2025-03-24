@@ -34,6 +34,7 @@ import NotFound from "./pages/NotFound";
 import Loading from "./components/Loading";
 import SplashScreen from "./components/splashScreen/SplashScreen";
 import BackgroundService from "./services/backgroundService";
+import { initializeEventUpdater } from "./services/utils/eventsUpdater";
 
 // Clerk public key
 const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || "";
@@ -91,6 +92,11 @@ const App: React.FC = () => {
 
     // Apply background settings
     BackgroundService.applyBackgroundSettings();
+  }, []);
+
+  useEffect(() => {
+    // Initialize the event updater to check for completed events
+    initializeEventUpdater();
   }, []);
 
   // Function to handle splash screen finish

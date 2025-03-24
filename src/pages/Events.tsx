@@ -215,7 +215,7 @@ const Events: React.FC = () => {
             />
           </TabPanel>
 
-          <TabPanel id="events" value={tabValue} index={1}>
+          <TabPanel id="invitations" value={tabValue} index={1}>
             <InvitationList
               invitations={invitations}
               onAcceptInvitation={handleAcceptInvitation}

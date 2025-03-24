@@ -1,5 +1,5 @@
-// src/services/profileService.ts
-import { UserProfile } from "../types";
+import { UserProfile, Achievement } from "../types";
+import { v4 as uuidv4 } from "uuid";
 
 export const profileService = {
   saveProfile: (userId: string, profileData: Partial<UserProfile>): void => {
@@ -13,6 +13,7 @@ export const profileService = {
           question2: "",
           question3: "",
           question4: "",
+          achievements: [],
         };
 
     const updatedData = {
@@ -35,7 +36,57 @@ export const profileService = {
       question2: "",
       question3: "",
       question4: "",
+      achievements: [],
     };
+  },
+
+  addAchievement: (
+    userId: string,
+    achievement: Omit<Achievement, "id">
+  ): void => {
+    const profile = profileService.getProfile(userId);
+
+    // Initialize achievements array if it doesn't exist
+    if (!profile.achievements) {
+      profile.achievements = [];
+    }
+
+    // Check if this achievement already exists to avoid duplicates
+    const achievementExists = profile.achievements.some(
+      (a) =>
+        a.eventId === achievement.eventId &&
+        a.type === achievement.type &&
+        a.position === achievement.position
+    );
+
+    if (!achievementExists) {
+      profile.achievements.push({
+        id: uuidv4(),
+        ...achievement,
+      });
+
+      profileService.saveProfile(userId, {
+        achievements: profile.achievements,
+      });
+    }
+  },
+
+  getUserAchievements: (userId: string): Achievement[] => {
+    const profile = profileService.getProfile(userId);
+    return profile.achievements || [];
+  },
+
+  removeAchievement: (userId: string, achievementId: string): void => {
+    const profile = profileService.getProfile(userId);
+
+    if (profile.achievements) {
+      profile.achievements = profile.achievements.filter(
+        (a) => a.id !== achievementId
+      );
+      profileService.saveProfile(userId, {
+        achievements: profile.achievements,
+      });
+    }
   },
 };
 

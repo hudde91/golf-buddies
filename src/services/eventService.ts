@@ -1,4 +1,3 @@
-// src/services/eventService.ts
 import { v4 as uuidv4 } from "uuid";
 import {
   Tournament,
@@ -13,6 +12,7 @@ import {
   Team,
   TeamFormData,
 } from "../types/event";
+import achievementService from "./achievementService";
 
 const EVENTS_KEY = "events";
 
@@ -364,6 +364,7 @@ const eventService = {
     const updatedTournament = { ...tournament, ...data };
 
     // Update status if dates changed
+    const oldStatus = tournament.status;
     if (data.startDate || data.endDate) {
       const startDate = data.startDate || tournament.startDate;
       const endDate = data.endDate || tournament.endDate;
@@ -376,6 +377,11 @@ const eventService = {
       updatedTournament
     );
     localStorage.setItem(EVENTS_KEY, JSON.stringify(updatedEvents));
+
+    // If status changed to completed, process achievements
+    if (oldStatus !== "completed" && updatedTournament.status === "completed") {
+      setTimeout(() => achievementService.processCompletedTournament(id), 0);
+    }
 
     return updatedTournament;
   },
@@ -1498,6 +1504,114 @@ const eventService = {
     const tournament = eventService.getTournamentById(tournamentId);
     if (!tournament) return false;
     return tournament.players.some((player) => player.id === userId);
+  },
+
+  // Update event statuses based on dates
+  updateEventStatuses: (): void => {
+    const events = eventService.getAllEvents();
+    let hasChanges = false;
+
+    events.forEach((event, index) => {
+      let statusChanged = false;
+
+      if (event.type === "tournament") {
+        const tournament = event.data as Tournament;
+        const newStatus = getEventStatus(
+          tournament.startDate,
+          tournament.endDate
+        );
+
+        if (tournament.status !== newStatus) {
+          events[index].data = {
+            ...tournament,
+            status: newStatus,
+          };
+          statusChanged = true;
+          hasChanges = true;
+
+          // If the event just became completed, process achievements
+          if (newStatus === "completed" && tournament.status !== "completed") {
+            // This will be called after the event is saved
+            setTimeout(
+              () =>
+                achievementService.processCompletedTournament(tournament.id),
+              0
+            );
+          }
+        }
+      } else if (event.type === "tour") {
+        const tour = event.data as Tour;
+        const newStatus = getEventStatus(tour.startDate, tour.endDate);
+
+        if (tour.status !== newStatus) {
+          events[index].data = {
+            ...tour,
+            status: newStatus,
+          };
+          statusChanged = true;
+          hasChanges = true;
+
+          // If the event just became completed, process achievements
+          if (newStatus === "completed" && tour.status !== "completed") {
+            // This will be called after the event is saved
+            setTimeout(
+              () => achievementService.processCompletedTour(tour.id),
+              0
+            );
+          }
+        }
+
+        // Also update statuses of tournaments within the tour
+        if (tour.tournaments && tour.tournaments.length > 0) {
+          let tourHasChanges = false;
+
+          const updatedTournaments = tour.tournaments.map((tournament) => {
+            const newTournamentStatus = getEventStatus(
+              tournament.startDate,
+              tournament.endDate
+            );
+
+            if (tournament.status !== newTournamentStatus) {
+              tourHasChanges = true;
+
+              // If a tournament just became completed, process achievements
+              if (
+                newTournamentStatus === "completed" &&
+                tournament.status !== "completed"
+              ) {
+                // This will be called after the event is saved
+                setTimeout(
+                  () =>
+                    achievementService.processCompletedTournament(
+                      tournament.id
+                    ),
+                  0
+                );
+              }
+
+              return {
+                ...tournament,
+                status: newTournamentStatus,
+              };
+            }
+
+            return tournament;
+          });
+
+          if (tourHasChanges) {
+            events[index].data = {
+              ...tour,
+              tournaments: updatedTournaments,
+            };
+            hasChanges = true;
+          }
+        }
+      }
+    });
+
+    if (hasChanges) {
+      localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
+    }
   },
 };
 

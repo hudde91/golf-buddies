@@ -8,12 +8,18 @@ import {
   useTheme,
   alpha,
   Typography,
+  Divider,
+  Chip,
+  Paper,
 } from "@mui/material";
+import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import profileService from "../services/profileService";
-import { UserProfile } from "../types";
+import { UserProfile, Achievement } from "../types";
 import ProfileHeader from "../components/profile/ProfileHeader";
 import BioSection from "../components/profile/BioSection";
 import QuestionsSection from "../components/profile/QuestionsSection";
+import { format } from "date-fns";
+import AchievementItem from "./AchievementItem";
 
 const Profile: React.FC = () => {
   const { user } = useUser();
@@ -28,6 +34,7 @@ const Profile: React.FC = () => {
   const [profileImage, setProfileImage] = useState<string>("");
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [bio, setBio] = useState<string>("");
+  const [achievements, setAchievements] = useState<Achievement[]>([]);
 
   // Questions state
   const [question1, setQuestion1] = useState<string>("");
@@ -68,6 +75,9 @@ const Profile: React.FC = () => {
     setQuestion2(userData.question2 || "");
     setQuestion3(userData.question3 || "");
     setQuestion4(userData.question4 || "");
+
+    // Load achievements
+    setAchievements(userData.achievements || []);
 
     setIsLoading(false);
   }, [user?.id, user?.imageUrl]);
@@ -147,6 +157,7 @@ const Profile: React.FC = () => {
       question2,
       question3,
       question4,
+      achievements: achievements, // Make sure we preserve achievements when saving
     };
 
     if (uploadedImage) {
@@ -196,6 +207,11 @@ const Profile: React.FC = () => {
       </Box>
     );
   }
+
+  // Sort achievements by date (most recent first)
+  const sortedAchievements = [...achievements].sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
 
   return (
     <Box
@@ -249,6 +265,56 @@ const Profile: React.FC = () => {
             onQuestion4Change={handleQuestion4Change}
             onSave={handleSave}
           />
+
+          <Box sx={{ mt: 4 }}>
+            <Divider
+              sx={{
+                mb: 3,
+                borderColor: alpha(theme.palette.common.white, 0.2),
+              }}
+            />
+
+            <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
+              <EmojiEventsIcon
+                sx={{ color: theme.palette.warning.main, mr: 1 }}
+              />
+              <Typography
+                variant="h5"
+                component="h2"
+                sx={{ color: theme.palette.common.white }}
+              >
+                Achievements
+              </Typography>
+            </Box>
+
+            {sortedAchievements.length > 0 ? (
+              sortedAchievements.map((achievement) => (
+                <AchievementItem
+                  key={achievement.id}
+                  achievement={achievement}
+                />
+              ))
+            ) : (
+              <Box
+                sx={{
+                  p: 3,
+                  textAlign: "center",
+                  backgroundColor: alpha(theme.palette.common.white, 0.05),
+                  borderRadius: 1,
+                  border: `1px solid ${alpha(
+                    theme.palette.common.white,
+                    0.08
+                  )}`,
+                }}
+              >
+                <Typography
+                  sx={{ color: alpha(theme.palette.common.white, 0.7) }}
+                >
+                  No achievements yet. Compete in tournaments to earn awards!
+                </Typography>
+              </Box>
+            )}
+          </Box>
         </Box>
       </Container>
 
