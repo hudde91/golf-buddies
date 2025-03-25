@@ -246,6 +246,7 @@ export const useProfileStyles = () => {
     },
 
     // Achievement styles
+    // TODO: Is this used now?
     achievements: {
       container: profileStyles.achievements.container(theme),
       title: profileStyles.achievements.title(theme),

@@ -26,6 +26,7 @@ import TournamentDialogs from "../components/tournamentDetails/TournamentDialogs
 import NotFoundView from "../components/tournamentDetails/NotFoundView";
 import TeamManagement from "../components/tournamentDetails/teamsTab/TeamManagement";
 import { TabPanel } from "../components/common/index";
+import { colors } from "../theme/theme";
 
 const CaptainBadge: React.FC<{
   player: Player;
@@ -336,8 +337,7 @@ const TournamentDetail: React.FC = () => {
     return (
       <Box
         sx={{
-          background:
-            "linear-gradient(135deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.6) 100%)",
+          background: colors.backgrounds.dark,
           minHeight: "calc(100vh - 64px)",
           display: "flex",
           alignItems: "center",
@@ -432,8 +432,7 @@ const TournamentDetail: React.FC = () => {
   return (
     <Box
       sx={{
-        background:
-          "linear-gradient(135deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.6) 100%)",
+        background: colors.backgrounds.dark,
         minHeight: "calc(100vh - 64px)",
         pt: { xs: 2, md: 4 },
         pb: 6,

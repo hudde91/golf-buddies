@@ -1,7 +1,7 @@
 import { alpha, Paper, Box, Typography, Chip, useTheme } from "@mui/material";
 import { format } from "date-fns";
-import { Achievement } from "../types";
-import { getBadgeColor, getPositionText } from "./util";
+import { getBadgeColor, getPositionText } from "../../pages/util";
+import { Achievement } from "../../types";
 
 const AchievementItem: React.FC<{ achievement: Achievement }> = ({
   achievement,

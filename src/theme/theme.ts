@@ -34,7 +34,7 @@ export const colors = {
     300: "#BA8C63", // Bronze color
   },
   backgrounds: {
-    dark: "linear-gradient(135deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.6) 100%)",
+    dark: "linear-gradient(135deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.2) 100%)",
     card: "rgba(255, 255, 255, 0.95)",
     glass: (theme: Theme) => alpha(theme.palette.common.black, 0.3),
     glassBorder: (theme: Theme) =>

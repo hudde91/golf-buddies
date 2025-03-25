@@ -6,7 +6,7 @@ import React, {
   useContext,
 } from "react";
 import { ThemeProvider as MuiThemeProvider, CssBaseline } from "@mui/material";
-import theme, { colors } from "./theme";
+import theme from "./theme";
 import BackgroundService from "../services/backgroundService";
 
 type ThemeContextType = {

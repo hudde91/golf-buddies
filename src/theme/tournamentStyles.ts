@@ -119,8 +119,7 @@ export const tournamentStyles = {
 
   // Loading state
   loadingState: {
-    background:
-      "linear-gradient(135deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.6) 100%)",
+    background: colors.backgrounds.dark,
     minHeight: "calc(100vh - 64px)",
     display: "flex",
     alignItems: "center",

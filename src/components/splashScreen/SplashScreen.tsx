@@ -7,6 +7,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
+import { colors } from "../../theme/theme";
 
 interface SplashScreenProps {
   onFinish: () => void;
@@ -71,7 +72,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({
             left: 0,
             width: "100%",
             height: "100%",
-            backgroundColor: "rgba(0,0,0,0.6)",
+            backgroundColor: colors.backgrounds.dark,
           },
         }}
       >

@@ -76,7 +76,7 @@ const EventHeader: React.FC<EventHeaderProps> = ({ onCreateEvent }) => {
           "&:hover": {
             backgroundColor: theme.palette.primary.dark,
           },
-          boxShadow: `0 4px 14px ${alpha(theme.palette.primary.main, 0.4)}`,
+          // boxShadow: `0 4px 14px ${alpha(theme.palette.primary.main, 0.4)}`,
         }}
       >
         Create Event

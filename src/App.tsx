@@ -17,11 +17,7 @@ import {
 import { Fade } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-
-// Import custom theme provider
 import { AppThemeProvider } from "./theme/ThemeProvider";
-
-// Components
 import Header from "./components/Header";
 import Home from "./pages/Home";
 import Profile from "./pages/Profile";
@@ -99,7 +95,6 @@ const App: React.FC = () => {
     initializeEventUpdater();
   }, []);
 
-  // Function to handle splash screen finish
   const handleSplashFinish = () => {
     setShowSplash(false);
     setContentLoaded(true);

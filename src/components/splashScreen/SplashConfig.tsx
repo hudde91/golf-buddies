@@ -21,6 +21,7 @@ import {
 import ImageIcon from "@mui/icons-material/Image";
 import splashService, { SplashPreset } from "../../services/splashService";
 import { TabPanel } from "../common/index";
+import { colors } from "../../theme/theme";
 
 interface SplashConfigProps {
   onSave: (image: string, text: string) => void;
@@ -148,7 +149,7 @@ const SplashConfig: React.FC<SplashConfigProps> = ({
                   left: 0,
                   width: "100%",
                   height: "100%",
-                  backgroundColor: "rgba(0,0,0,0.6)",
+                  backgroundColor: colors.backgrounds.dark,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",

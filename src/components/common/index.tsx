@@ -1,4 +1,3 @@
-// src/components/common/index.tsx
 import React, { ReactNode } from "react";
 import {
   Box,

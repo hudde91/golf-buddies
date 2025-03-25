@@ -1,4 +1,3 @@
-// components/Header.tsx
 import React, { useState, useEffect } from "react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 import {
@@ -11,7 +10,6 @@ import {
   MenuItem,
   Box,
   Divider,
-  Avatar,
   Badge,
   Tooltip,
   useScrollTrigger,
@@ -51,8 +49,7 @@ function ElevationScroll(props: ElevationScrollProps) {
     sx: {
       transition: "all 0.3s ease",
       backdropFilter: trigger ? "blur(10px)" : "none",
-      // Use a dark, semi-transparent background that matches the homepage
-      backgroundColor: trigger ? "rgba(0, 0, 0, 0.85)" : "rgba(0, 0, 0, 0.6)",
+      backgroundColor: trigger ? "rgba(0, 0, 0, 0.85)" : "rgba(0, 0, 0, 0.4)",
       color: "white",
       borderBottom: trigger
         ? `1px solid ${alpha(theme.palette.common.white, 0.1)}`

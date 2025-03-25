@@ -8,18 +8,14 @@ import {
   useTheme,
   alpha,
   Typography,
-  Divider,
-  Chip,
-  Paper,
 } from "@mui/material";
-import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import profileService from "../services/profileService";
 import { UserProfile, Achievement } from "../types";
 import ProfileHeader from "../components/profile/ProfileHeader";
 import BioSection from "../components/profile/BioSection";
 import QuestionsSection from "../components/profile/QuestionsSection";
-import { format } from "date-fns";
-import AchievementItem from "./AchievementItem";
+import { colors } from "../theme/theme";
+import AchievementsSection from "../components/profile/AchievementsSection";
 
 const Profile: React.FC = () => {
   const { user } = useUser();
@@ -178,8 +174,7 @@ const Profile: React.FC = () => {
     return (
       <Box
         sx={{
-          background:
-            "linear-gradient(135deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.6) 100%)",
+          background: colors.backgrounds.dark,
           minHeight: "calc(100vh - 64px)",
           pt: 4,
           pb: 6,
@@ -216,8 +211,7 @@ const Profile: React.FC = () => {
   return (
     <Box
       sx={{
-        background:
-          "linear-gradient(135deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.6) 100%)",
+        background: colors.backgrounds.dark,
         minHeight: "calc(100vh - 64px)",
         pt: 4,
         pb: 6,
@@ -266,55 +260,7 @@ const Profile: React.FC = () => {
             onSave={handleSave}
           />
 
-          <Box sx={{ mt: 4 }}>
-            <Divider
-              sx={{
-                mb: 3,
-                borderColor: alpha(theme.palette.common.white, 0.2),
-              }}
-            />
-
-            <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
-              <EmojiEventsIcon
-                sx={{ color: theme.palette.warning.main, mr: 1 }}
-              />
-              <Typography
-                variant="h5"
-                component="h2"
-                sx={{ color: theme.palette.common.white }}
-              >
-                Achievements
-              </Typography>
-            </Box>
-
-            {sortedAchievements.length > 0 ? (
-              sortedAchievements.map((achievement) => (
-                <AchievementItem
-                  key={achievement.id}
-                  achievement={achievement}
-                />
-              ))
-            ) : (
-              <Box
-                sx={{
-                  p: 3,
-                  textAlign: "center",
-                  backgroundColor: alpha(theme.palette.common.white, 0.05),
-                  borderRadius: 1,
-                  border: `1px solid ${alpha(
-                    theme.palette.common.white,
-                    0.08
-                  )}`,
-                }}
-              >
-                <Typography
-                  sx={{ color: alpha(theme.palette.common.white, 0.7) }}
-                >
-                  No achievements yet. Compete in tournaments to earn awards!
-                </Typography>
-              </Box>
-            )}
-          </Box>
+          <AchievementsSection achievements={achievements} />
         </Box>
       </Container>
 

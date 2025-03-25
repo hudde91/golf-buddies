@@ -23,6 +23,7 @@ import EventGrid from "../components/EventGrid";
 import InvitationList from "../components/invitation/InvitationList";
 import LoadingState from "../components/tournament/LoadingState";
 import { TabPanel } from "../components/common/index";
+import { colors } from "../theme/theme";
 
 const Events: React.FC = () => {
   const { user, isLoaded } = useUser();
@@ -158,8 +159,7 @@ const Events: React.FC = () => {
   return (
     <Box
       sx={{
-        background:
-          "linear-gradient(135deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.6) 100%)",
+        background: colors.backgrounds.dark,
         minHeight: "calc(100vh - 64px)",
         py: { xs: 3, md: 4 },
       }}

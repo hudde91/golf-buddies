@@ -19,6 +19,7 @@ import LoadingState from "../components/tournament/LoadingState";
 import TourHeader from "../components/tour/TourHeader";
 import TourTabs from "../components/tourDetails/TourTabs";
 import { BackButton } from "../components/common/index";
+import { colors } from "../theme/theme";
 
 const TourDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -168,8 +169,7 @@ const TourDetails: React.FC = () => {
   return (
     <Box
       sx={{
-        background:
-          "linear-gradient(135deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.6) 100%)",
+        background: colors.backgrounds.dark,
         minHeight: "calc(100vh - 64px)",
         py: { xs: 3, md: 4 },
       }}
@@ -195,7 +195,6 @@ const TourDetails: React.FC = () => {
           navigateToTournament={(tournamentId) =>
             navigate(`/tournaments/${tournamentId}`)
           }
-          theme={theme}
         />
       </Container>
 

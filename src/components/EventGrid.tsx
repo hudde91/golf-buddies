@@ -34,7 +34,6 @@ const EventCard: React.FC<EventCardProps> = ({
 }) => {
   const theme = useTheme();
 
-  // Get common data based on event type
   let name = "";
   let description = "";
   let startDate = "";
@@ -78,7 +77,7 @@ const EventCard: React.FC<EventCardProps> = ({
         height: "100%",
         display: "flex",
         flexDirection: "column",
-        backgroundColor: alpha(theme.palette.common.black, 0.6),
+        backgroundColor: alpha(theme.palette.common.black, 0.3),
         backdropFilter: "blur(10px)",
         borderRadius: 2,
         border: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
@@ -102,7 +101,7 @@ const EventCard: React.FC<EventCardProps> = ({
             label={status.charAt(0).toUpperCase() + status.slice(1)}
             size="small"
             sx={{
-              backgroundColor: alpha(getStatusColor(status, theme), 0.2),
+              backgroundColor: alpha(getStatusColor(status, theme), 0.1),
               color: getStatusColor(status, theme),
               fontWeight: "medium",
               borderRadius: 1,
@@ -321,7 +320,7 @@ const EventGrid: React.FC<EventGridProps> = ({
             borderRadius: 2,
             textTransform: "none",
             fontWeight: "bold",
-            boxShadow: `0 4px 14px ${alpha(theme.palette.primary.main, 0.4)}`,
+            // boxShadow: `0 4px 14px ${alpha(theme.palette.primary.main, 0.4)}`,
           }}
         >
           Create Event
