@@ -14,7 +14,10 @@ import {
   Chip,
   Tooltip,
 } from "@mui/material";
-import { Star as StarIcon } from "@mui/icons-material";
+import {
+  Star as StarIcon,
+  MilitaryTech as AchievementIcon,
+} from "@mui/icons-material";
 import tournamentService from "../services/eventService";
 import { Tournament, RoundFormData, HoleScore, Player } from "../types/event";
 import TournamentHeader from "../components/tournamentDetails/TournamentHeader";
@@ -27,6 +30,7 @@ import NotFoundView from "../components/tournamentDetails/NotFoundView";
 import TeamManagement from "../components/tournamentDetails/teamsTab/TeamManagement";
 import { TabPanel } from "../components/common/index";
 import { colors } from "../theme/theme";
+import HighlightsTab from "../components/tournamentDetails/highlightsTab/HighlightsTab";
 
 const CaptainBadge: React.FC<{
   player: Player;
@@ -499,6 +503,15 @@ const TournamentDetail: React.FC = () => {
                   }}
                 />
               )}
+              <Tab
+                label="Highlights"
+                icon={<AchievementIcon />}
+                iconPosition="start"
+                sx={{
+                  color: "white",
+                  minWidth: isSmall ? "auto" : "initial",
+                }}
+              />
             </Tabs>
           </Box>
 
@@ -564,6 +577,25 @@ const TournamentDetail: React.FC = () => {
               </Box>
             </TabPanel>
           )}
+          <TabPanel
+            id="tournament-detail"
+            value={tabValue}
+            index={tournament.isTeamEvent ? 4 : 3}
+          >
+            <HighlightsTab
+              tournament={tournament}
+              user={
+                user
+                  ? {
+                      id: user.id,
+                      name: user.fullName || "",
+                      email: user.primaryEmailAddress?.emailAddress || "",
+                      avatarUrl: user.imageUrl,
+                    }
+                  : null
+              }
+            />
+          </TabPanel>
         </Box>
       </Container>
 

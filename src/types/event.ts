@@ -32,7 +32,7 @@ export interface HoleScore {
 
 export interface Round {
   id: string;
-  name: string; // e.g., "Round 1", "Morning Round", etc.
+  name: string;
   date: string;
   courseDetails?: {
     name?: string;
@@ -70,6 +70,8 @@ export interface Tournament {
   isTeamEvent: boolean;
   scoringType: "individual" | "team" | "both";
   status: "upcoming" | "active" | "completed";
+  shoutOuts?: ShoutOut[];
+  highlights?: Highlight[];
 }
 
 export interface Tour {
@@ -81,9 +83,9 @@ export interface Tour {
   createdBy: string;
   createdAt: string;
   tournaments: Tournament[];
-  players?: Player[]; // Optional shared player roster across tournaments
+  players?: Player[];
   teams?: Team[]; // Optional shared teams across tournaments
-  invitations?: string[]; // Optional shared invitations
+  invitations?: string[];
   status: "upcoming" | "active" | "completed";
   pointsSystem?: {
     // Optional points system for tour rankings
@@ -130,4 +132,43 @@ export interface TourFormData {
   startDate: string;
   endDate: string;
   description: string;
+}
+
+export interface ShoutOut {
+  id: string;
+  tournamentId: string;
+  roundId: string;
+  playerId: string;
+  holeNumber: number;
+  type: "birdie" | "eagle" | "hole-in-one" | "custom";
+  message?: string;
+  timestamp: string;
+}
+
+export interface Highlight {
+  id: string;
+  tournamentId: string;
+  playerId: string;
+  roundId?: string;
+  title: string;
+  description?: string;
+  mediaUrl?: string;
+  mediaType: "image" | "video";
+  timestamp: string;
+}
+
+// Combined type for displaying both shoutOuts and highlights together
+export interface FeedItem {
+  id: string;
+  type: "shoutOut" | "highlight";
+  timestamp: string;
+  data: ShoutOut | Highlight;
+}
+
+export interface HighlightFormData {
+  title: string;
+  description?: string;
+  mediaType: "image" | "video";
+  mediaFile?: File;
+  roundId?: string;
 }

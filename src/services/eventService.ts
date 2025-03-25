@@ -11,6 +11,8 @@ import {
   HoleScore,
   Team,
   TeamFormData,
+  ShoutOut,
+  Highlight,
 } from "../types/event";
 import achievementService from "./achievementService";
 
@@ -649,6 +651,165 @@ const eventService = {
     return updatedTournament;
   },
 
+  // Create a shoutOut for special achievements
+  createShoutOut: (
+    tournamentId: string,
+    roundId: string,
+    playerId: string,
+    holeNumber: number,
+    type: "birdie" | "eagle" | "hole-in-one",
+    message?: string
+  ): Tournament | null => {
+    const events = eventService.getAllEvents();
+    const result = findTournamentInEvents(events, tournamentId);
+
+    if (!result) return null;
+
+    const { tournament } = result;
+
+    // Create new shoutOut
+    const newShoutOut: ShoutOut = {
+      id: uuidv4(),
+      tournamentId,
+      roundId,
+      playerId,
+      holeNumber,
+      type,
+      message,
+      timestamp: new Date().toISOString(),
+    };
+
+    // Add shoutOut to tournament
+    const updatedTournament = {
+      ...tournament,
+      shoutOuts: [...(tournament.shoutOuts || []), newShoutOut],
+    };
+
+    const updatedEvents = updateTournamentInEvents(
+      events,
+      tournamentId,
+      updatedTournament
+    );
+    localStorage.setItem(EVENTS_KEY, JSON.stringify(updatedEvents));
+
+    return updatedTournament;
+  },
+
+  // Get all shoutOuts for a tournament
+  getTournamentShoutOuts: (tournamentId: string): ShoutOut[] => {
+    const tournament = eventService.getTournamentById(tournamentId);
+    if (!tournament || !tournament.shoutOuts) return [];
+    return tournament.shoutOuts;
+  },
+
+  detectAchievements: (
+    tournamentId: string,
+    roundId: string,
+    playerId: string,
+    scores: HoleScore[]
+  ): void => {
+    const tournament = eventService.getTournamentById(tournamentId);
+    if (!tournament) return;
+
+    const round = tournament.rounds.find((r) => r.id === roundId);
+    if (!round) return;
+
+    // Detect achievements based on par and score
+    scores.forEach((score) => {
+      if (!score.score || !score.par) return; // Skip if score or par is missing
+
+      const diff = score.par - score.score;
+
+      if (diff === 0) {
+        // Par - no special achievement
+        return;
+      } else if (score.score === 1) {
+        // Hole in one!
+        eventService.createShoutOut(
+          tournamentId,
+          roundId,
+          playerId,
+          score.hole,
+          "hole-in-one",
+          "Incredible hole-in-one!"
+        );
+      } else if (diff === 1) {
+        // Birdie
+        eventService.createShoutOut(
+          tournamentId,
+          roundId,
+          playerId,
+          score.hole,
+          "birdie",
+          "Great birdie!"
+        );
+      } else if (diff >= 2) {
+        // Eagle or better
+        eventService.createShoutOut(
+          tournamentId,
+          roundId,
+          playerId,
+          score.hole,
+          "eagle",
+          diff === 2 ? "Amazing eagle!" : "Spectacular double eagle or better!"
+        );
+      }
+    });
+  },
+
+  // Create a highlight with media (image or video)
+  createHighlight: (
+    tournamentId: string,
+    playerId: string,
+    title: string,
+    mediaType: "image" | "video",
+    description?: string,
+    roundId?: string,
+    mediaUrl?: string
+  ): Tournament | null => {
+    const events = eventService.getAllEvents();
+    const result = findTournamentInEvents(events, tournamentId);
+
+    if (!result) return null;
+
+    const { tournament } = result;
+
+    // Create new highlight
+    const newHighlight: Highlight = {
+      id: uuidv4(),
+      tournamentId,
+      playerId,
+      roundId,
+      title,
+      description,
+      mediaUrl,
+      mediaType,
+      timestamp: new Date().toISOString(),
+    };
+
+    // Add highlight to tournament
+    const updatedTournament = {
+      ...tournament,
+      highlights: [...(tournament.highlights || []), newHighlight],
+    };
+
+    const updatedEvents = updateTournamentInEvents(
+      events,
+      tournamentId,
+      updatedTournament
+    );
+    localStorage.setItem(EVENTS_KEY, JSON.stringify(updatedEvents));
+
+    return updatedTournament;
+  },
+
+  // Get all highlights for a tournament
+  getTournamentHighlights: (tournamentId: string): Highlight[] => {
+    const tournament = eventService.getTournamentById(tournamentId);
+    if (!tournament || !tournament.highlights) return [];
+    return tournament.highlights;
+  },
+
   // Update player scores for a round
   updateRoundScores: (
     tournamentId: string,
@@ -689,9 +850,11 @@ const eventService = {
     );
     localStorage.setItem(EVENTS_KEY, JSON.stringify(updatedEvents));
 
+    // Detect achievements and create shoutOuts (add this line)
+    eventService.detectAchievements(tournamentId, roundId, playerId, scores);
+
     return updatedTournament;
   },
-
   // Get user's pending invitations - only for tournaments, not tours
   getUserInvitations: (userEmail: string): Tournament[] => {
     const events = eventService.getAllEvents();
