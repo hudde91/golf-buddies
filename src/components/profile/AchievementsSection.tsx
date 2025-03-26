@@ -1,7 +1,6 @@
 import React from "react";
 import { Box, Typography, useTheme, alpha, Divider } from "@mui/material";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
-import { useProfileStyles } from "../../theme/hooks";
 import { Achievement } from "../../types";
 import AchievementItem from "./AchievementItem";
 

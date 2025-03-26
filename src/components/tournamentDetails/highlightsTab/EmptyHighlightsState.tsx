@@ -1,32 +1,17 @@
-import { Paper, Typography, alpha, useTheme } from "@mui/material";
+import { Paper, Typography } from "@mui/material";
 import { EmojiEvents as TrophyIcon } from "@mui/icons-material";
+import { useTournamentHighlightsStyles } from "../../../theme/hooks";
 
 const EmptyHighlightsState = () => {
-  const theme = useTheme();
+  const styles = useTournamentHighlightsStyles();
+
   return (
-    <Paper
-      sx={{
-        p: 3,
-        bgcolor: alpha(theme.palette.common.black, 0.2),
-        border: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
-        borderRadius: 2,
-        textAlign: "center",
-      }}
-    >
-      <TrophyIcon
-        sx={{
-          fontSize: 48,
-          color: alpha(theme.palette.common.white, 0.5),
-          mb: 2,
-        }}
-      />
-      <Typography variant="h6" sx={{ color: "white", mb: 1 }}>
+    <Paper sx={styles.emptyState}>
+      <TrophyIcon sx={styles.emptyStateIcon} />
+      <Typography variant="h6" sx={styles.emptyStateTitle}>
         No highlights yet
       </Typography>
-      <Typography
-        variant="body1"
-        sx={{ color: alpha(theme.palette.common.white, 0.7) }}
-      >
+      <Typography variant="body1" sx={styles.emptyStateText}>
         Share photos, videos, or wait for achievements like birdies, eagles, and
         holes-in-one to appear here.
       </Typography>

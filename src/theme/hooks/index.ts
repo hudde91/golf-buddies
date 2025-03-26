@@ -10,6 +10,7 @@ import {
   tournamentPlayerStyles,
   tournamentScorecardStyles,
   tournamentTeamStyles,
+  tournamentHighlightsStyles,
 } from "../tournamentStyles";
 
 // Hook to provide common style objects
@@ -17,19 +18,16 @@ export const useAppStyles = () => {
   const theme = useTheme();
 
   return {
-    // Page-level styles
     pageContainer: {
       background: colors.backgrounds.dark,
       ...styleHelpers.pageContainer,
     },
 
-    // Glass panel styles
     glassPanel: {
       ...styleHelpers.glassBox(theme),
       p: { xs: 2, md: 4 },
     },
 
-    // Common text styles
     pageTitle: {
       color: colors.text.primary,
       fontWeight: 500,
@@ -40,7 +38,6 @@ export const useAppStyles = () => {
       mb: 4,
     },
 
-    // Section styles
     section: {
       mb: 4,
     },
@@ -50,7 +47,6 @@ export const useAppStyles = () => {
       mb: 2,
     },
 
-    // Form field styles
     formField: {
       mb: 3,
       "& .MuiInputLabel-root": {
@@ -72,13 +68,11 @@ export const useAppStyles = () => {
       },
     },
 
-    // Responsive containers
     responsiveContainer: {
       width: "100%",
       px: { xs: 2, sm: 3, md: 4 },
     },
 
-    // Common card styles
     card: {
       backgroundColor: alpha(theme.palette.common.black, 0.3),
       backdropFilter: "blur(10px)",
@@ -91,7 +85,6 @@ export const useAppStyles = () => {
       },
     },
 
-    // Tab styles
     tabs: {
       "& .MuiTab-root": {
         color: colors.text.subtle,
@@ -104,7 +97,6 @@ export const useAppStyles = () => {
       },
     },
 
-    // Common button styles
     primaryButton: {
       color: "white",
       bgcolor: theme.palette.primary.main,
@@ -122,7 +114,6 @@ export const useAppStyles = () => {
       },
     },
 
-    // Loading state styles
     loadingContainer: {
       display: "flex",
       alignItems: "center",
@@ -178,16 +169,13 @@ export const useResponsiveStyles = () => {
 // Specialized hook for profile components
 export const useProfileStyles = () => {
   const theme = useTheme();
-  const appStyles = useAppStyles(); // Leverage existing app styles
+  const appStyles = useAppStyles();
 
   return {
-    // Inherit common app styles
     ...appStyles,
 
-    // Profile-specific styles
     profileCard: profileStyles.profileCard(theme),
 
-    // Section title with profile styling
     profileSectionTitle: profileStyles.sectionTitle(theme),
 
     // Get text field props with profile styling
@@ -206,14 +194,12 @@ export const useProfileStyles = () => {
       },
     }),
 
-    // Avatar styling for profile
     profileAvatar: {
       ...profileStyles.avatar(theme),
       width: { xs: 180, md: 220 },
       height: { xs: 180, md: 220 },
     },
 
-    // Typography variants for profile
     profileTypography: {
       heading: {
         ...profileStyles.typography.profileHeading(theme),
@@ -224,13 +210,11 @@ export const useProfileStyles = () => {
       muted: profileStyles.typography.profileMuted(theme),
     },
 
-    // Profile-specific buttons
     profileButtons: {
       edit: profileStyles.buttons.editButton(theme),
       save: profileStyles.buttons.saveButton(theme),
     },
 
-    // Helper for slider components in profile
     profileSlider: {
       height: 8,
       borderRadius: 4,
@@ -244,29 +228,6 @@ export const useProfileStyles = () => {
         border: `2px solid ${theme.palette.primary.main}`,
       },
     },
-
-    // Achievement styles
-    // TODO: Is this used now?
-    achievements: {
-      container: profileStyles.achievements.container(theme),
-      title: profileStyles.achievements.title(theme),
-      list: profileStyles.achievements.list(theme),
-      emptyState: profileStyles.achievements.emptyState(theme),
-      item: profileStyles.achievements.item(theme),
-      getItemBackground: (position: number) =>
-        profileStyles.achievements.getItemBackground(theme, position),
-      positionBadge: {
-        base: profileStyles.achievements.positionBadge.base(theme),
-        first: profileStyles.achievements.positionBadge.first(theme),
-        second: profileStyles.achievements.positionBadge.second(theme),
-        third: profileStyles.achievements.positionBadge.third(theme),
-      },
-      iconContainer: profileStyles.achievements.iconContainer(theme),
-      textContainer: profileStyles.achievements.textContainer(theme),
-      displayText: profileStyles.achievements.displayText(theme),
-      dateText: profileStyles.achievements.dateText(theme),
-      divider: profileStyles.achievements.divider(theme),
-    },
   };
 };
 
@@ -276,24 +237,18 @@ export const useTourStyles = () => {
   const appStyles = useAppStyles();
 
   return {
-    // Inherit common app styles
     ...appStyles,
 
-    // Core tour container styling
     tourContainer: tourStyles.tourContainer(theme),
 
-    // Section title with tour styling
     tourSectionTitle: tourStyles.tourSectionTitle(theme),
 
-    // Tab styling
     tourTabs: tourStyles.tourTabs(theme),
     tourTabPanel: tourStyles.tourTabPanel,
 
-    // Card styles
     tourCard: tourStyles.tourCard(theme),
     tourTeamCard: tourStyles.tourTeamCard(theme),
 
-    // Tournament card helper
     getStatusChip: (status: string) => {
       const color = getStatusColor(status, theme);
       return tourStyles.statusChip(color, theme);
@@ -356,10 +311,9 @@ export const useTourStyles = () => {
 // Specialized hook for invitation components
 export const useInvitationStyles = () => {
   const theme = useTheme();
-  const appStyles = useAppStyles(); // Leverage existing app styles
+  const appStyles = useAppStyles();
 
   return {
-    // Inherit common app styles
     ...appStyles,
 
     invitationCard: invitationStyles.invitationCard(theme),
@@ -389,24 +343,19 @@ export const useInvitationStyles = () => {
 // Specialized hook for player components
 export const useTournamentPlayerStyles = () => {
   const theme = useTheme();
-  const appStyles = useAppStyles(); // Leverage existing app styles
+  const appStyles = useAppStyles();
 
   return {
-    // Inherit common app styles
     ...appStyles,
 
-    // Player card styling
     playerCard: tournamentPlayerStyles.playerCard(theme),
 
-    // Get player avatar styling with optional team color
     getPlayerAvatar: (teamColor?: string) =>
       tournamentPlayerStyles.playerAvatar(theme, teamColor),
 
-    // Get profile avatar styling (larger size for dialogs)
     getProfileAvatar: (teamColor?: string) =>
       tournamentPlayerStyles.profileAvatar(theme, teamColor),
 
-    // Chip styles for player indicators
     chips: {
       creator: tournamentPlayerStyles.chips.creator,
       getTeamChip: (teamColor: string) =>
@@ -415,20 +364,16 @@ export const useTournamentPlayerStyles = () => {
         tournamentPlayerStyles.chips.captain(teamColor, theme),
     },
 
-    // Info item with icon (for profile details)
     profileInfoItem: tournamentPlayerStyles.profileInfoItem(theme),
 
-    // Info icon container
     getInfoIconContainer: (color: string) =>
       tournamentPlayerStyles.infoIconContainer(color, theme),
 
-    // Dialog styling
     profileDialog: tournamentPlayerStyles.profileDialog(theme),
     profileDivider: tournamentPlayerStyles.profileDivider(theme),
     closeButton: tournamentPlayerStyles.closeButton(theme),
     dialogActions: tournamentPlayerStyles.dialogActions(theme),
 
-    // Typography variants
     playerTypography: {
       playerName: tournamentPlayerStyles.typography.playerName,
       playerDetail: tournamentPlayerStyles.typography.playerDetail(theme),
@@ -440,13 +385,11 @@ export const useTournamentPlayerStyles = () => {
       infoItemValue: tournamentPlayerStyles.typography.infoItemValue,
     },
 
-    // Button styles
     buttons: {
       close: tournamentPlayerStyles.buttons.close(theme),
       invite: tournamentPlayerStyles.buttons.invite(theme),
     },
 
-    // Layouts
     layouts: {
       tabHeader: tournamentPlayerStyles.layouts.tabHeader,
     },
@@ -456,32 +399,25 @@ export const useTournamentPlayerStyles = () => {
 // Specialized hook for tournament components
 export const useTournamentStyles = () => {
   const theme = useTheme();
-  const appStyles = useAppStyles(); // Leverage existing app styles
+  const appStyles = useAppStyles();
 
   return {
-    // Inherit common app styles
     ...appStyles,
 
-    // Tournament card styling
     tournamentCard: tournamentStyles.tournamentCard(theme),
     tournamentCardMedia: tournamentStyles.tournamentCardMedia,
 
-    // Status chip
     getStatusChip: (status: string) => {
       const color = getStatusColor(status, theme);
       return tournamentStyles.statusChip(color, theme);
     },
 
-    // Color helper
     getStatusColor: (status: string) => getStatusColor(status, theme),
 
-    // Divider
     tournamentDivider: tournamentStyles.tournamentDivider(theme),
 
-    // Info item with icon
     infoItem: tournamentStyles.infoItem(theme),
 
-    // Leaderboard
     getLeaderboardRowStyle: (
       position: number,
       highlightWinner: boolean = true
@@ -490,24 +426,20 @@ export const useTournamentStyles = () => {
     getPositionColor: (position: number) =>
       tournamentStyles.getPositionColor(position, theme),
 
-    // Loading and empty states
     loadingState: tournamentStyles.loadingState,
     emptyState: tournamentStyles.emptyState(theme),
     emptyStateIcon: tournamentStyles.emptyStateIcon(theme),
 
-    // Form styles
     formStyles: {
       inputProps: tournamentStyles.formStyles.inputProps(theme),
       labelProps: tournamentStyles.formStyles.labelProps(theme),
     },
 
-    // Dialog styles
     dialogStyles: {
       title: tournamentStyles.dialogStyles.title(theme),
       actions: tournamentStyles.dialogStyles.actions(theme),
     },
 
-    // Typography variants
     tournamentTypography: {
       title: tournamentStyles.typography.title(theme),
       cardTitle: tournamentStyles.typography.cardTitle,
@@ -521,58 +453,47 @@ export const useTournamentStyles = () => {
 // Specialized hook for leaderboard components
 export const useTournamentLeaderboardStyles = () => {
   const theme = useTheme();
-  const tournamentStyles = useTournamentStyles(); // Leverage existing tournament styles
+  const tournamentStyles = useTournamentStyles();
 
   return {
-    // Inherit tournament styles
     ...tournamentStyles,
 
-    // Empty state styling
     leaderboardEmptyState: tournamentLeaderboardStyles.emptyState(theme),
     leaderboardEmptyStateIcon:
       tournamentLeaderboardStyles.emptyStateIcon(theme),
 
-    // Table styling
     tableContainer: tournamentLeaderboardStyles.tableContainer(theme),
     headerCell: tournamentLeaderboardStyles.headerCell(theme),
     positionHeaderCell: tournamentLeaderboardStyles.positionHeaderCell(theme),
     dataCell: tournamentLeaderboardStyles.dataCell(theme),
     centeredDataCell: tournamentLeaderboardStyles.centeredDataCell(theme),
 
-    // Row styling
     getTableRowStyle: (index: number) =>
       tournamentLeaderboardStyles.tableRow(theme, index),
 
-    // Chip styling
     winnerChip: tournamentLeaderboardStyles.winnerChip,
     captainChip: tournamentLeaderboardStyles.captainChip(theme),
     getTeamChip: (teamColor: string) =>
       tournamentLeaderboardStyles.teamChip(teamColor, theme),
 
-    // Avatar styling
     getPlayerAvatar: (teamColor?: string) =>
       tournamentLeaderboardStyles.playerAvatar(theme, teamColor),
     getTeamAvatar: (teamColor: string) =>
       tournamentLeaderboardStyles.teamAvatar(teamColor),
 
-    // Mobile info text
     mobileInfoText: tournamentLeaderboardStyles.mobileInfoText(theme),
 
-    // Divider
     leaderboardDivider: tournamentLeaderboardStyles.leaderboardDivider(theme),
 
-    // Helper for score vs par coloring
     getScoreVsParColor: (vsPar: string) =>
       tournamentLeaderboardStyles.scoreVsParColor(vsPar, theme),
 
-    // Typography
     leaderboardTypography: {
       title: tournamentLeaderboardStyles.typography.title,
       noDataText: tournamentLeaderboardStyles.typography.noDataText(theme),
       noTeamText: tournamentLeaderboardStyles.typography.noTeamText(theme),
     },
 
-    // Helper functions
     formatScoreToPar: (score: number, par: number): string => {
       const diff = score - par;
       if (diff === 0) return "E";
@@ -602,13 +523,11 @@ export const useTournamentLeaderboardStyles = () => {
 // Specialized hook for scorecard components
 export const useTournamentScorecardStyles = () => {
   const theme = useTheme();
-  const appStyles = useAppStyles(); // Leverage existing app styles
+  const appStyles = useAppStyles();
 
   return {
-    // Inherit common app styles
     ...appStyles,
 
-    // Scorecard header styling
     header: {
       container: tournamentScorecardStyles.scorecardHeader.container,
       title: tournamentScorecardStyles.scorecardHeader.title,
@@ -618,7 +537,6 @@ export const useTournamentScorecardStyles = () => {
       chipsContainer: tournamentScorecardStyles.scorecardHeader.chipsContainer,
     },
 
-    // Weather display styling
     weather: {
       container: tournamentScorecardStyles.weatherDisplay.container(theme),
       title: tournamentScorecardStyles.weatherDisplay.title,
@@ -627,7 +545,6 @@ export const useTournamentScorecardStyles = () => {
       chipsContainer: tournamentScorecardStyles.weatherDisplay.chipsContainer,
     },
 
-    // Scorecard section styling
     section: {
       container: tournamentScorecardStyles.scorecardSection.container,
       title: tournamentScorecardStyles.scorecardSection.title(theme),
@@ -635,16 +552,13 @@ export const useTournamentScorecardStyles = () => {
         tournamentScorecardStyles.scorecardSection.tableContainer(theme),
     },
 
-    // Table header styling
     tableHeaderCell: tournamentScorecardStyles.tableHeaderCell(theme),
 
-    // Par row styling
     parRow: {
       cell: tournamentScorecardStyles.parRow.cell(theme),
       text: tournamentScorecardStyles.parRow.text(theme),
     },
 
-    // Player score row styling
     playerScoreRow: {
       getContainer: (playerIndex: number) =>
         tournamentScorecardStyles.playerScoreRow.container(theme, playerIndex),
@@ -656,7 +570,6 @@ export const useTournamentScorecardStyles = () => {
       totalCell: tournamentScorecardStyles.playerScoreRow.totalCell,
     },
 
-    // Score cell styling
     scoreCell: {
       getContainer: (scoreClass?: string) =>
         tournamentScorecardStyles.scoreCell.container(theme, scoreClass),
@@ -664,7 +577,6 @@ export const useTournamentScorecardStyles = () => {
       editFieldInput: tournamentScorecardStyles.scoreCell.editFieldInput,
     },
 
-    // Rounds tab styling
     roundsTab: {
       header: tournamentScorecardStyles.roundsTab.header,
       emptyState: tournamentScorecardStyles.roundsTab.emptyState(theme),
@@ -684,7 +596,6 @@ export const useTournamentScorecardStyles = () => {
         tournamentScorecardStyles.roundsTab.noSelectionText(theme),
     },
 
-    // Action buttons styling
     actionButtons: {
       container: tournamentScorecardStyles.actionButtons.container,
       save: tournamentScorecardStyles.actionButtons.save(theme),
@@ -697,19 +608,16 @@ export const useTournamentScorecardStyles = () => {
 // Specialized hook for tournament team components
 export const useTournamentTeamStyles = () => {
   const theme = useTheme();
-  const appStyles = useAppStyles(); // Leverage existing app styles
+  const appStyles = useAppStyles();
 
   return {
-    // Inherit common app styles
     ...appStyles,
 
-    // Empty state placeholder
     emptyState: tournamentTeamStyles.emptyState(theme),
     emptyStateIcon: tournamentTeamStyles.emptyStateIcon(theme),
     emptyStateTitle: tournamentTeamStyles.emptyStateTitle,
     emptyStateMessage: tournamentTeamStyles.emptyStateMessage(theme),
 
-    // Team card styling
     getTeamCard: (color: string) => tournamentTeamStyles.teamCard(theme, color),
     teamHeader: tournamentTeamStyles.teamHeader,
     getTeamAvatar: (color: string) => tournamentTeamStyles.teamAvatar(color),
@@ -723,7 +631,6 @@ export const useTournamentTeamStyles = () => {
     noPlayersText: tournamentTeamStyles.noPlayersText(theme),
     cardActions: tournamentTeamStyles.cardActions(theme),
 
-    // Player badge for captain
     getCaptainBadge: (color: string) =>
       tournamentTeamStyles.captainBadge(theme, color),
     playerItem: tournamentTeamStyles.playerItem(theme),
@@ -732,12 +639,10 @@ export const useTournamentTeamStyles = () => {
     getCaptainLabel: (color: string) =>
       tournamentTeamStyles.captainLabel(color),
 
-    // Buttons
     managePlayersButton: tournamentTeamStyles.managePLayersButton(theme),
     editButton: tournamentTeamStyles.editButton(theme),
     deleteButton: tournamentTeamStyles.deleteButton(theme),
 
-    // Team form dialog styling
     dialogPaper: tournamentTeamStyles.dialogPaper(theme),
     dialogTitle: tournamentTeamStyles.dialogTitle(theme),
     formField: {
@@ -752,10 +657,8 @@ export const useTournamentTeamStyles = () => {
     cancelButton: tournamentTeamStyles.cancelButton(theme),
     submitButton: tournamentTeamStyles.submitButton,
 
-    // Team management layout
     tabHeader: tournamentTeamStyles.tabHeader,
 
-    // Team players dialog
     playersListDialog: tournamentTeamStyles.playersList(theme),
     getPlayerListItem: (isSelected: boolean, color: string) =>
       tournamentTeamStyles.playerListItem(theme, isSelected, color),
@@ -765,11 +668,103 @@ export const useTournamentTeamStyles = () => {
     emptyListPaper: tournamentTeamStyles.emptyListPaper(theme),
     addPlayerChip: tournamentTeamStyles.addPlayerChip,
 
-    // Unassigned players list
     playerCard: tournamentTeamStyles.playerCard(theme),
     assignTeamSelect: tournamentTeamStyles.assignTeamSelect(theme),
     menuPaper: tournamentTeamStyles.menuPaper(theme),
     menuItem: tournamentTeamStyles.menuItem(theme),
     teamColorDot: tournamentTeamStyles.teamColorDot,
+  };
+};
+
+// Specialized hook for highlights components
+export const useTournamentHighlightsStyles = () => {
+  const theme = useTheme();
+
+  return {
+    // Container styles
+    container: tournamentHighlightsStyles.container,
+
+    // Header styles
+    header: tournamentHighlightsStyles.header,
+    headerTitle: tournamentHighlightsStyles.headerTitle,
+    headerSubtitle: tournamentHighlightsStyles.headerSubtitle(theme),
+
+    // Feed styles
+    feedContainer: tournamentHighlightsStyles.feedContainer(theme),
+    feedItem: tournamentHighlightsStyles.feedItem(theme),
+    divider: tournamentHighlightsStyles.divider(theme),
+
+    // Content styles
+    itemHeader: tournamentHighlightsStyles.itemHeader,
+    playerName: tournamentHighlightsStyles.playerName,
+    getTypeChip: (color: string) =>
+      tournamentHighlightsStyles.getTypeChip(color, theme),
+    contentText: tournamentHighlightsStyles.contentText(theme),
+    highlightTitle: tournamentHighlightsStyles.highlightTitle,
+
+    // Media styles
+    mediaContainer: tournamentHighlightsStyles.mediaContainer(theme),
+
+    // Metadata styles
+    metadataContainer: tournamentHighlightsStyles.metadataContainer,
+    metadataText: tournamentHighlightsStyles.metadataText(theme),
+
+    // Avatar styles
+    getAvatarStyle: (type: string, color: string) =>
+      tournamentHighlightsStyles.getAvatarStyle(type, color, theme),
+
+    // Empty state styles
+    emptyState: tournamentHighlightsStyles.emptyState(theme),
+    emptyStateIcon: tournamentHighlightsStyles.emptyStateIcon(theme),
+    emptyStateTitle: tournamentHighlightsStyles.emptyStateTitle,
+    emptyStateText: tournamentHighlightsStyles.emptyStateText(theme),
+
+    // Form dialog styles
+    formDialog: {
+      paper: tournamentHighlightsStyles.formDialog.paper(theme),
+      title: tournamentHighlightsStyles.formDialog.title,
+      content: tournamentHighlightsStyles.formDialog.content,
+      actions: tournamentHighlightsStyles.formDialog.actions(theme),
+    },
+
+    // Upload area styles
+    uploadBox: tournamentHighlightsStyles.uploadBox(theme),
+    uploadIcon: tournamentHighlightsStyles.uploadIcon,
+    uploadTitle: tournamentHighlightsStyles.uploadTitle,
+    uploadSubtext: tournamentHighlightsStyles.uploadSubtext(theme),
+    uploadError: tournamentHighlightsStyles.uploadError,
+
+    // Preview styles
+    previewContainer: tournamentHighlightsStyles.previewContainer(theme),
+    removeButton: tournamentHighlightsStyles.removeButton(theme),
+
+    // Video placeholder styles
+    videoPlaceholder: tournamentHighlightsStyles.videoPlaceholder,
+    videoIcon: tournamentHighlightsStyles.videoIcon(theme),
+    videoText: tournamentHighlightsStyles.videoText(theme),
+
+    // Form field styles
+    formField: tournamentHighlightsStyles.formField(theme),
+
+    // Helper function to get the appropriate color for item types
+    getItemTypeColor: (type: string, mediaType?: string) => {
+      if (type === "highlight") {
+        return mediaType === "image"
+          ? theme.palette.info
+          : theme.palette.secondary;
+      } else {
+        // ShoutOut coloring
+        switch (type) {
+          case "birdie":
+            return theme.palette.success;
+          case "eagle":
+            return theme.palette.warning;
+          case "hole-in-one":
+            return theme.palette.error;
+          default:
+            return theme.palette.primary;
+        }
+      }
+    },
   };
 };

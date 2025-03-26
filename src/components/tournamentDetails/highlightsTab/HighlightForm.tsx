@@ -13,48 +13,13 @@ import {
   Box,
   Typography,
   IconButton,
-  alpha,
-  styled,
 } from "@mui/material";
 import {
   CloudUpload as UploadIcon,
   Clear as ClearIcon,
 } from "@mui/icons-material";
 import { HighlightFormData, Tournament } from "../../../types/event";
-
-const UploadBox = styled(Box)(({ theme }) => ({
-  border: `2px dashed ${alpha(theme.palette.primary.main, 0.5)}`,
-  borderRadius: theme.shape.borderRadius,
-  padding: theme.spacing(3),
-  textAlign: "center",
-  cursor: "pointer",
-  marginBottom: theme.spacing(2),
-  transition: "all 0.2s ease-in-out",
-  "&:hover": {
-    borderColor: theme.palette.primary.main,
-    backgroundColor: alpha(theme.palette.primary.main, 0.05),
-  },
-}));
-
-const PreviewContainer = styled(Box)(({ theme }) => ({
-  position: "relative",
-  marginTop: theme.spacing(2),
-  marginBottom: theme.spacing(2),
-  borderRadius: theme.shape.borderRadius,
-  overflow: "hidden",
-  maxWidth: "100%",
-  backgroundColor: alpha(theme.palette.common.black, 0.04),
-}));
-
-const RemoveButton = styled(IconButton)(({ theme }) => ({
-  position: "absolute",
-  top: 8,
-  right: 8,
-  backgroundColor: alpha(theme.palette.common.white, 0.7),
-  "&:hover": {
-    backgroundColor: theme.palette.common.white,
-  },
-}));
+import { useTournamentHighlightsStyles } from "../../../theme/hooks";
 
 interface HighlightFormProps {
   open: boolean;
@@ -69,6 +34,8 @@ const HighlightForm: React.FC<HighlightFormProps> = ({
   onSubmit,
   tournament,
 }) => {
+  const styles = useTournamentHighlightsStyles();
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [mediaFile, setMediaFile] = useState<File | null>(null);
@@ -171,7 +138,7 @@ const HighlightForm: React.FC<HighlightFormProps> = ({
     if (!previewUrl) return null;
 
     return (
-      <PreviewContainer>
+      <Box sx={styles.previewContainer}>
         {mediaType === "image" ? (
           <img
             src={previewUrl}
@@ -195,21 +162,28 @@ const HighlightForm: React.FC<HighlightFormProps> = ({
             }}
           />
         )}
-        <RemoveButton
+        <IconButton
           size="small"
           onClick={handleRemoveFile}
           aria-label="Remove file"
+          sx={styles.removeButton}
         >
           <ClearIcon fontSize="small" />
-        </RemoveButton>
-      </PreviewContainer>
+        </IconButton>
+      </Box>
     );
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Share a Highlight</DialogTitle>
-      <DialogContent>
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      maxWidth="sm"
+      fullWidth
+      PaperProps={{ sx: styles.formDialog.paper }}
+    >
+      <DialogTitle sx={styles.formDialog.title}>Share a Highlight</DialogTitle>
+      <DialogContent sx={styles.formDialog.content}>
         <Box sx={{ mt: 1 }}>
           <TextField
             margin="dense"
@@ -220,7 +194,7 @@ const HighlightForm: React.FC<HighlightFormProps> = ({
             onChange={(e) => setTitle(e.target.value)}
             error={formErrors.title}
             helperText={formErrors.title ? "Title is required" : ""}
-            sx={{ mb: 2 }}
+            sx={styles.formField}
           />
 
           <TextField
@@ -231,12 +205,11 @@ const HighlightForm: React.FC<HighlightFormProps> = ({
             rows={3}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            sx={{ mb: 2 }}
+            sx={styles.formField}
           />
 
-          {/* File upload section */}
           {!mediaFile ? (
-            <UploadBox onClick={handleFileInputClick}>
+            <Box sx={styles.uploadBox} onClick={handleFileInputClick}>
               <input
                 type="file"
                 accept="image/*,video/*"
@@ -244,28 +217,32 @@ const HighlightForm: React.FC<HighlightFormProps> = ({
                 ref={fileInputRef}
                 onChange={handleFileChange}
               />
-              <UploadIcon sx={{ fontSize: 40, color: "primary.main", mb: 1 }} />
-              <Typography variant="subtitle1" gutterBottom>
+              <UploadIcon sx={styles.uploadIcon} />
+              <Typography
+                variant="subtitle1"
+                sx={styles.uploadTitle}
+                gutterBottom
+              >
                 Click to upload a photo or video
               </Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" sx={styles.uploadSubtext}>
                 Supports JPG, PNG, GIF, MP4, MOV, and other common formats
               </Typography>
               {formErrors.media && (
                 <Typography
                   color="error"
                   variant="caption"
-                  sx={{ display: "block", mt: 1 }}
+                  sx={styles.uploadError}
                 >
                   Please upload a valid image or video file
                 </Typography>
               )}
-            </UploadBox>
+            </Box>
           ) : (
             renderPreview()
           )}
 
-          <FormControl fullWidth>
+          <FormControl fullWidth sx={styles.formField}>
             <InputLabel>Round</InputLabel>
             <Select
               value={selectedRound}
@@ -284,8 +261,10 @@ const HighlightForm: React.FC<HighlightFormProps> = ({
           </FormControl>
         </Box>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose}>Cancel</Button>
+      <DialogActions sx={styles.formDialog.actions}>
+        <Button onClick={handleClose} variant="outlined" color="inherit">
+          Cancel
+        </Button>
         <Button onClick={handleSubmit} variant="contained" color="primary">
           Share
         </Button>

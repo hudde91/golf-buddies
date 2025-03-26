@@ -20,7 +20,6 @@ export const getStatusColor = (status: string, theme: Theme) => {
 
 // Tournament-specific styling patterns
 export const tournamentStyles = {
-  // Base tournament card styling
   tournamentCard: (theme: Theme) => ({
     height: "100%",
     display: "flex",
@@ -36,7 +35,6 @@ export const tournamentStyles = {
     },
   }),
 
-  // Tournament card with media (image)
   tournamentCardMedia: {
     height: 140,
     backgroundImage:
@@ -55,7 +53,6 @@ export const tournamentStyles = {
     },
   },
 
-  // Status chip
   statusChip: (color: string, theme: Theme) => ({
     display: "inline-block",
     backgroundColor: alpha(color, 0.2),
@@ -67,13 +64,11 @@ export const tournamentStyles = {
     py: 0.5,
   }),
 
-  // Card divider
   tournamentDivider: (theme: Theme) => ({
     my: 1.5,
     borderColor: alpha(theme.palette.common.white, 0.1),
   }),
 
-  // Info item with icon
   infoItem: (theme: Theme) => ({
     display: "flex",
     alignItems: "center",
@@ -88,7 +83,6 @@ export const tournamentStyles = {
     },
   }),
 
-  // Leaderboard row
   leaderboardRow: (
     theme: Theme,
     position: number,
@@ -109,7 +103,6 @@ export const tournamentStyles = {
     },
   }),
 
-  // Medal position styling
   getPositionColor: (position: number, theme: Theme) => {
     if (position === 1) return theme.palette.warning.main;
     if (position === 2) return theme.palette.grey[400];
@@ -117,7 +110,6 @@ export const tournamentStyles = {
     return theme.palette.common.white;
   },
 
-  // Loading state
   loadingState: {
     background: colors.backgrounds.dark,
     minHeight: "calc(100vh - 64px)",
@@ -128,7 +120,6 @@ export const tournamentStyles = {
     p: 3,
   },
 
-  // Empty state
   emptyState: (theme: Theme) => ({
     textAlign: "center",
     py: 6,
@@ -137,14 +128,12 @@ export const tournamentStyles = {
     border: `1px dashed ${alpha(theme.palette.common.white, 0.2)}`,
   }),
 
-  // Empty state icon
   emptyStateIcon: (theme: Theme) => ({
     fontSize: 60,
     color: alpha(theme.palette.common.white, 0.3),
     mb: 2,
   }),
 
-  // Form styles
   formStyles: {
     inputProps: (theme: Theme) => ({
       style: { color: "white" },
@@ -166,7 +155,6 @@ export const tournamentStyles = {
     }),
   },
 
-  // Dialog styles
   dialogStyles: {
     title: (theme: Theme) => ({
       color: "white",
@@ -185,7 +173,6 @@ export const tournamentStyles = {
     }),
   },
 
-  // Typography variants
   typography: {
     title: (theme: Theme) => ({
       fontWeight: "bold",
@@ -217,7 +204,6 @@ export const tournamentStyles = {
 
 // Tournament leaderboard-specific styling patterns
 export const tournamentLeaderboardStyles = {
-  // Empty state styles
   emptyState: (theme: Theme) => ({
     textAlign: "center",
     py: 6,
@@ -226,14 +212,12 @@ export const tournamentLeaderboardStyles = {
     border: `1px dashed ${alpha(theme.palette.common.white, 0.2)}`,
   }),
 
-  // Empty state icon
   emptyStateIcon: (theme: Theme) => ({
     fontSize: 60,
     color: alpha(theme.palette.common.white, 0.3),
     mb: 2,
   }),
 
-  // Table container styling
   tableContainer: (theme: Theme) => ({
     overflowX: "auto",
     bgcolor: "transparent",
@@ -242,7 +226,6 @@ export const tournamentLeaderboardStyles = {
     boxShadow: `0 4px 8px ${alpha(theme.palette.common.black, 0.3)}`,
   }),
 
-  // Table cell styling - header cells
   headerCell: (theme: Theme) => ({
     fontWeight: "bold",
     color: alpha(theme.palette.common.white, 0.9),
@@ -250,7 +233,6 @@ export const tournamentLeaderboardStyles = {
     bgcolor: alpha(theme.palette.common.black, 0.4),
   }),
 
-  // Position header cell (narrower)
   positionHeaderCell: (theme: Theme) => ({
     fontWeight: "bold",
     width: 50,
@@ -259,20 +241,17 @@ export const tournamentLeaderboardStyles = {
     bgcolor: alpha(theme.palette.common.black, 0.4),
   }),
 
-  // Standard data cell
   dataCell: (theme: Theme) => ({
     borderBottomColor: alpha(theme.palette.common.white, 0.1),
     color: alpha(theme.palette.common.white, 0.9),
   }),
 
-  // Centered data cell
   centeredDataCell: (theme: Theme) => ({
     borderBottomColor: alpha(theme.palette.common.white, 0.1),
     color: alpha(theme.palette.common.white, 0.9),
     textAlign: "center",
   }),
 
-  // Alternating row styling
   tableRow: (theme: Theme, index: number) => ({
     bgcolor:
       index % 2 === 0 ? alpha(theme.palette.common.black, 0.1) : "transparent",
@@ -281,14 +260,12 @@ export const tournamentLeaderboardStyles = {
     },
   }),
 
-  // Winner chip
   winnerChip: {
     ml: 1,
     height: 20,
     fontSize: "0.6rem",
   },
 
-  // Captain chip
   captainChip: (theme: Theme) => ({
     ml: 1,
     height: 20,
@@ -298,14 +275,12 @@ export const tournamentLeaderboardStyles = {
     border: `1px solid ${alpha(theme.palette.success.light, 0.3)}`,
   }),
 
-  // Team chip
   teamChip: (teamColor: string, theme: Theme) => ({
     bgcolor: alpha(teamColor, 0.2),
     color: teamColor,
     border: `1px solid ${alpha(teamColor, 0.5)}`,
   }),
 
-  // Avatar styling
   playerAvatar: (theme: Theme, teamColor?: string) => ({
     width: 24,
     height: 24,
@@ -322,7 +297,6 @@ export const tournamentLeaderboardStyles = {
     bgcolor: teamColor,
   }),
 
-  // Info text for mobile view
   mobileInfoText: (theme: Theme) => ({
     display: "block",
     textAlign: "center",
@@ -330,7 +304,6 @@ export const tournamentLeaderboardStyles = {
     color: alpha(theme.palette.common.white, 0.7),
   }),
 
-  // Divider
   leaderboardDivider: (theme: Theme) => ({
     mb: 4,
     bgcolor: alpha(theme.palette.common.white, 0.1),
@@ -343,7 +316,6 @@ export const tournamentLeaderboardStyles = {
     return alpha(theme.palette.common.white, 0.9);
   },
 
-  // Typography variants
   typography: {
     title: {
       color: "white",
@@ -525,7 +497,6 @@ export const tournamentPlayerStyles = {
 
 // Scorecard-specific styling patterns
 export const tournamentScorecardStyles = {
-  // Header styling
   scorecardHeader: {
     container: {
       display: "flex",
@@ -561,7 +532,6 @@ export const tournamentScorecardStyles = {
     },
   },
 
-  // Weather display styling
   weatherDisplay: {
     container: (theme: Theme) => ({
       display: "flex",
@@ -596,7 +566,6 @@ export const tournamentScorecardStyles = {
     },
   },
 
-  // Scorecard section styling
   scorecardSection: {
     container: {
       mb: 4,
@@ -615,7 +584,6 @@ export const tournamentScorecardStyles = {
     }),
   },
 
-  // Table header cell styles
   tableHeaderCell: (theme: Theme) => ({
     fontWeight: "bold",
     color: alpha(theme.palette.common.white, 0.9),
@@ -623,7 +591,6 @@ export const tournamentScorecardStyles = {
     bgcolor: alpha(theme.palette.common.black, 0.4),
   }),
 
-  // Par row styling
   parRow: {
     cell: (theme: Theme) => ({
       bgcolor: alpha(theme.palette.common.black, 0.2),
@@ -636,7 +603,6 @@ export const tournamentScorecardStyles = {
     }),
   },
 
-  // Player score row styling
   playerScoreRow: {
     container: (theme: Theme, playerIndex: number) => ({
       bgcolor:
@@ -673,7 +639,6 @@ export const tournamentScorecardStyles = {
     },
   },
 
-  // Score cell styling
   scoreCell: {
     container: (theme: Theme, scoreClass?: string) => ({
       display: "flex",
@@ -757,7 +722,6 @@ export const tournamentScorecardStyles = {
     },
   },
 
-  // Round tabs styling
   roundsTab: {
     header: {
       display: "flex",
@@ -1185,4 +1149,242 @@ export const tournamentTeamStyles = {
     borderRadius: "50%",
     mr: 1,
   },
+};
+
+// Highlights and ShoutOuts specific styling patterns
+export const tournamentHighlightsStyles = {
+  // Container and header styles
+  container: {
+    py: 3,
+  },
+
+  header: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: { xs: "flex-start", sm: "center" },
+    mb: 3,
+    flexDirection: { xs: "column", sm: "row" },
+    gap: 2,
+  },
+
+  headerTitle: {
+    color: "white",
+    fontWeight: 500,
+  },
+
+  headerSubtitle: (theme: Theme) => ({
+    color: alpha(theme.palette.common.white, 0.7),
+    mt: 0.5,
+  }),
+
+  feedContainer: (theme: Theme) => ({
+    bgcolor: alpha(theme.palette.common.black, 0.2),
+    border: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
+    borderRadius: 2,
+    overflow: "hidden",
+  }),
+
+  feedItem: (theme: Theme) => ({
+    py: 2,
+    "&:hover": {
+      bgcolor: alpha(theme.palette.common.black, 0.3),
+    },
+  }),
+
+  divider: (theme: Theme) => ({
+    bgcolor: alpha(theme.palette.common.white, 0.1),
+  }),
+
+  itemHeader: {
+    display: "flex",
+    alignItems: "center",
+    flexWrap: "wrap",
+  },
+
+  playerName: {
+    color: "white",
+    fontWeight: 600,
+    mr: 1,
+  },
+
+  getTypeChip: (color: string, theme: Theme) => ({
+    bgcolor: alpha(color, 0.15),
+    color: color,
+    fontWeight: 600,
+    mr: 1,
+  }),
+
+  contentText: (theme: Theme) => ({
+    color: alpha(theme.palette.common.white, 0.7),
+    my: 0.5,
+  }),
+
+  highlightTitle: {
+    color: "white",
+    fontWeight: 500,
+    my: 0.5,
+  },
+
+  mediaContainer: (theme: Theme) => ({
+    mt: 1,
+    mb: 2,
+    width: "100%",
+    maxHeight: 240,
+    overflow: "hidden",
+    borderRadius: 1,
+    bgcolor: alpha(theme.palette.common.black, 0.3),
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  }),
+
+  metadataContainer: {
+    display: "flex",
+    alignItems: "center",
+    flexWrap: "wrap",
+    mt: 1,
+  },
+
+  metadataText: (theme: Theme) => ({
+    color: alpha(theme.palette.common.white, 0.5),
+    mr: 2,
+  }),
+
+  getAvatarStyle: (type: string, color: string, theme: Theme) => ({
+    bgcolor: type === "highlight" ? alpha(color, 0.8) : color,
+  }),
+
+  // Empty state
+  emptyState: (theme: Theme) => ({
+    p: 3,
+    bgcolor: alpha(theme.palette.common.black, 0.2),
+    border: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
+    borderRadius: 2,
+    textAlign: "center",
+  }),
+
+  emptyStateIcon: (theme: Theme) => ({
+    fontSize: 48,
+    color: alpha(theme.palette.common.white, 0.5),
+    mb: 2,
+  }),
+
+  emptyStateTitle: {
+    color: "white",
+    mb: 1,
+  },
+
+  emptyStateText: (theme: Theme) => ({
+    color: alpha(theme.palette.common.white, 0.7),
+  }),
+
+  formDialog: {
+    paper: (theme: Theme) => ({
+      bgcolor: alpha(theme.palette.common.black, 0.9),
+      backgroundImage: "none",
+      border: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
+      borderRadius: 2,
+    }),
+    title: {
+      color: "white",
+    },
+    content: {
+      py: 1,
+    },
+    actions: (theme: Theme) => ({
+      borderTop: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
+      px: 3,
+      py: 2,
+    }),
+  },
+
+  uploadBox: (theme: Theme) => ({
+    border: `2px dashed ${alpha(theme.palette.primary.main, 0.5)}`,
+    borderRadius: theme.shape.borderRadius,
+    padding: theme.spacing(3),
+    textAlign: "center",
+    cursor: "pointer",
+    marginBottom: theme.spacing(2),
+    transition: "all 0.2s ease-in-out",
+    "&:hover": {
+      borderColor: theme.palette.primary.main,
+      backgroundColor: alpha(theme.palette.primary.main, 0.05),
+    },
+  }),
+
+  uploadIcon: {
+    fontSize: 40,
+    color: "primary.main",
+    mb: 1,
+  },
+
+  uploadTitle: {
+    color: "white",
+  },
+
+  uploadSubtext: (theme: Theme) => ({
+    color: alpha(theme.palette.common.white, 0.7),
+  }),
+
+  uploadError: {
+    color: "error.main",
+    display: "block",
+    mt: 1,
+  },
+
+  previewContainer: (theme: Theme) => ({
+    position: "relative",
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+    borderRadius: theme.shape.borderRadius,
+    overflow: "hidden",
+    maxWidth: "100%",
+    backgroundColor: alpha(theme.palette.common.black, 0.04),
+  }),
+
+  removeButton: (theme: Theme) => ({
+    position: "absolute",
+    top: 8,
+    right: 8,
+    backgroundColor: alpha(theme.palette.common.white, 0.7),
+    "&:hover": {
+      backgroundColor: theme.palette.common.white,
+    },
+  }),
+
+  videoPlaceholder: {
+    p: 4,
+    textAlign: "center",
+  },
+
+  videoIcon: (theme: Theme) => ({
+    fontSize: 48,
+    color: theme.palette.secondary.main,
+  }),
+
+  videoText: (theme: Theme) => ({
+    display: "block",
+    color: alpha(theme.palette.common.white, 0.5),
+  }),
+
+  formField: (theme: Theme) => ({
+    mb: 2,
+    input: {
+      color: "white",
+    },
+    "& .MuiOutlinedInput-root": {
+      "& fieldset": {
+        borderColor: alpha(theme.palette.common.white, 0.3),
+      },
+      "&:hover fieldset": {
+        borderColor: alpha(theme.palette.common.white, 0.5),
+      },
+      "&.Mui-focused fieldset": {
+        borderColor: theme.palette.primary.main,
+      },
+    },
+    "& .MuiInputLabel-root": {
+      color: alpha(theme.palette.common.white, 0.7),
+    },
+  }),
 };
