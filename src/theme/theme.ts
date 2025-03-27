@@ -1,4 +1,3 @@
-// src/theme/theme.ts
 import { createTheme, alpha } from "@mui/material/styles";
 import { Theme } from "@mui/material";
 
@@ -46,12 +45,10 @@ export const colors = {
     subtle: "rgba(255,255,255,0.7)",
     muted: "rgba(255,255,255,0.5)",
   },
-  // For direct color access
   white: "#ffffff",
   black: "#000000",
 };
 
-// Define spacings
 export const spacing = {
   xs: 1,
   sm: 2,
@@ -60,7 +57,6 @@ export const spacing = {
   xl: 6,
 };
 
-// Helper functions for common styling patterns
 export const styleHelpers = {
   glassBox: (theme: Theme) => ({
     backgroundColor: alpha(theme.palette.common.black, 0.3),

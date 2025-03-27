@@ -17,7 +17,6 @@ import {
   Thermostat as TempIcon,
   Opacity,
 } from "@mui/icons-material";
-import { formatTemperature } from "./scorecardUtils";
 import { Weather } from "../../../services/weatherService";
 import { useTournamentScorecardStyles } from "../../../theme/hooks";
 
@@ -34,7 +33,6 @@ const WeatherDisplay: React.FC<WeatherDisplayProps> = ({
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const styles = useTournamentScorecardStyles();
 
-  // Get weather icon component based on condition
   const getWeatherIcon = () => {
     switch (weather.icon) {
       case "sunny":
@@ -90,7 +88,7 @@ const WeatherDisplay: React.FC<WeatherDisplayProps> = ({
           <Tooltip title="Temperature">
             <Chip
               icon={<TempIcon />}
-              label={formatTemperature(weather.temperature)}
+              label={`${weather.temperature}°C`}
               size={isMobile ? "small" : "medium"}
               sx={{
                 bgcolor: `rgba(${theme.palette.warning.main}, 0.1)`,

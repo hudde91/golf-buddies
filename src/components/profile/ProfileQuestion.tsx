@@ -1,4 +1,3 @@
-// src/components/profile/ProfileQuestion.tsx
 import React from "react";
 import { Box, Typography, Divider, alpha, useTheme } from "@mui/material";
 import { useProfileStyles } from "../../theme/hooks";

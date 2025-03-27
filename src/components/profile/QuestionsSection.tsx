@@ -1,4 +1,3 @@
-// src/components/profile/QuestionsSection.tsx
 import React from "react";
 import { Box, Typography, Button } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
@@ -116,7 +115,6 @@ const QuestionsSection: React.FC<QuestionsSectionProps> = ({
     );
   }
 
-  // Only render the view section if at least one question has an answer
   if (!(question1 || question2 || question3 || question4)) {
     return null;
   }

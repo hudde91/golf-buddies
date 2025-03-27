@@ -111,18 +111,12 @@ export const getHoleSections = (
   return [{ label: "Holes", holes: holes }];
 };
 
-// Get score relative to par for visual indicators
 export const getScoreClass = (score?: number, par?: number): string => {
   if (score === undefined || par === undefined) return "";
 
-  if (score < par - 1) return "eagle"; // Eagle or better
-  if (score === par - 1) return "birdie"; // Birdie
-  if (score === par) return "par"; // Par
-  if (score === par + 1) return "bogey"; // Bogey
-  return "double-bogey"; // Double bogey or worse
-};
-
-// Format temperature in Celsius only
-export const formatTemperature = (celsius: number) => {
-  return `${celsius}°C`;
+  if (score < par - 1) return "eagle";
+  if (score === par - 1) return "birdie";
+  if (score === par) return "par";
+  if (score === par + 1) return "bogey";
+  return "double-bogey";
 };

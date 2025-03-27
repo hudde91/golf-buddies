@@ -15,7 +15,6 @@ const ProfileInfoItem: React.FC<ProfileInfoItemProps> = ({
   value,
   color,
 }) => {
-  // Use the new custom hook
   const styles = useTournamentPlayerStyles();
 
   return (

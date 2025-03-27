@@ -17,7 +17,6 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
   onClick,
   renderPlayerExtra,
 }) => {
-  // Use the new custom hook
   const styles = useTournamentPlayerStyles();
 
   const playerTeam = tournament.teams.find((t) => t.id === player.teamId);

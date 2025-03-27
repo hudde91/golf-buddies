@@ -48,7 +48,6 @@ const TourDetails: React.FC = () => {
         setTour(fetchedEvent.data as Tour);
         setIsCreator(fetchedEvent.data.createdBy === user.id);
 
-        // Get tour leaderboard
         const tourLeaderboard = eventService.getTourLeaderboard(id);
         setLeaderboard(tourLeaderboard);
       } else {

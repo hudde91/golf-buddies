@@ -1,4 +1,3 @@
-// components/tour/tabs/TournamentCard.tsx
 import React from "react";
 import { format } from "date-fns";
 import {
@@ -7,9 +6,7 @@ import {
   People as PeopleIcon,
 } from "@mui/icons-material";
 import { Tournament } from "../../../types/event";
-import { getStatusColor } from "../../util";
 
-// Import our domain-specific components
 import {
   TournamentCard as TournamentCardComponent,
   TournamentInfoItem,

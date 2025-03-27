@@ -1,4 +1,3 @@
-// src/components/tournament/TournamentHeader.tsx
 import React from "react";
 import { Box, Typography, Button } from "@mui/material";
 import { Add as AddIcon } from "@mui/icons-material";

@@ -22,7 +22,6 @@ import { useTheme } from "@mui/material/styles";
 import BackgroundService from "../services/backgroundService";
 import SplashConfig from "../components/splashScreen/SplashConfig";
 
-// Import our theme components and hooks
 import {
   PageContainer,
   GlassPanel,
@@ -46,7 +45,6 @@ const Settings: React.FC = () => {
   const [splashText, setSplashText] = useState<string>("GolfTracks");
   const [tabValue, setTabValue] = useState(0);
 
-  // Background image settings
   const [backgroundImage, setBackgroundImage] = useState<string>("");
   const [customBackground, setCustomBackground] = useState<boolean>(false);
   const [uploadedBackground, setUploadedBackground] = useState<string | null>(
@@ -57,7 +55,6 @@ const Settings: React.FC = () => {
   const backgroundPresets = BackgroundService.getPresets();
 
   useEffect(() => {
-    // Load splash screen settings from local storage
     const savedImage = localStorage.getItem("splashImage");
     const savedText = localStorage.getItem("splashText");
 
@@ -69,7 +66,6 @@ const Settings: React.FC = () => {
       setSplashText(savedText);
     }
 
-    // Load background settings
     const bgSettings = BackgroundService.getBackgroundSettings();
     setCustomBackground(bgSettings.enabled);
     setBackgroundImage(bgSettings.image);
@@ -77,7 +73,6 @@ const Settings: React.FC = () => {
   }, []);
 
   const handleSplashConfigSave = (image: string, text: string) => {
-    // Save splash screen settings to local storage
     localStorage.setItem("splashImage", image);
     localStorage.setItem("splashText", text);
 
@@ -116,7 +111,6 @@ const Settings: React.FC = () => {
   ) => {
     setCustomBackground(event.target.checked);
 
-    // Save the setting
     BackgroundService.saveBackgroundSettings({
       enabled: event.target.checked,
       image: backgroundImage,

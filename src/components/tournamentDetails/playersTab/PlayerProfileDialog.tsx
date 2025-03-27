@@ -36,17 +36,14 @@ const PlayerProfileDialog: React.FC<PlayerProfileDialogProps> = ({
   tournament,
   onClose,
 }) => {
-  // Use the new custom hook
   const styles = useTournamentPlayerStyles();
 
   if (!player) return null;
 
-  // Find player's team if they have one
   const playerTeam = tournament.teams.find(
     (team) => player.teamId && team.id === player.teamId
   );
 
-  // Check if player is a captain
   const isCaptain = tournament.teams.some((team) => team.captain === player.id);
 
   return (

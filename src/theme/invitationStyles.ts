@@ -1,9 +1,6 @@
-// src/theme/invitationStyles.ts
 import { alpha, Theme } from "@mui/material";
 
-// Invitation-specific styling patterns
 export const invitationStyles = {
-  // Invitation card styling
   invitationCard: (theme: Theme) => ({
     backgroundColor: alpha(theme.palette.common.black, 0.4),
     backdropFilter: "blur(8px)",
@@ -13,7 +10,6 @@ export const invitationStyles = {
     overflow: "hidden",
   }),
 
-  // Icon container
   iconContainer: (theme: Theme) => ({
     bgcolor: theme.palette.primary.dark,
     color: "white",
@@ -26,13 +22,11 @@ export const invitationStyles = {
     mr: 2,
   }),
 
-  // Divider styling
   invitationDivider: (theme: Theme) => ({
     my: 1,
     backgroundColor: alpha(theme.palette.common.white, 0.1),
   }),
 
-  // Info item with icon
   infoItem: (theme: Theme) => ({
     display: "flex",
     alignItems: "center",
@@ -46,7 +40,6 @@ export const invitationStyles = {
     },
   }),
 
-  // Button styles
   invitationButtons: {
     accept: () => ({
       mr: 1,
@@ -62,7 +55,6 @@ export const invitationStyles = {
     }),
   },
 
-  // Empty state container
   emptyStateContainer: (theme: Theme) => ({
     textAlign: "center",
     py: 6,
@@ -71,14 +63,12 @@ export const invitationStyles = {
     border: `1px dashed ${alpha(theme.palette.common.white, 0.2)}`,
   }),
 
-  // Empty state icon
   emptyStateIcon: (theme: Theme) => ({
     fontSize: 60,
     color: alpha(theme.palette.common.white, 0.3),
     mb: 2,
   }),
 
-  // Typography variants for invitations
   typography: {
     title: {
       color: "white",

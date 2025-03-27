@@ -4,7 +4,6 @@ import { getScoreClass } from "./scorecardUtils";
 import { useTournamentScorecardStyles } from "../../../theme/hooks";
 
 interface ScoreCellProps {
-  playerId: string;
   holeIndex: number;
   score?: number;
   par?: number;
@@ -14,7 +13,6 @@ interface ScoreCellProps {
 }
 
 const ScoreCell: React.FC<ScoreCellProps> = ({
-  playerId,
   holeIndex,
   score,
   par,

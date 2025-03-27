@@ -1,4 +1,3 @@
-// TeamManagement.tsx
 import React, { useState } from "react";
 import {
   Box,
@@ -6,13 +5,11 @@ import {
   Button,
   Grid,
   useTheme,
-  alpha,
   useMediaQuery,
 } from "@mui/material";
-import { Add as AddIcon, GroupAdd as GroupAddIcon } from "@mui/icons-material";
+import { Add as AddIcon } from "@mui/icons-material";
 import { Team, Player, TeamFormData } from "../../../types/event";
 
-// Component imports
 import TeamCard from "./TeamCard";
 import UnassignedPlayersList from "./UnassignedPlayersList";
 import TeamFormDialog from "./TeamFormDialog";

@@ -1,8 +1,6 @@
-// src/components/player/index.tsx
 import React, { ReactNode } from "react";
 import { Box, Typography, Avatar, Chip, alpha, useTheme } from "@mui/material";
 
-// Player avatar with consistent styling
 export const PlayerAvatar: React.FC<{
   name: string;
   avatarUrl?: string;
@@ -32,7 +30,6 @@ export const PlayerAvatar: React.FC<{
   );
 };
 
-// Player detail row with consistent styling
 export const PlayerRow: React.FC<{
   player: {
     id: string;
@@ -139,7 +136,6 @@ export const PlayerRow: React.FC<{
   );
 };
 
-// Player statistics component
 export const PlayerStats: React.FC<{
   stats: {
     label: string;

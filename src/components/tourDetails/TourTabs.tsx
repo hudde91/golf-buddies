@@ -1,4 +1,3 @@
-// components/tour/TourTabs.tsx
 import { Box, Tabs, Tab } from "@mui/material";
 import { Tour } from "../../types/event";
 import TournamentsTab from "./TournamentsTab";

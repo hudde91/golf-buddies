@@ -1,4 +1,3 @@
-// components/tour/tabs/TournamentCard.tsx
 import React from "react";
 import {
   Card,
@@ -31,7 +30,7 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
   const styles = useTourStyles();
 
   return (
-    <Card sx={styles.tourCard}>
+    <Card sx={styles.tourCard} onClick={onViewTournament}>
       <CardContent sx={{ flex: 1 }}>
         <Box sx={{ mb: 1 }}>
           <Chip
@@ -86,7 +85,6 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
         <Button
           fullWidth
           variant="contained"
-          onClick={onViewTournament}
           sx={{
             mb: 1.5,
             mx: 1.5,

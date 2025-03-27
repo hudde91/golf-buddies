@@ -1,18 +1,11 @@
-// pages/Home.tsx
 import React from "react";
 import { Grid, Box, Typography, useTheme } from "@mui/material";
 import GolfCourseIcon from "@mui/icons-material/GolfCourse";
 import PeopleIcon from "@mui/icons-material/People";
 import AnalyticsIcon from "@mui/icons-material/Analytics";
 
-// Import common components
 import { PageContainer, PageHeader } from "../components/common";
-import {
-  GlassCard,
-  CardContent,
-  FlexBox,
-  SectionDivider,
-} from "../components/ui";
+import { GlassCard, CardContent, FlexBox } from "../components/ui";
 
 interface FeatureProps {
   icon: React.ReactNode;
@@ -21,8 +14,6 @@ interface FeatureProps {
 }
 
 const Home: React.FC = () => {
-  const theme = useTheme();
-
   return (
     <PageContainer>
       <Grid container spacing={4}>

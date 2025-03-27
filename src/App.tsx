@@ -32,7 +32,6 @@ import SplashScreen from "./components/splashScreen/SplashScreen";
 import BackgroundService from "./services/backgroundService";
 import { initializeEventUpdater } from "./services/utils/eventsUpdater";
 
-// Clerk public key
 const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || "";
 
 if (!clerkPubKey) {
@@ -74,7 +73,6 @@ const App: React.FC = () => {
   );
 
   useEffect(() => {
-    // Check localStorage for custom splash settings
     const savedImage = localStorage.getItem("splashImage");
     const savedText = localStorage.getItem("splashText");
 
@@ -86,7 +84,6 @@ const App: React.FC = () => {
       setSplashText(savedText);
     }
 
-    // Apply background settings
     BackgroundService.applyBackgroundSettings();
   }, []);
 
@@ -102,7 +99,6 @@ const App: React.FC = () => {
 
   return (
     <ClerkProvider publishableKey={clerkPubKey}>
-      {/* Use our custom theme provider instead of Material UI's ThemeProvider */}
       <AppThemeProvider>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           {showSplash && (
@@ -152,7 +148,6 @@ const App: React.FC = () => {
                         }
                       />
 
-                      {/* Route that determines whether to show TournamentDetails or TourDetails */}
                       <Route
                         path="/events/:id"
                         element={
@@ -162,7 +157,6 @@ const App: React.FC = () => {
                         }
                       />
 
-                      {/* Explicit route for Tournament Details */}
                       <Route
                         path="/tournaments/:id"
                         element={

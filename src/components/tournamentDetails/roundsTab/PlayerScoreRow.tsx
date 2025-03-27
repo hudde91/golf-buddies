@@ -83,7 +83,6 @@ const PlayerScoreRow: React.FC<PlayerScoreRowProps> = ({
             }}
           >
             <ScoreCell
-              playerId={player.id}
               holeIndex={holeIndex}
               score={holeScore?.score}
               par={holeScore?.par}

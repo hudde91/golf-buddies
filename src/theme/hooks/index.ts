@@ -681,20 +681,16 @@ export const useTournamentHighlightsStyles = () => {
   const theme = useTheme();
 
   return {
-    // Container styles
     container: tournamentHighlightsStyles.container,
 
-    // Header styles
     header: tournamentHighlightsStyles.header,
     headerTitle: tournamentHighlightsStyles.headerTitle,
     headerSubtitle: tournamentHighlightsStyles.headerSubtitle(theme),
 
-    // Feed styles
     feedContainer: tournamentHighlightsStyles.feedContainer(theme),
     feedItem: tournamentHighlightsStyles.feedItem(theme),
     divider: tournamentHighlightsStyles.divider(theme),
 
-    // Content styles
     itemHeader: tournamentHighlightsStyles.itemHeader,
     playerName: tournamentHighlightsStyles.playerName,
     getTypeChip: (color: string) =>
@@ -702,24 +698,19 @@ export const useTournamentHighlightsStyles = () => {
     contentText: tournamentHighlightsStyles.contentText(theme),
     highlightTitle: tournamentHighlightsStyles.highlightTitle,
 
-    // Media styles
     mediaContainer: tournamentHighlightsStyles.mediaContainer(theme),
 
-    // Metadata styles
     metadataContainer: tournamentHighlightsStyles.metadataContainer,
     metadataText: tournamentHighlightsStyles.metadataText(theme),
 
-    // Avatar styles
     getAvatarStyle: (type: string, color: string) =>
       tournamentHighlightsStyles.getAvatarStyle(type, color, theme),
 
-    // Empty state styles
     emptyState: tournamentHighlightsStyles.emptyState(theme),
     emptyStateIcon: tournamentHighlightsStyles.emptyStateIcon(theme),
     emptyStateTitle: tournamentHighlightsStyles.emptyStateTitle,
     emptyStateText: tournamentHighlightsStyles.emptyStateText(theme),
 
-    // Form dialog styles
     formDialog: {
       paper: tournamentHighlightsStyles.formDialog.paper(theme),
       title: tournamentHighlightsStyles.formDialog.title,
@@ -727,33 +718,27 @@ export const useTournamentHighlightsStyles = () => {
       actions: tournamentHighlightsStyles.formDialog.actions(theme),
     },
 
-    // Upload area styles
     uploadBox: tournamentHighlightsStyles.uploadBox(theme),
     uploadIcon: tournamentHighlightsStyles.uploadIcon,
     uploadTitle: tournamentHighlightsStyles.uploadTitle,
     uploadSubtext: tournamentHighlightsStyles.uploadSubtext(theme),
     uploadError: tournamentHighlightsStyles.uploadError,
 
-    // Preview styles
     previewContainer: tournamentHighlightsStyles.previewContainer(theme),
     removeButton: tournamentHighlightsStyles.removeButton(theme),
 
-    // Video placeholder styles
     videoPlaceholder: tournamentHighlightsStyles.videoPlaceholder,
     videoIcon: tournamentHighlightsStyles.videoIcon(theme),
     videoText: tournamentHighlightsStyles.videoText(theme),
 
-    // Form field styles
     formField: tournamentHighlightsStyles.formField(theme),
 
-    // Helper function to get the appropriate color for item types
     getItemTypeColor: (type: string, mediaType?: string) => {
       if (type === "highlight") {
         return mediaType === "image"
           ? theme.palette.info
           : theme.palette.secondary;
       } else {
-        // ShoutOut coloring
         switch (type) {
           case "birdie":
             return theme.palette.success;

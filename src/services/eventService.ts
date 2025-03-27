@@ -44,7 +44,6 @@ export const teamColors = [
   "#d32f2f", // Deep red
 ];
 
-// Helper functions
 const getEventStatus = (
   startDate: string,
   endDate: string
@@ -103,7 +102,6 @@ const findTournamentInEvents = (
   return null;
 };
 
-// Function to update a tournament in the events array
 const updateTournamentInEvents = (
   events: Event[],
   tournamentId: string,
@@ -1162,7 +1160,6 @@ const eventService = {
     return null;
   },
 
-  // Decline invitation
   declineInvitation: (eventId: string, userEmail: string): boolean => {
     const events = eventService.getAllEvents();
     const event = events.find((e) => e.id === eventId);
@@ -1176,7 +1173,6 @@ const eventService = {
         // Check if the invitation exists
         if (!tournament.invitations.includes(userEmail)) return false;
 
-        // Remove from invitations
         const updatedTournament = {
           ...tournament,
           invitations: tournament.invitations.filter(
@@ -1184,7 +1180,6 @@ const eventService = {
           ),
         };
 
-        // Update the tournament in the events array
         const updatedEvents = updateTournamentInEvents(
           events,
           eventId,
@@ -1202,10 +1197,8 @@ const eventService = {
       // Declining invitation to a standalone tournament
       const tournament = event.data as Tournament;
 
-      // Check if the invitation exists
       if (!tournament.invitations.includes(userEmail)) return false;
 
-      // Remove from invitations
       const updatedTournament = {
         ...tournament,
         invitations: tournament.invitations.filter(
@@ -1264,7 +1257,6 @@ const eventService = {
     return false;
   },
 
-  // Add team to event
   addTeam: (
     tournamentId: string,
     teamData: TeamFormData
@@ -1300,7 +1292,6 @@ const eventService = {
     return updatedTournament;
   },
 
-  // Update team details
   updateTeam: (
     tournamentId: string,
     teamId: string,
@@ -1313,12 +1304,10 @@ const eventService = {
 
     const { tournament } = result;
 
-    // Update the team
     const updatedTeams = tournament.teams.map((team) =>
       team.id === teamId ? { ...team, ...teamData } : team
     );
 
-    // Update the tournament
     const updatedTournament = {
       ...tournament,
       teams: updatedTeams,
@@ -1334,7 +1323,6 @@ const eventService = {
     return updatedTournament;
   },
 
-  // Delete a team
   deleteTeam: (tournamentId: string, teamId: string): Tournament | null => {
     const events = eventService.getAllEvents();
     const result = findTournamentInEvents(events, tournamentId);
@@ -1343,7 +1331,6 @@ const eventService = {
 
     const { tournament } = result;
 
-    // Remove the team
     const updatedTeams = tournament.teams.filter((team) => team.id !== teamId);
 
     // Remove team association from players
@@ -1351,7 +1338,6 @@ const eventService = {
       player.teamId === teamId ? { ...player, teamId: undefined } : player
     );
 
-    // Update the tournament
     const updatedTournament = {
       ...tournament,
       teams: updatedTeams,
@@ -1368,7 +1354,6 @@ const eventService = {
     return updatedTournament;
   },
 
-  // Assign player to a team
   assignPlayerToTeam: (
     tournamentId: string,
     playerId: string,
@@ -1381,12 +1366,10 @@ const eventService = {
 
     const { tournament } = result;
 
-    // Update player's team assignment
     const updatedPlayers = tournament.players.map((player) =>
       player.id === playerId ? { ...player, teamId } : player
     );
 
-    // Update the tournament
     const updatedTournament = {
       ...tournament,
       players: updatedPlayers,
@@ -1402,7 +1385,6 @@ const eventService = {
     return updatedTournament;
   },
 
-  // Calculate tournament leaderboard
   getTournamentLeaderboard: (
     tournamentId: string
   ): {
@@ -1517,7 +1499,6 @@ const eventService = {
       });
     });
 
-    // Convert to array and sort by total points
     return Object.entries(playerResults)
       .map(([playerId, data]) => ({
         playerId,
@@ -1607,7 +1588,6 @@ const eventService = {
 
     if (roundIndex === -1) return null;
 
-    // Get the round
     const round = tournament.rounds[roundIndex];
 
     // Create or update matchResults object
@@ -1632,14 +1612,12 @@ const eventService = {
       points: opponentPoints,
     };
 
-    // Update the round
     const updatedRounds = [...tournament.rounds];
     updatedRounds[roundIndex] = {
       ...round,
       matchResults,
     };
 
-    // Update the tournament
     const updatedTournament = {
       ...tournament,
       rounds: updatedRounds,

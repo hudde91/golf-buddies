@@ -1,8 +1,6 @@
-// src/theme/tournamentStyles.ts
 import { alpha, Theme } from "@mui/material";
-import { colors, styleHelpers } from "./theme";
+import { colors } from "./theme";
 
-// Function to get color based on tournament status
 export const getStatusColor = (status: string, theme: Theme) => {
   switch (status.toLowerCase()) {
     case "upcoming":
@@ -334,7 +332,6 @@ export const tournamentLeaderboardStyles = {
 
 // Player-specific styling patterns
 export const tournamentPlayerStyles = {
-  // Player card styling
   playerCard: (theme: Theme) => ({
     backgroundColor: alpha(theme.palette.common.black, 0.3),
     backdropFilter: "blur(10px)",
@@ -351,7 +348,6 @@ export const tournamentPlayerStyles = {
     },
   }),
 
-  // Player avatar styling
   playerAvatar: (theme: Theme, teamColor?: string) => ({
     width: 40,
     height: 40,
@@ -359,7 +355,6 @@ export const tournamentPlayerStyles = {
     border: `2px solid ${teamColor || alpha(theme.palette.common.white, 0.2)}`,
   }),
 
-  // Profile avatar (larger size for profile dialog)
   profileAvatar: (theme: Theme, teamColor?: string) => ({
     width: 80,
     height: 80,
@@ -367,7 +362,6 @@ export const tournamentPlayerStyles = {
     border: `3px solid ${teamColor || alpha(theme.palette.common.white, 0.2)}`,
   }),
 
-  // Chip styles for player indicators
   chips: {
     creator: {
       size: "small",
@@ -387,7 +381,6 @@ export const tournamentPlayerStyles = {
     }),
   },
 
-  // Info item with icon
   profileInfoItem: (theme: Theme) => ({
     display: "flex",
     alignItems: "flex-start",
@@ -395,7 +388,6 @@ export const tournamentPlayerStyles = {
     gap: 2,
   }),
 
-  // Info icon container
   infoIconContainer: (color: string, theme: Theme) => ({
     bgcolor: alpha(color, 0.1),
     color: color,
@@ -403,7 +395,6 @@ export const tournamentPlayerStyles = {
     height: 40,
   }),
 
-  // Dialog styling
   profileDialog: (theme: Theme) => ({
     backgroundColor: alpha(theme.palette.common.black, 0.8),
     backdropFilter: "blur(20px)",
@@ -411,14 +402,12 @@ export const tournamentPlayerStyles = {
     borderRadius: 2,
   }),
 
-  // Section divider
   profileDivider: (theme: Theme) => ({
     borderBottom: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
     pb: 3,
     mb: 3,
   }),
 
-  // Close button
   closeButton: (theme: Theme) => ({
     position: "absolute",
     right: 8,
@@ -426,12 +415,10 @@ export const tournamentPlayerStyles = {
     color: alpha(theme.palette.common.white, 0.7),
   }),
 
-  // Dialog actions
   dialogActions: (theme: Theme) => ({
     p: 2,
   }),
 
-  // Typography variants for players
   typography: {
     playerName: {
       color: "white",
@@ -462,7 +449,6 @@ export const tournamentPlayerStyles = {
     },
   },
 
-  // Button styles
   buttons: {
     close: (theme: Theme) => ({
       color: "white",
@@ -482,7 +468,6 @@ export const tournamentPlayerStyles = {
     }),
   },
 
-  // Layouts
   layouts: {
     tabHeader: {
       display: "flex",
@@ -840,7 +825,6 @@ export const tournamentScorecardStyles = {
 
 // Team-specific styling patterns
 export const tournamentTeamStyles = {
-  // Empty state placeholder
   emptyState: (theme: Theme) => ({
     textAlign: "center",
     py: 6,
@@ -1153,7 +1137,6 @@ export const tournamentTeamStyles = {
 
 // Highlights and ShoutOuts specific styling patterns
 export const tournamentHighlightsStyles = {
-  // Container and header styles
   container: {
     py: 3,
   },

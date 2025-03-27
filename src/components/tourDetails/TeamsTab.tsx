@@ -1,4 +1,3 @@
-// components/tour/tabs/TeamsTab.tsx
 import React from "react";
 import {
   Box,

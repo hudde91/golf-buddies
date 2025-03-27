@@ -1,12 +1,8 @@
-// src/services/achievementService.ts
 import eventService from "./eventService";
 import profileService from "./profileService";
-import { Tournament, Tour, Event } from "../types/event";
-import { Achievement } from "../types";
-import { v4 as uuidv4 } from "uuid";
+import { Tournament, Tour } from "../types/event";
 
 const achievementService = {
-  // Process completed tournaments and save achievements
   processCompletedTournament: (tournamentId: string): void => {
     const tournament = eventService.getTournamentById(tournamentId);
 
@@ -14,7 +10,6 @@ const achievementService = {
       return;
     }
 
-    // Get the leaderboard to determine winners
     const leaderboard = eventService.getTournamentLeaderboard(tournamentId);
 
     // Process top 3 positions (or however many players there are)

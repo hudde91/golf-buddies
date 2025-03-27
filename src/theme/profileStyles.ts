@@ -1,10 +1,7 @@
-// src/theme/profileStyles.ts
 import { alpha, Theme } from "@mui/material";
 import { colors, styleHelpers } from "./theme";
 
-// Profile-specific styling patterns that extend the main theme
 export const profileStyles = {
-  // Extend the glass panel for profile cards
   profileCard: (theme: Theme) => ({
     ...styleHelpers.glassBox(theme),
     p: { xs: 3, md: 4 },
@@ -12,7 +9,6 @@ export const profileStyles = {
     border: `2px solid ${alpha(theme.palette.common.white, 0.1)}`,
   }),
 
-  // Section title with primary color accent
   sectionTitle: (theme: Theme) => ({
     color: colors.text.primary,
     fontWeight: 600,
@@ -21,7 +17,6 @@ export const profileStyles = {
     mb: 2,
   }),
 
-  // Profile form field styling
   formField: (theme: Theme) => ({
     input: {
       color: colors.text.primary,
@@ -47,13 +42,11 @@ export const profileStyles = {
     },
   }),
 
-  // Avatar styling
   avatar: (theme: Theme) => ({
     border: `4px solid ${alpha(theme.palette.common.white, 0.2)}`,
     boxShadow: "0 8px 16px rgba(0,0,0,0.3)",
   }),
 
-  // Typography variants specific to profile
   typography: {
     profileHeading: (theme: Theme) => ({
       color: colors.text.primary,
@@ -78,7 +71,6 @@ export const profileStyles = {
     }),
   },
 
-  // Profile-specific buttons
   buttons: {
     editButton: (theme: Theme) => ({
       bgcolor: alpha(theme.palette.common.white, 0.1),
@@ -94,7 +86,6 @@ export const profileStyles = {
     }),
   },
 
-  // Achievement styling
   achievements: {
     container: (theme: Theme) => ({
       mb: 3,

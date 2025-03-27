@@ -94,7 +94,6 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
       [name]: value,
     }));
 
-    // Clear error when field is modified
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,

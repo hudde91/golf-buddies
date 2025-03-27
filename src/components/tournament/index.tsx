@@ -1,4 +1,3 @@
-// src/components/tournament/index.tsx
 import React, { ReactNode } from "react";
 import {
   Box,
@@ -11,7 +10,6 @@ import {
 import { PrimaryButton } from "../../components/common/index";
 import { useTournamentStyles } from "../../theme/hooks";
 
-// Status chip component for tournaments
 export const TournamentStatusChip: React.FC<{
   status: string;
   color?: string;
@@ -36,7 +34,6 @@ export const TournamentStatusChip: React.FC<{
   );
 };
 
-// Tournament card component
 export const TournamentCard: React.FC<{
   name: string;
   status: string;
@@ -89,7 +86,6 @@ export const TournamentCard: React.FC<{
   );
 };
 
-// Tournament info item with icon
 export const TournamentInfoItem: React.FC<{
   icon: ReactNode;
   text: string;
@@ -105,7 +101,6 @@ export const TournamentInfoItem: React.FC<{
   );
 };
 
-// Leaderboard row component
 export const LeaderboardRow: React.FC<{
   position: number;
   name: string;

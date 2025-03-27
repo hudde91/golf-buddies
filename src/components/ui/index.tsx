@@ -1,19 +1,14 @@
-// src/components/ui/index.tsx
 import React, { ReactNode } from "react";
 import {
   Box,
   Typography,
   Paper,
-  Card,
   Divider,
   LinearProgress,
   alpha,
   useTheme,
 } from "@mui/material";
 
-// Card components with standardized styling
-
-// Base Card component with glass effect
 export const GlassCard: React.FC<{
   children: ReactNode;
   sx?: object;
@@ -55,7 +50,6 @@ export const GlassCard: React.FC<{
   );
 };
 
-// Card content section
 export const CardContent: React.FC<{
   children: ReactNode;
   sx?: object;
@@ -72,7 +66,6 @@ export const CardContent: React.FC<{
   );
 };
 
-// Card header with title and optional icon/action
 export const CardHeader: React.FC<{
   title: string;
   icon?: ReactNode;
@@ -112,7 +105,6 @@ export const CardHeader: React.FC<{
   );
 };
 
-// Section divider with consistent styling
 export const SectionDivider: React.FC<{
   sx?: object;
 }> = ({ sx = {} }) => {
@@ -129,7 +121,6 @@ export const SectionDivider: React.FC<{
   );
 };
 
-// Progress bar with consistent styling
 export const ProgressBar: React.FC<{
   value: number;
   color?: string;
@@ -156,7 +147,6 @@ export const ProgressBar: React.FC<{
   );
 };
 
-// Section container
 export const SectionContainer: React.FC<{
   children: ReactNode;
   sx?: object;
@@ -173,7 +163,6 @@ export const SectionContainer: React.FC<{
   );
 };
 
-// Grid container with responsive spacing
 export const ResponsiveGrid: React.FC<{
   children: ReactNode;
   spacing?: number;
@@ -198,7 +187,6 @@ export const ResponsiveGrid: React.FC<{
   );
 };
 
-// Mobile-first display helpers
 export const MobileOnly: React.FC<{
   children: ReactNode;
   component?: React.ElementType;
@@ -237,7 +225,6 @@ export const DesktopOnly: React.FC<{
   );
 };
 
-// Flexible layout container
 export const FlexBox: React.FC<{
   children: ReactNode;
   direction?: "row" | "column" | "row-reverse" | "column-reverse";

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Paper,
   Table,
@@ -12,11 +12,16 @@ import {
   Avatar,
   Chip,
   useMediaQuery,
+  Collapse,
+  IconButton,
 } from "@mui/material";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { Tournament } from "../../../types/event";
 import tournamentService from "../../../services/eventService";
 import { useTournamentLeaderboardStyles } from "../../../theme/hooks";
 import { useTheme } from "@mui/material";
+import PlayerScorecard from "./PlayerScorecard";
 
 interface TournamentLeaderboardProps {
   tournament: Tournament;
@@ -30,12 +35,17 @@ const TournamentLeaderboard: React.FC<TournamentLeaderboardProps> = ({
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const isXsScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
+  const [expandedPlayerId, setExpandedPlayerId] = useState<string | null>(null);
+
+  const handleToggleExpand = (playerId: string) => {
+    setExpandedPlayerId(expandedPlayerId === playerId ? null : playerId);
+  };
+
   // Sort rounds by date
   const sortedRounds = [...tournament.rounds].sort(
     (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
   );
 
-  // Get leaderboard data
   const leaderboard = tournamentService.getTournamentLeaderboard(tournament.id);
 
   // Calculate relative to par if available
@@ -43,7 +53,6 @@ const TournamentLeaderboard: React.FC<TournamentLeaderboardProps> = ({
     (round) => round.courseDetails?.par !== undefined
   );
 
-  // Calculate total par for the tournament
   const totalPar = tournament.rounds.reduce((total, round) => {
     return total + (round.courseDetails?.par || 0);
   }, 0);
@@ -55,10 +64,19 @@ const TournamentLeaderboard: React.FC<TournamentLeaderboardProps> = ({
     ? sortedRounds.slice(-2) // On mobile show only last 2 rounds
     : sortedRounds;
 
-  // Helper function to check if a player is a captain
   const isPlayerCaptain = (playerId: string) => {
     if (!tournament) return false;
     return tournament.teams.some((team) => team.captain === playerId);
+  };
+
+  // Calculate the number of columns in the table for the colspan
+  const calculateColspan = () => {
+    let count = 2; // Position and Player columns
+    if (!isXsScreen && tournament.isTeamEvent) count++; // Team column
+    count += displayRounds.length; // Round columns
+    count++; // Total column
+    if (hasParInfo && totalPar > 0 && !isXsScreen) count++; // vs Par column
+    return count;
   };
 
   return (
@@ -127,94 +145,154 @@ const TournamentLeaderboard: React.FC<TournamentLeaderboardProps> = ({
                 ? tournament.teams.find((t) => t.id === playerObj.teamId)
                 : null;
 
+              const isExpanded = expandedPlayerId === player.playerId;
+
               return (
-                <TableRow
-                  key={`leaderboard-${player.playerId}`}
-                  sx={styles.getTableRowStyle(index)}
-                >
-                  <TableCell sx={styles.centeredDataCell}>
-                    {position}
-                    {index === 0 && tournament.status === "completed" && (
-                      <Chip
-                        label="Winner"
-                        color="primary"
-                        size="small"
-                        sx={styles.winnerChip}
-                      />
-                    )}
-                  </TableCell>
-                  <TableCell sx={styles.dataCell}>
-                    <Box sx={{ display: "flex", alignItems: "center" }}>
-                      <Avatar
-                        src={playerObj?.avatarUrl}
-                        alt={player.playerName}
-                        sx={styles.getPlayerAvatar(playerTeam?.color)}
-                      />
-                      {player.playerName}
-                      {isPlayerCaptain(player.playerId) && (
-                        <Chip
-                          label="Captain"
-                          size="small"
-                          sx={styles.captainChip}
-                        />
-                      )}
-                    </Box>
-                  </TableCell>
-
-                  {!isXsScreen && tournament.isTeamEvent && (
-                    <TableCell sx={styles.dataCell}>
-                      {playerTeam ? (
-                        <Chip
-                          size="small"
-                          label={playerTeam.name}
-                          sx={styles.getTeamChip(playerTeam.color)}
-                        />
-                      ) : (
-                        <Typography
-                          variant="body2"
-                          sx={styles.leaderboardTypography.noTeamText}
-                        >
-                          No team
-                        </Typography>
-                      )}
-                    </TableCell>
-                  )}
-
-                  {displayRounds.map((round) => (
-                    <TableCell
-                      key={`${player.playerId}-round-${round.id}`}
-                      align="center"
-                      sx={styles.dataCell}
-                    >
-                      {player.roundTotals[round.id] || "-"}
-                    </TableCell>
-                  ))}
-
-                  <TableCell
-                    align="center"
+                <React.Fragment key={`leaderboard-${player.playerId}`}>
+                  <TableRow
                     sx={{
-                      ...styles.dataCell,
-                      fontWeight: "bold",
+                      ...styles.getTableRowStyle(index),
+                      cursor: "pointer",
+                      "&:hover": {
+                        backgroundColor: theme.palette.action.hover,
+                      },
                     }}
+                    onClick={() => handleToggleExpand(player.playerId)}
                   >
-                    {styles.getScoreDisplay(player.total, index, leaderboard)}
-                  </TableCell>
+                    <TableCell sx={styles.centeredDataCell}>
+                      <Box sx={{ display: "flex", alignItems: "center" }}>
+                        <IconButton
+                          aria-label="expand row"
+                          size="small"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleToggleExpand(player.playerId);
+                          }}
+                          sx={{ mr: 1 }}
+                        >
+                          {isExpanded ? (
+                            <KeyboardArrowUpIcon />
+                          ) : (
+                            <KeyboardArrowDownIcon />
+                          )}
+                        </IconButton>
+                        <Box component="span">
+                          {position}
+                          {index === 0 && tournament.status === "completed" && (
+                            <Chip
+                              label="Winner"
+                              color="primary"
+                              size="small"
+                              sx={styles.winnerChip}
+                            />
+                          )}
+                        </Box>
+                      </Box>
+                    </TableCell>
+                    <TableCell sx={styles.dataCell}>
+                      <Box sx={{ display: "flex", alignItems: "center" }}>
+                        <Avatar
+                          src={playerObj?.avatarUrl}
+                          alt={player.playerName}
+                          sx={styles.getPlayerAvatar(playerTeam?.color)}
+                        />
+                        {player.playerName}
+                        {isPlayerCaptain(player.playerId) && (
+                          <Chip
+                            label="Captain"
+                            size="small"
+                            sx={styles.captainChip}
+                          />
+                        )}
+                      </Box>
+                    </TableCell>
 
-                  {hasParInfo && totalPar > 0 && !isXsScreen && (
+                    {!isXsScreen && tournament.isTeamEvent && (
+                      <TableCell sx={styles.dataCell}>
+                        {playerTeam ? (
+                          <Chip
+                            size="small"
+                            label={playerTeam.name}
+                            sx={styles.getTeamChip(playerTeam.color)}
+                          />
+                        ) : (
+                          <Typography
+                            variant="body2"
+                            sx={styles.leaderboardTypography.noTeamText}
+                          >
+                            No team
+                          </Typography>
+                        )}
+                      </TableCell>
+                    )}
+
+                    {displayRounds.map((round) => (
+                      <TableCell
+                        key={`${player.playerId}-round-${round.id}`}
+                        align="center"
+                        sx={styles.dataCell}
+                      >
+                        {player.roundTotals[round.id] || "-"}
+                      </TableCell>
+                    ))}
+
                     <TableCell
                       align="center"
                       sx={{
                         ...styles.dataCell,
                         fontWeight: "bold",
-                        color: vsPar
-                          ? styles.getScoreVsParColor(vsPar)
-                          : undefined,
                       }}
                     >
-                      {vsPar}
+                      {styles.getScoreDisplay(player.total, index, leaderboard)}
                     </TableCell>
-                  )}
-                </TableRow>
+
+                    {hasParInfo && totalPar > 0 && !isXsScreen && (
+                      <TableCell
+                        align="center"
+                        sx={{
+                          ...styles.dataCell,
+                          fontWeight: "bold",
+                          color: vsPar
+                            ? styles.getScoreVsParColor(vsPar)
+                            : undefined,
+                        }}
+                      >
+                        {vsPar}
+                      </TableCell>
+                    )}
+                  </TableRow>
+
+                  <TableRow>
+                    <TableCell
+                      colSpan={calculateColspan()}
+                      sx={{
+                        padding: 0,
+                        borderBottom: isExpanded
+                          ? "1px solid rgba(224, 224, 224, 1)"
+                          : "none",
+                      }}
+                    >
+                      <Collapse in={isExpanded} timeout="auto" unmountOnExit>
+                        <Box
+                          sx={{
+                            margin: 2,
+                            padding: 2,
+                            backgroundColor: theme.palette.background.paper,
+                            borderRadius: "8px",
+                            boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
+                          }}
+                        >
+                          {playerObj && (
+                            <PlayerScorecard
+                              player={playerObj}
+                              tournament={tournament}
+                            />
+                          )}
+                        </Box>
+                      </Collapse>
+                    </TableCell>
+                  </TableRow>
+                </React.Fragment>
               );
             })}
           </TableBody>

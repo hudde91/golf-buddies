@@ -1,4 +1,3 @@
-// src/components/profile/HandicapField.tsx
 import React from "react";
 import {
   Box,

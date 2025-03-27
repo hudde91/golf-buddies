@@ -1,17 +1,14 @@
-// src/theme/tourStyles.ts
 import { alpha, Theme } from "@mui/material";
 import { styleHelpers } from "./theme";
 
 // Tour-specific styling patterns that extend the main theme
 export const tourStyles = {
-  // Extend the glass panel for tour cards and containers
   tourContainer: (theme: Theme) => ({
     ...styleHelpers.glassBox(theme),
     p: { xs: 2, md: 3 },
     mb: 4,
   }),
 
-  // Base card styling for tournament cards
   tourCard: (theme: Theme) => ({
     height: "100%",
     display: "flex",
@@ -27,14 +24,12 @@ export const tourStyles = {
     },
   }),
 
-  // Section title
   tourSectionTitle: (theme: Theme) => ({
     color: "white",
     mb: 3,
     fontWeight: 500,
   }),
 
-  // Tab styling
   tourTabs: (theme: Theme) => ({
     px: 2,
     pt: 2,
@@ -49,12 +44,10 @@ export const tourStyles = {
     },
   }),
 
-  // Tab panel
   tourTabPanel: {
     p: { xs: 2, md: 3 },
   },
 
-  // Player list item styling
   tourPlayerItem: (theme: Theme) => ({
     p: 2,
     borderBottom: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
@@ -64,7 +57,6 @@ export const tourStyles = {
     },
   }),
 
-  // Team card styling
   tourTeamCard: (theme: Theme) => ({
     backgroundColor: alpha(theme.palette.common.black, 0.4),
     backdropFilter: "blur(10px)",
@@ -72,7 +64,6 @@ export const tourStyles = {
     overflow: "hidden",
   }),
 
-  // Tournament card status chip
   statusChip: (color: string, theme: Theme) => ({
     backgroundColor: alpha(color, 0.2),
     color: color,
@@ -80,14 +71,12 @@ export const tourStyles = {
     borderRadius: 1,
   }),
 
-  // Leaderboard table styling
   leaderboardTable: (theme: Theme) => ({
     backgroundColor: alpha(theme.palette.common.black, 0.2),
     borderRadius: 2,
     overflow: "hidden",
   }),
 
-  // Table header
   leaderboardHeader: (theme: Theme) => ({
     p: 2,
     bgcolor: alpha(theme.palette.primary.main, 0.2),
@@ -95,7 +84,6 @@ export const tourStyles = {
     color: "white",
   }),
 
-  // Medal position styling for leaderboard
   getMedalStyle: (position: number, theme: Theme) => {
     const colors = [
       theme.palette.warning.main, // Gold
@@ -116,7 +104,6 @@ export const tourStyles = {
     };
   },
 
-  // Info list items with icons
   infoItem: (theme: Theme) => ({
     display: "flex",
     alignItems: "center",
@@ -131,7 +118,6 @@ export const tourStyles = {
     },
   }),
 
-  // Dividers
   tourDivider: (theme: Theme) => ({
     my: 1.5,
     borderColor: alpha(theme.palette.common.white, 0.1),

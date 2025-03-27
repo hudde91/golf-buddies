@@ -1,4 +1,3 @@
-// components/tour/tabs/LeaderboardTab.tsx
 import React from "react";
 import { Box, Grid, Typography, useTheme, alpha } from "@mui/material";
 import { Leaderboard as LeaderboardIcon } from "@mui/icons-material";

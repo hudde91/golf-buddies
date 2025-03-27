@@ -84,7 +84,6 @@ const TournamentDetail: React.FC = () => {
   const [tabValue, setTabValue] = useState(0);
   const [selectedRoundId, setSelectedRoundId] = useState<string | null>(null);
 
-  // Dialog states
   const [openInviteDialog, setOpenInviteDialog] = useState<boolean>(false);
   const [openAddRoundDialog, setOpenAddRoundDialog] = useState<boolean>(false);
   const [openEditTournamentDialog, setOpenEditTournamentDialog] =
@@ -94,33 +93,12 @@ const TournamentDetail: React.FC = () => {
 
   const isCreator =
     user && tournament ? tournament.createdBy === user.id : false;
-  const isParticipant =
-    user && tournament
-      ? tournament.players.some((p) => p.id === user.id)
-      : false;
 
-  // Helper function to get a player's team
-  const getPlayerTeam = (playerId: string) => {
-    if (!tournament) return null;
-
-    for (const team of tournament.teams) {
-      const teamPlayers = tournament.players.filter(
-        (p) => p.teamId === team.id
-      );
-      if (teamPlayers.some((p) => p.id === playerId)) {
-        return team;
-      }
-    }
-    return null;
-  };
-
-  // Helper function to check if a player is a captain
   const isPlayerCaptain = (playerId: string) => {
     if (!tournament) return false;
     return tournament.teams.some((team) => team.captain === playerId);
   };
 
-  // Get captain player for a team
   const getTeamCaptain = (teamId: string): Player | null => {
     if (!tournament) return null;
 
@@ -160,7 +138,6 @@ const TournamentDetail: React.FC = () => {
     navigate(-1);
   };
 
-  // Handler functions that modify the tournament data
   const handleAddRound = (data: RoundFormData) => {
     if (!id) return;
 
@@ -168,7 +145,6 @@ const TournamentDetail: React.FC = () => {
     if (updatedTournament) {
       setTournament(updatedTournament);
 
-      // Select the newly added round
       const newRoundId =
         updatedTournament.rounds[updatedTournament.rounds.length - 1].id;
       setSelectedRoundId(newRoundId);
@@ -257,7 +233,6 @@ const TournamentDetail: React.FC = () => {
       return;
     }
 
-    // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const invalidEmails = emails.filter((email) => !emailRegex.test(email));
 
@@ -321,7 +296,6 @@ const TournamentDetail: React.FC = () => {
     }
   };
 
-  // Dialog handler functions
   const dialogHandlers = {
     invite: {
       open: () => setOpenInviteDialog(true),
@@ -599,7 +573,6 @@ const TournamentDetail: React.FC = () => {
         </Box>
       </Container>
 
-      {/* Centralize all dialogs in one component */}
       <TournamentDialogs
         tournament={tournament}
         dialogState={{

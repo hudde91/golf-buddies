@@ -21,18 +21,15 @@ const Profile: React.FC = () => {
   const { user } = useUser();
   const theme = useTheme();
 
-  // UI state
   const [editing, setEditing] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
 
-  // Profile data state
   const [profileImage, setProfileImage] = useState<string>("");
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [bio, setBio] = useState<string>("");
   const [achievements, setAchievements] = useState<Achievement[]>([]);
 
-  // Questions state
   const [question1, setQuestion1] = useState<string>("");
   const [handicapValue, setHandicapValue] = useState<number | null>(null);
   const [handicapError, setHandicapError] = useState<string>("");
@@ -40,7 +37,6 @@ const Profile: React.FC = () => {
   const [question3, setQuestion3] = useState<string>("");
   const [question4, setQuestion4] = useState<string>("");
 
-  // Define the questions
   const questions = {
     q1: "What is your handicap?",
     q2: "Which is your favorite club?",
@@ -51,16 +47,13 @@ const Profile: React.FC = () => {
   useEffect(() => {
     if (!user?.id) return;
 
-    // Load profile data
     const userData = profileService.getProfile(user.id);
     setBio(userData.bio || "");
 
     // Use profile image from service or fall back to Clerk image
     setProfileImage(userData.profileImage || user.imageUrl || "");
 
-    // Load additional questions
     setQuestion1(userData.question1 || "");
-    // Try to parse the handicap if it exists
     if (userData.question1) {
       const parsedHandicap = parseFloat(userData.question1);
       if (!isNaN(parsedHandicap)) {
@@ -72,13 +65,11 @@ const Profile: React.FC = () => {
     setQuestion3(userData.question3 || "");
     setQuestion4(userData.question4 || "");
 
-    // Load achievements
     setAchievements(userData.achievements || []);
 
     setIsLoading(false);
   }, [user?.id, user?.imageUrl]);
 
-  // Event handlers
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -141,7 +132,6 @@ const Profile: React.FC = () => {
   const handleSave = () => {
     if (!user?.id) return;
 
-    // Validate handicap
     if (editing && handicapValue === null) {
       setHandicapError("Please enter your handicap");
       return;
@@ -202,11 +192,6 @@ const Profile: React.FC = () => {
       </Box>
     );
   }
-
-  // Sort achievements by date (most recent first)
-  const sortedAchievements = [...achievements].sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-  );
 
   return (
     <Box

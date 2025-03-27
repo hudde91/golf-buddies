@@ -1,4 +1,3 @@
-// src/components/tournament/TournamentCard.tsx
 import React from "react";
 import {
   Card,
@@ -32,9 +31,8 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
   onViewDetails,
 }) => {
   const styles = useTournamentStyles();
-  const theme = useTheme(); // Still need theme for some dynamic colors
+  const theme = useTheme();
 
-  // Helper function for chip colors
   const getColorBasedOnStatus = (status: string) => {
     switch (status.toLowerCase()) {
       case "upcoming":

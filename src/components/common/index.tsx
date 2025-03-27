@@ -11,7 +11,6 @@ import {
 import { ArrowBack as ArrowBackIcon } from "@mui/icons-material";
 import { useAppStyles } from "../../theme/hooks";
 
-// Page container with standard background and spacing
 export const PageContainer: React.FC<{
   children: ReactNode;
   maxWidth?: "xs" | "sm" | "md" | "lg" | "xl" | false;
@@ -25,7 +24,6 @@ export const PageContainer: React.FC<{
   );
 };
 
-// Glass panel component with standardized styling
 export const GlassPanel: React.FC<{
   children: ReactNode;
   sx?: object;
@@ -35,7 +33,6 @@ export const GlassPanel: React.FC<{
   return <Box sx={{ ...styles.glassPanel, ...sx }}>{children}</Box>;
 };
 
-// Page header with title and optional subtitle
 export const PageHeader: React.FC<{
   title: string;
   subtitle?: string;
@@ -57,12 +54,10 @@ export const PageHeader: React.FC<{
   );
 };
 
-// Section header
 export const SectionHeader: React.FC<{
   title: string;
   action?: ReactNode;
 }> = ({ title, action }) => {
-  const styles = useAppStyles();
   const theme = useTheme();
 
   return (
@@ -82,7 +77,6 @@ export const SectionHeader: React.FC<{
   );
 };
 
-// Loading state component
 export const LoadingState: React.FC<{
   message?: string;
 }> = ({ message = "Loading..." }) => {
@@ -99,7 +93,6 @@ export const LoadingState: React.FC<{
   );
 };
 
-// Standardized button variants
 export const PrimaryButton: React.FC<{
   children: ReactNode;
   onClick?: () => void;
@@ -148,7 +141,6 @@ export const OutlinedButton: React.FC<{
   );
 };
 
-// Empty state placeholder with enhanced styling
 export const EmptyState: React.FC<{
   message?: string;
   icon?: ReactNode;
@@ -168,7 +160,6 @@ export const EmptyState: React.FC<{
 }) => {
   const theme = useTheme();
 
-  // Handle icon styling if it's a React element
   const IconComponent =
     icon && React.isValidElement(icon)
       ? React.cloneElement(icon as React.ReactElement, {
@@ -222,7 +213,6 @@ export const EmptyState: React.FC<{
   );
 };
 
-// Tab panel component for tabbed interfaces
 export const TabPanel: React.FC<{
   children?: React.ReactNode;
   index: number;
@@ -242,7 +232,6 @@ export const TabPanel: React.FC<{
   );
 };
 
-// Back button component with consistent styling
 export const BackButton: React.FC<{
   onClick: () => void;
   label?: string;

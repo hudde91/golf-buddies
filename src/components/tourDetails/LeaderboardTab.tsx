@@ -1,4 +1,3 @@
-// components/tour/tabs/LeaderboardTab.tsx
 import React from "react";
 import {
   Box,

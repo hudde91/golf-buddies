@@ -1,8 +1,6 @@
-// src/components/team/index.tsx
 import React, { ReactNode } from "react";
 import { Box, Typography, Chip, Paper, alpha, useTheme } from "@mui/material";
 
-// Team chip with consistent styling
 export const TeamChip: React.FC<{
   teamName: string;
   teamColor?: string;
@@ -27,7 +25,6 @@ export const TeamChip: React.FC<{
   );
 };
 
-// Captain badge
 export const CaptainBadge: React.FC<{
   teamColor?: string;
   size?: "small" | "medium";
@@ -53,7 +50,6 @@ export const CaptainBadge: React.FC<{
   );
 };
 
-// Team card component
 export const TeamCard: React.FC<{
   team: {
     id: string;
@@ -111,7 +107,6 @@ export const TeamCard: React.FC<{
   );
 };
 
-// Team leaderboard item
 export const TeamLeaderboard: React.FC<{
   teams: {
     id: string;

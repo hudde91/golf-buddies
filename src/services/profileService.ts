@@ -46,7 +46,6 @@ export const profileService = {
   ): void => {
     const profile = profileService.getProfile(userId);
 
-    // Initialize achievements array if it doesn't exist
     if (!profile.achievements) {
       profile.achievements = [];
     }

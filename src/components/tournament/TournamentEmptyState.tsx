@@ -1,4 +1,3 @@
-// src/components/tournament/TournamentEmptyState.tsx
 import React from "react";
 import { Box, Typography, Button } from "@mui/material";
 import { Add as AddIcon, EmojiEvents as TrophyIcon } from "@mui/icons-material";

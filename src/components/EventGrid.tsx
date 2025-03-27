@@ -320,7 +320,6 @@ const EventGrid: React.FC<EventGridProps> = ({
             borderRadius: 2,
             textTransform: "none",
             fontWeight: "bold",
-            // boxShadow: `0 4px 14px ${alpha(theme.palette.primary.main, 0.4)}`,
           }}
         >
           Create Event

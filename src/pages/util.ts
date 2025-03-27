@@ -1,6 +1,5 @@
 import { Theme, alpha } from "@mui/material";
 
-// Helper function to determine badge color based on position
 export const getBadgeColor = (position: number, theme: Theme) => {
   switch (position) {
     case 1:
@@ -14,7 +13,6 @@ export const getBadgeColor = (position: number, theme: Theme) => {
   }
 };
 
-// Helper function to get position text
 export const getPositionText = (position: number) => {
   switch (position) {
     case 1:
