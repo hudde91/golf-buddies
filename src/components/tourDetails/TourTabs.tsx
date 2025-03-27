@@ -46,7 +46,6 @@ const TourTabs: React.FC<TourTabsProps> = ({
         {tour.teams && tour.teams.length > 0 && <Tab label="Teams" />}
       </Tabs>
 
-      {/* Tournaments Tab */}
       <TabPanel id="tournament" value={tabValue} index={0}>
         <TournamentsTab
           tour={tour}
@@ -56,17 +55,14 @@ const TourTabs: React.FC<TourTabsProps> = ({
         />
       </TabPanel>
 
-      {/* Leaderboard Tab */}
       <TabPanel id="tournament" value={tabValue} index={1}>
         <LeaderboardTab tour={tour} leaderboard={leaderboard} />
       </TabPanel>
 
-      {/* Players Tab */}
       <TabPanel id="tournament" value={tabValue} index={2}>
         <PlayersTab tour={tour} />
       </TabPanel>
 
-      {/* Teams Tab */}
       {tour.teams && tour.teams.length > 0 && (
         <TabPanel id="tournament" value={tabValue} index={3}>
           <TeamsTab tour={tour} />

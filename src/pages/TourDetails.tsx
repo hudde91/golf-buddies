@@ -197,7 +197,6 @@ const TourDetails: React.FC = () => {
         />
       </Container>
 
-      {/* Dialogs */}
       <Dialog
         open={openAddTournament}
         onClose={handleAddTournamentClose}
