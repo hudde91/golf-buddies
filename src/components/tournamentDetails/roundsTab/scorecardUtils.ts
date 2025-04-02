@@ -25,6 +25,30 @@ export const calculateSectionTotal = (
   }, 0);
 };
 
+// Format score relative to par (e.g., "-2", "E", "+3")
+export const formatScoreToPar = (score: number, par: number): string => {
+  const relativeToPar = score - par;
+
+  if (relativeToPar === 0) {
+    return "E"; // Even par
+  } else if (relativeToPar < 0) {
+    return relativeToPar.toString(); // Already has negative sign
+  } else {
+    return `+${relativeToPar}`; // Add plus sign
+  }
+};
+
+// Get color based on score relative to par
+export const getScoreColor = (score: number, par: number): string => {
+  const relativeToPar = score - par;
+
+  if (relativeToPar < -1) return "#d32f2f"; // Eagle or better - Red
+  if (relativeToPar === -1) return "#f44336"; // Birdie - Light Red
+  if (relativeToPar === 0) return "#2e7d32"; // Par - Green
+  if (relativeToPar === 1) return "#0288d1"; // Bogey - Blue
+  return "#9e9e9e"; // Double bogey or worse - Gray
+};
+
 // Split holes into front 9 and back 9 (or appropriate splits for other hole counts)
 export const getHoleSections = (
   round: Round,

@@ -4,7 +4,7 @@ import { useProfileStyles } from "../../theme/hooks";
 
 interface ProfileQuestionProps {
   question: string;
-  answer: string;
+  answer: string | number | null;
   isLast?: boolean;
 }
 

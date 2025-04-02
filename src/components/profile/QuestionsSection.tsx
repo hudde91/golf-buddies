@@ -7,10 +7,10 @@ import ProfileQuestion from "./ProfileQuestion";
 import { useProfileStyles } from "../../theme/hooks";
 
 interface QuestionData {
+  handicap: string;
   q1: string;
   q2: string;
   q3: string;
-  q4: string;
 }
 
 interface QuestionsSectionProps {
@@ -21,12 +21,10 @@ interface QuestionsSectionProps {
   question1: string;
   question2: string;
   question3: string;
-  question4: string;
-  onHandicapChange: (event: Event, newValue: number | number[]) => void;
   onHandicapInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onQuestion1Change: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onQuestion2Change: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onQuestion3Change: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onQuestion4Change: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSave: () => void;
 }
 
@@ -38,12 +36,10 @@ const QuestionsSection: React.FC<QuestionsSectionProps> = ({
   question1,
   question2,
   question3,
-  question4,
-  onHandicapChange,
   onHandicapInputChange,
+  onQuestion1Change,
   onQuestion2Change,
   onQuestion3Change,
-  onQuestion4Change,
   onSave,
 }) => {
   const styles = useProfileStyles();
@@ -66,13 +62,17 @@ const QuestionsSection: React.FC<QuestionsSectionProps> = ({
       <>
         {sectionTitle}
 
-        {/* Handicap Question with Slider */}
         <HandicapField
-          question={questions.q1}
+          question={questions.handicap}
           value={handicapValue}
           error={handicapError}
-          onChange={onHandicapChange}
           onInputChange={onHandicapInputChange}
+        />
+
+        <ProfileTextField
+          label={questions.q1}
+          value={question1}
+          onChange={onQuestion1Change}
         />
 
         <ProfileTextField
@@ -85,12 +85,6 @@ const QuestionsSection: React.FC<QuestionsSectionProps> = ({
           label={questions.q3}
           value={question3}
           onChange={onQuestion3Change}
-        />
-
-        <ProfileTextField
-          label={questions.q4}
-          value={question4}
-          onChange={onQuestion4Change}
         />
 
         <Box
@@ -115,45 +109,31 @@ const QuestionsSection: React.FC<QuestionsSectionProps> = ({
     );
   }
 
-  if (!(question1 || question2 || question3 || question4)) {
-    return null;
-  }
-
   return (
     <Box sx={{ mt: 5 }}>
       {sectionTitle}
+      <ProfileQuestion
+        question={questions.handicap}
+        answer={handicapValue}
+        isLast={!(question2 || question3)}
+      />
 
-      {question1 && (
-        <ProfileQuestion
-          question={questions.q1}
-          answer={question1}
-          isLast={!(question2 || question3 || question4)}
-        />
-      )}
+      <ProfileQuestion
+        question={questions.q1}
+        answer={question1}
+        isLast={!(question2 || question3)}
+      />
 
-      {question2 && (
-        <ProfileQuestion
-          question={questions.q2}
-          answer={question2}
-          isLast={!(question3 || question4)}
-        />
-      )}
-
-      {question3 && (
-        <ProfileQuestion
-          question={questions.q3}
-          answer={question3}
-          isLast={!question4}
-        />
-      )}
-
-      {question4 && (
-        <ProfileQuestion
-          question={questions.q4}
-          answer={question4}
-          isLast={true}
-        />
-      )}
+      <ProfileQuestion
+        question={questions.q2}
+        answer={question2}
+        isLast={!question3}
+      />
+      <ProfileQuestion
+        question={questions.q3}
+        answer={question3}
+        isLast={true}
+      />
     </Box>
   );
 };

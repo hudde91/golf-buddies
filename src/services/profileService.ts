@@ -32,10 +32,10 @@ export const profileService = {
     return {
       bio: "",
       profileImage: "",
+      handicap: 0,
       question1: "",
       question2: "",
       question3: "",
-      question4: "",
       achievements: [],
     };
   },

@@ -108,7 +108,6 @@ const TeamFormDialog: React.FC<TeamFormDialogProps> = ({
             </Box>
           </Box>
 
-          {/* Captain Selection */}
           {team && teamPlayers.length > 0 && (
             <Box sx={{ mt: 3 }}>
               <Typography variant="subtitle1" gutterBottom sx={styles.teamName}>

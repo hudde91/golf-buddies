@@ -8,6 +8,7 @@ export interface Player {
   avatarUrl?: string;
   teamId?: string;
   bio?: string;
+  handicap?: number;
   question1?: string;
   question2?: string;
   question3?: string;
@@ -30,6 +31,14 @@ export interface HoleScore {
   notes?: string;
 }
 
+export interface PlayerGroup {
+  id: string;
+  name: string;
+  playerIds: string[];
+  startingHole?: number; // Optional, for shotgun starts
+  teeTime?: string; // Optional, for scheduled tee times
+}
+
 export interface Round {
   id: string;
   name: string;
@@ -43,6 +52,8 @@ export interface Round {
   scores: {
     [playerId: string]: HoleScore[];
   };
+
+  playerGroups?: PlayerGroup[]; // New field for player groups
   // For match play formats
   matchResults?: {
     [playerId: string]: {

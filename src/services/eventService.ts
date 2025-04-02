@@ -13,6 +13,7 @@ import {
   TeamFormData,
   ShoutOut,
   Highlight,
+  PlayerGroup,
 } from "../types/event";
 import achievementService from "./achievementService";
 
@@ -647,6 +648,67 @@ const eventService = {
     localStorage.setItem(EVENTS_KEY, JSON.stringify(updatedEvents));
 
     return updatedTournament;
+  },
+
+  // Update player groups for a round
+  updatePlayerGroups: (
+    tournamentId: string,
+    roundId: string,
+    playerGroups: PlayerGroup[]
+  ): Tournament | null => {
+    const events = eventService.getAllEvents();
+    const result = findTournamentInEvents(events, tournamentId);
+
+    if (!result) return null;
+
+    const { tournament } = result;
+    const roundIndex = tournament.rounds.findIndex((r) => r.id === roundId);
+
+    if (roundIndex === -1) return null;
+
+    // Update the player groups for this round
+    const updatedRounds = [...tournament.rounds];
+    updatedRounds[roundIndex] = {
+      ...updatedRounds[roundIndex],
+      playerGroups: playerGroups,
+    };
+
+    // Update the tournament
+    const updatedTournament = {
+      ...tournament,
+      rounds: updatedRounds,
+    };
+
+    const updatedEvents = updateTournamentInEvents(
+      events,
+      tournamentId,
+      updatedTournament
+    );
+    localStorage.setItem(EVENTS_KEY, JSON.stringify(updatedEvents));
+
+    return updatedTournament;
+  },
+
+  // Get player groups for a round
+  getRoundPlayerGroups: (
+    tournamentId: string,
+    roundId: string
+  ): PlayerGroup[] => {
+    const tournament = eventService.getTournamentById(tournamentId);
+    if (!tournament) return [];
+
+    const round = tournament.rounds.find((r) => r.id === roundId);
+    if (!round) return [];
+
+    return round.playerGroups || [];
+  },
+
+  updateTournamentPlayerGroups: (
+    tournamentId: string,
+    roundId: string,
+    playerGroups: PlayerGroup[]
+  ): Tournament | null => {
+    return eventService.updateRound(tournamentId, roundId, { playerGroups });
   },
 
   // Create a shoutOut for special achievements
@@ -1753,6 +1815,71 @@ const eventService = {
     if (hasChanges) {
       localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
     }
+  },
+  getCurrentUser: async (): Promise<Player | null> => {
+    // If using Clerk
+    try {
+      const user = await window.Clerk?.user;
+      if (!user) return null;
+
+      return {
+        id: user.id,
+        name: `${user.firstName} ${user.lastName}`.trim(),
+        email: user.primaryEmailAddress?.emailAddress || "",
+        avatarUrl: user.imageUrl || "",
+        teamId: "",
+        bio: "",
+        question1: "",
+        question2: "",
+        question3: "",
+        question4: "",
+        handicap: 0,
+      };
+    } catch (error) {
+      console.error("Error getting current user:", error);
+      return null;
+    }
+  },
+
+  // Update player scores in a round
+  updatePlayerScores: async (
+    tournamentId: string,
+    roundId: string,
+    playerId: string,
+    scores: HoleScore[]
+  ): Promise<Tournament | null> => {
+    return eventService.updateRoundScores(
+      tournamentId,
+      roundId,
+      playerId,
+      scores
+    );
+  },
+
+  // Check if the current user is the creator of a tournament or event
+  isCreator: async (tournamentOrEventId: string): Promise<boolean> => {
+    const currentUser = await eventService.getCurrentUser();
+    if (!currentUser) return false;
+
+    // First try to find it as a tournament
+    const tournament = eventService.getTournamentById(tournamentOrEventId);
+    if (tournament) {
+      return tournament.createdBy === currentUser.id;
+    }
+
+    // If not found as a tournament, check as an event
+    const event = eventService.getEventById(tournamentOrEventId);
+    if (event) {
+      if (event.type === "tournament") {
+        const tournamentData = event.data as Tournament;
+        return tournamentData.createdBy === currentUser.id;
+      } else if (event.type === "tour") {
+        const tourData = event.data as Tour;
+        return tourData.createdBy === currentUser.id;
+      }
+    }
+
+    return false;
   },
 };
 

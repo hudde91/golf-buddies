@@ -14,19 +14,20 @@ import {
   Chip,
   useTheme,
 } from "@mui/material";
-import { Tournament, Player, Round } from "../../../types/event";
-import { useTournamentScorecardStyles } from "../../../theme/hooks";
+import { Tournament, Player, Round } from "../../types/event";
+import { useTournamentScorecardStyles } from "../../theme/hooks";
 import {
   calculateSectionTotal,
   calculateTotal,
   formatScoreToPar,
   getScoreColor,
-} from "./scorecardUtils";
-import { getScoreClass } from "../roundsTab/scorecardUtils";
+} from "./roundsTab/scorecardUtils";
+import { getScoreClass } from "./roundsTab/scorecardUtils";
 
 interface PlayerScorecardProps {
   player: Player;
   tournament: Tournament;
+  showAllRounds?: boolean; // Optional prop to show all rounds or just first one
 }
 
 interface TabPanelProps {
@@ -61,6 +62,7 @@ const a11yProps = (index: number) => {
 const PlayerScorecard: React.FC<PlayerScorecardProps> = ({
   player,
   tournament,
+  showAllRounds = true, // Default to showing all rounds
 }) => {
   const theme = useTheme();
   const styles = useTournamentScorecardStyles();
@@ -69,6 +71,9 @@ const PlayerScorecard: React.FC<PlayerScorecardProps> = ({
   const sortedRounds = [...tournament.rounds].sort(
     (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
   );
+
+  // If showAllRounds is false, only show the first round
+  const displayRounds = showAllRounds ? sortedRounds : [sortedRounds[0]];
 
   const [selectedRound, setSelectedRound] = useState(0);
 
@@ -107,77 +112,86 @@ const PlayerScorecard: React.FC<PlayerScorecardProps> = ({
 
   return (
     <Box>
-      <Box
-        sx={{
-          mb: 2,
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <Box>
-          <Typography variant="h6">{player.name}'s Scorecard</Typography>
+      {showAllRounds && (
+        <Box
+          sx={{
+            mb: 2,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <Box>
+            <Typography variant="h6">{player.name}'s Scorecard</Typography>
 
-          {tournament.isTeamEvent && playerTeam && (
-            <Chip
-              label={playerTeam.name}
-              size="small"
-              sx={{
-                bgcolor: playerTeam.color || theme.palette.primary.main,
-                color: "#fff",
-                mt: 0.5,
-              }}
-            />
-          )}
-        </Box>
-
-        {tournament.status === "completed" && (
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <Typography variant="body1" sx={{ mr: 1, fontWeight: "bold" }}>
-              Tournament Total: {tournamentTotal}
-            </Typography>
-
-            {totalTournamentPar > 0 && (
+            {tournament.isTeamEvent && playerTeam && (
               <Chip
-                label={formatScoreToPar(tournamentTotal, totalTournamentPar)}
-                color={
-                  tournamentTotal <= totalTournamentPar ? "success" : "default"
-                }
+                label={playerTeam.name}
                 size="small"
+                sx={{
+                  bgcolor: playerTeam.color || theme.palette.primary.main,
+                  color: "#fff",
+                  mt: 0.5,
+                }}
               />
             )}
           </Box>
-        )}
-      </Box>
 
-      <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-        <Tabs
-          value={selectedRound}
-          onChange={handleRoundChange}
-          aria-label="Round tabs"
-          variant="scrollable"
-          scrollButtons="auto"
-        >
-          {sortedRounds.map((round, index) => (
-            <Tab
-              key={round.id}
-              label={round.name || `Round ${index + 1}`}
-              {...a11yProps(index)}
-            />
-          ))}
-        </Tabs>
-      </Box>
+          {tournament.status === "completed" && (
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <Typography variant="body1" sx={{ mr: 1, fontWeight: "bold" }}>
+                Tournament Total: {tournamentTotal}
+              </Typography>
 
-      {sortedRounds.map((round, roundIndex) => {
+              {totalTournamentPar > 0 && (
+                <Chip
+                  label={formatScoreToPar(tournamentTotal, totalTournamentPar)}
+                  color={
+                    tournamentTotal <= totalTournamentPar
+                      ? "success"
+                      : "default"
+                  }
+                  size="small"
+                />
+              )}
+            </Box>
+          )}
+        </Box>
+      )}
+
+      {displayRounds.length > 1 && (
+        <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+          <Tabs
+            value={selectedRound}
+            onChange={handleRoundChange}
+            aria-label="Round tabs"
+            variant="scrollable"
+            scrollButtons="auto"
+          >
+            {displayRounds.map((round, index) => (
+              <Tab
+                key={round.id}
+                label={round.name || `Round ${index + 1}`}
+                {...a11yProps(index)}
+              />
+            ))}
+          </Tabs>
+        </Box>
+      )}
+
+      {displayRounds.map((round, roundIndex) => {
         const sections = getRoundSections(round);
 
         return (
           <TabPanel key={round.id} value={selectedRound} index={roundIndex}>
             <Box>
-              <Typography variant="subtitle1" sx={{ mb: 1 }}>
-                {round.courseDetails?.name && `${round.courseDetails.name} - `}
-                {new Date(round.date).toLocaleDateString()}
-              </Typography>
+              {showAllRounds && (
+                <Typography variant="subtitle1" sx={{ mb: 1 }}>
+                  {round.courseDetails?.name &&
+                    `${round.courseDetails.name} - `}
+                  {new Date(round.date).toLocaleDateString()}
+                </Typography>
+              )}
 
               {sections.map((section, sectionIndex) => (
                 <TableContainer
@@ -207,7 +221,7 @@ const PlayerScorecard: React.FC<PlayerScorecardProps> = ({
                           align="center"
                           sx={{ width: "60px", fontWeight: "bold" }}
                         >
-                          Total
+                          {sectionIndex === 0 ? "Subtotal" : "Total"}
                         </TableCell>
                       </TableRow>
                     </TableHead>
@@ -220,9 +234,14 @@ const PlayerScorecard: React.FC<PlayerScorecardProps> = ({
                           </TableCell>
 
                           {section.holes.map((holeNum) => {
-                            const holePar = round.courseDetails?.par
-                              ? Math.floor(round.courseDetails.par / 18)
-                              : "-";
+                            const holeIndex = holeNum - 1;
+                            const holePar =
+                              round.scores[Object.keys(round.scores)[0]]?.[
+                                holeIndex
+                              ]?.par ||
+                              (round.courseDetails?.par
+                                ? Math.floor(round.courseDetails.par / 18)
+                                : "-");
 
                             return (
                               <TableCell key={`par-${holeNum}`} align="center">
@@ -250,10 +269,12 @@ const PlayerScorecard: React.FC<PlayerScorecardProps> = ({
                           const holeScore =
                             round.scores[player.id]?.[holeIndex];
                           const score = holeScore?.score;
-                          // Use standard par value from course details
-                          const holePar = round.courseDetails?.par
-                            ? Math.floor(round.courseDetails.par / 18)
-                            : undefined;
+                          // Use standard par value from course details or specific hole par if available
+                          const holePar =
+                            holeScore?.par ||
+                            (round.courseDetails?.par
+                              ? Math.floor(round.courseDetails.par / 18)
+                              : undefined);
                           const scoreClass = getScoreClass(score, holePar);
 
                           return (
@@ -315,52 +336,53 @@ const PlayerScorecard: React.FC<PlayerScorecardProps> = ({
         );
       })}
 
-      {/* Stats visualization could be added here */}
-      {sortedRounds.length > 0 && tournament.status === "completed" && (
-        <Box
-          sx={{
-            mt: 3,
-            p: 2,
-            bgcolor: theme.palette.background.default,
-            borderRadius: "4px",
-          }}
-        >
-          <Typography variant="subtitle2" gutterBottom>
-            Round Performance
-          </Typography>
+      {showAllRounds &&
+        sortedRounds.length > 0 &&
+        tournament.status === "completed" && (
+          <Box
+            sx={{
+              mt: 3,
+              p: 2,
+              bgcolor: theme.palette.background.default,
+              borderRadius: "4px",
+            }}
+          >
+            <Typography variant="subtitle2" gutterBottom>
+              Round Performance
+            </Typography>
 
-          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-            {sortedRounds.map((round, index) => {
-              const roundTotal = calculateTotal(player.id, round);
-              const roundPar = round.courseDetails?.par || 0;
+            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+              {sortedRounds.map((round, index) => {
+                const roundTotal = calculateTotal(player.id, round);
+                const roundPar = round.courseDetails?.par || 0;
 
-              if (roundTotal === 0) return null;
+                if (roundTotal === 0) return null;
 
-              return (
-                <Chip
-                  key={`stat-${round.id}`}
-                  label={`${
-                    round.name || `Round ${index + 1}`
-                  }: ${roundTotal} ${
-                    roundPar
-                      ? `(${formatScoreToPar(roundTotal, roundPar)})`
-                      : ""
-                  }`}
-                  variant="outlined"
-                  sx={{
-                    borderColor: roundPar
-                      ? getScoreColor(roundTotal, roundPar)
-                      : "inherit",
-                    color: roundPar
-                      ? getScoreColor(roundTotal, roundPar)
-                      : "inherit",
-                  }}
-                />
-              );
-            })}
+                return (
+                  <Chip
+                    key={`stat-${round.id}`}
+                    label={`${
+                      round.name || `Round ${index + 1}`
+                    }: ${roundTotal} ${
+                      roundPar
+                        ? `(${formatScoreToPar(roundTotal, roundPar)})`
+                        : ""
+                    }`}
+                    variant="outlined"
+                    sx={{
+                      borderColor: roundPar
+                        ? getScoreColor(roundTotal, roundPar)
+                        : "inherit",
+                      color: roundPar
+                        ? getScoreColor(roundTotal, roundPar)
+                        : "inherit",
+                    }}
+                  />
+                );
+              })}
+            </Box>
           </Box>
-        </Box>
-      )}
+        )}
     </Box>
   );
 };

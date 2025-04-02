@@ -31,6 +31,7 @@ import Loading from "./components/Loading";
 import SplashScreen from "./components/splashScreen/SplashScreen";
 import BackgroundService from "./services/backgroundService";
 import { initializeEventUpdater } from "./services/utils/eventsUpdater";
+import GroupDetailPageContainer from "./components/tournamentDetails/roundsTab/GroupPage/GroupDetailPageContainer";
 
 const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || "";
 
@@ -158,10 +159,19 @@ const App: React.FC = () => {
                       />
 
                       <Route
-                        path="/tournaments/:id"
+                        path="/tournaments/:id/*"
                         element={
                           <ProtectedRoute>
                             <TournamentDetails />
+                          </ProtectedRoute>
+                        }
+                      />
+
+                      <Route
+                        path="/tournaments/:tournamentId/rounds/:roundId/groups/:groupId"
+                        element={
+                          <ProtectedRoute>
+                            <GroupDetailPageContainer />
                           </ProtectedRoute>
                         }
                       />

@@ -21,7 +21,7 @@ import { Tournament } from "../../../types/event";
 import tournamentService from "../../../services/eventService";
 import { useTournamentLeaderboardStyles } from "../../../theme/hooks";
 import { useTheme } from "@mui/material";
-import PlayerScorecard from "./PlayerScorecard";
+import PlayerScorecard from "../PlayerScorecard";
 
 interface TournamentLeaderboardProps {
   tournament: Tournament;

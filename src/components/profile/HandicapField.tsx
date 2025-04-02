@@ -3,7 +3,6 @@ import {
   Box,
   Typography,
   TextField,
-  Slider,
   IconButton,
   Tooltip,
   FormHelperText,
@@ -15,7 +14,6 @@ interface HandicapFieldProps {
   question: string;
   value: number | null;
   error: string;
-  onChange: (event: Event, newValue: number | number[]) => void;
   onInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -23,7 +21,6 @@ const HandicapField: React.FC<HandicapFieldProps> = ({
   question,
   value,
   error,
-  onChange,
   onInputChange,
 }) => {
   const styles = useProfileStyles();
@@ -64,24 +61,6 @@ const HandicapField: React.FC<HandicapFieldProps> = ({
             ...styles.formField,
           }}
         />
-        <Box sx={{ flexGrow: 1, px: 2 }}>
-          <Slider
-            value={value !== null ? value : 0}
-            onChange={onChange}
-            min={-10}
-            max={54}
-            step={0.1}
-            valueLabelDisplay="auto"
-            sx={styles.profileSlider}
-            marks={[
-              { value: -10, label: "-10" },
-              { value: 0, label: "0" },
-              { value: 20, label: "20" },
-              { value: 36, label: "36" },
-              { value: 54, label: "54" },
-            ]}
-          />
-        </Box>
       </Box>
       <FormHelperText sx={styles.profileTypography.muted}>
         Pro golfers can have negative handicaps. Beginners usually start around

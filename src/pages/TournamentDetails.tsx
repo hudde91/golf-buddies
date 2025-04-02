@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
 import {
   Container,
@@ -19,7 +19,7 @@ import {
   MilitaryTech as AchievementIcon,
 } from "@mui/icons-material";
 import tournamentService from "../services/eventService";
-import { Tournament, RoundFormData, HoleScore, Player } from "../types/event";
+import { Tournament, RoundFormData, Player, PlayerGroup } from "../types/event";
 import TournamentHeader from "../components/tournamentDetails/TournamentHeader";
 import TournamentInfo from "../components/tournamentDetails/TournamentInfo";
 import LeaderboardTab from "../components/tournamentDetails/leaderboardTab/LeaderboardTab";
@@ -31,6 +31,15 @@ import TeamManagement from "../components/tournamentDetails/teamsTab/TeamManagem
 import { TabPanel } from "../components/common/index";
 import { colors } from "../theme/theme";
 import HighlightsTab from "../components/tournamentDetails/highlightsTab/HighlightsTab";
+
+// Map tab names to their respective indices
+const TAB_INDICES = {
+  leaderboard: 0,
+  rounds: 1,
+  players: 2,
+  teams: 3,
+  highlights: 4,
+};
 
 const CaptainBadge: React.FC<{
   player: Player;
@@ -76,13 +85,30 @@ const TournamentDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { user, isLoaded } = useUser();
   const navigate = useNavigate();
+  const location = useLocation();
   const theme = useTheme();
   const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
 
+  // Get tab from URL query parameter
+  const queryParams = new URLSearchParams(location.search);
+  const tabParam = queryParams.get("tab");
+
   const [tournament, setTournament] = useState<Tournament | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [tabValue, setTabValue] = useState(0);
   const [selectedRoundId, setSelectedRoundId] = useState<string | null>(null);
+
+  // Set initial tab value based on URL parameter
+  const getInitialTabValue = () => {
+    if (!tabParam) return 0; // Default to Leaderboard
+
+    const tabName = tabParam.toLowerCase();
+    if (tabName in TAB_INDICES) {
+      return TAB_INDICES[tabName as keyof typeof TAB_INDICES];
+    }
+    return 0;
+  };
+
+  const [tabValue, setTabValue] = useState(getInitialTabValue());
 
   const [openInviteDialog, setOpenInviteDialog] = useState<boolean>(false);
   const [openAddRoundDialog, setOpenAddRoundDialog] = useState<boolean>(false);
@@ -130,8 +156,26 @@ const TournamentDetail: React.FC = () => {
     fetchTournament();
   }, [id, isLoaded]);
 
+  // Update tab when URL changes
+  useEffect(() => {
+    setTabValue(getInitialTabValue());
+  }, [location.search]);
+
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
+
+    // Update URL with the tab parameter
+    let tabName = "";
+    Object.entries(TAB_INDICES).forEach(([key, value]) => {
+      if (value === newValue) {
+        tabName = key;
+      }
+    });
+
+    // Only update URL if a valid tab name is found
+    if (tabName) {
+      navigate(`/tournaments/${id}?tab=${tabName}`, { replace: true });
+    }
   };
 
   const handleBackClick = () => {
@@ -149,27 +193,10 @@ const TournamentDetail: React.FC = () => {
         updatedTournament.rounds[updatedTournament.rounds.length - 1].id;
       setSelectedRoundId(newRoundId);
       setTabValue(1); // Switch to Rounds tab
+      navigate(`/tournaments/${id}?tab=rounds`, { replace: true });
     }
 
     setOpenAddRoundDialog(false);
-  };
-
-  const handleUpdateRoundScores = (
-    roundId: string,
-    playerId: string,
-    scores: HoleScore[]
-  ) => {
-    if (!id) return;
-
-    const updatedTournament = tournamentService.updateRoundScores(
-      id,
-      roundId,
-      playerId,
-      scores
-    );
-    if (updatedTournament) {
-      setTournament(updatedTournament);
-    }
   };
 
   const handleDeleteRound = (roundId: string) => {
@@ -309,6 +336,21 @@ const TournamentDetail: React.FC = () => {
       open: () => setOpenEditTournamentDialog(true),
       close: () => setOpenEditTournamentDialog(false),
     },
+  };
+
+  const handleUpdatePlayerGroups = (
+    roundId: string,
+    playerGroups: PlayerGroup[]
+  ) => {
+    const updatedTournament = tournamentService.updateTournamentPlayerGroups(
+      tournament?.id!,
+      roundId,
+      playerGroups
+    );
+
+    if (updatedTournament) {
+      setTournament(updatedTournament);
+    }
   };
 
   if (isLoading || !isLoaded) {
@@ -516,8 +558,8 @@ const TournamentDetail: React.FC = () => {
               selectedRoundId={selectedRoundId}
               onSelectRound={handleSelectRound}
               onDeleteRound={handleDeleteRound}
-              onUpdateScores={handleUpdateRoundScores}
               onAddRound={dialogHandlers.addRound.open}
+              onUpdatePlayerGroups={handleUpdatePlayerGroups}
               // renderPlayerExtra={(player) => (
               //   <>
               //     {isPlayerCaptain(player.id) && (

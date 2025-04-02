@@ -11,10 +11,10 @@ export interface Achievement {
 export interface UserProfile {
   bio: string;
   profileImage: string;
+  handicap: number;
   question1: string;
   question2: string;
   question3: string;
-  question4: string;
   achievements?: Achievement[];
 }
 

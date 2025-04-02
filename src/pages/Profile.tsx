@@ -35,13 +35,12 @@ const Profile: React.FC = () => {
   const [handicapError, setHandicapError] = useState<string>("");
   const [question2, setQuestion2] = useState<string>("");
   const [question3, setQuestion3] = useState<string>("");
-  const [question4, setQuestion4] = useState<string>("");
 
   const questions = {
-    q1: "What is your handicap?",
-    q2: "Which is your favorite club?",
-    q3: "How many beers do you drink a round?",
-    q4: "What is your best golf memory?",
+    handicap: "What is your handicap?",
+    q1: "Which is your favorite club?",
+    q2: "How many beers do you drink a round?",
+    q3: "What is your best golf memory?",
   };
 
   useEffect(() => {
@@ -53,17 +52,11 @@ const Profile: React.FC = () => {
     // Use profile image from service or fall back to Clerk image
     setProfileImage(userData.profileImage || user.imageUrl || "");
 
-    setQuestion1(userData.question1 || "");
-    if (userData.question1) {
-      const parsedHandicap = parseFloat(userData.question1);
-      if (!isNaN(parsedHandicap)) {
-        setHandicapValue(parsedHandicap);
-      }
-    }
+    setHandicapValue(userData.handicap);
 
+    setQuestion1(userData.question1 || "");
     setQuestion2(userData.question2 || "");
     setQuestion3(userData.question3 || "");
-    setQuestion4(userData.question4 || "");
 
     setAchievements(userData.achievements || []);
 
@@ -89,32 +82,20 @@ const Profile: React.FC = () => {
     setBio(e.target.value);
   };
 
-  const handleHandicapChange = (event: Event, newValue: number | number[]) => {
-    if (typeof newValue === "number") {
-      setHandicapValue(newValue);
-      setQuestion1(newValue.toString());
-      setHandicapError("");
-    }
-  };
-
   const handleHandicapInputChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const value = event.target.value;
 
-    if (value === "") {
-      setHandicapValue(null);
-      setQuestion1("");
-      return;
-    }
-
     const numValue = parseFloat(value);
 
     if (!isNaN(numValue) && numValue >= -10 && numValue <= 54) {
       setHandicapValue(numValue);
-      setQuestion1(numValue.toString());
-      setHandicapError("");
     }
+  };
+
+  const handleQuestion1Change = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setQuestion1(e.target.value);
   };
 
   const handleQuestion2Change = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -123,10 +104,6 @@ const Profile: React.FC = () => {
 
   const handleQuestion3Change = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuestion3(e.target.value);
-  };
-
-  const handleQuestion4Change = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setQuestion4(e.target.value);
   };
 
   const handleSave = () => {
@@ -142,7 +119,6 @@ const Profile: React.FC = () => {
       question1: handicapValue !== null ? handicapValue.toString() : "",
       question2,
       question3,
-      question4,
       achievements: achievements, // Make sure we preserve achievements when saving
     };
 
@@ -236,12 +212,10 @@ const Profile: React.FC = () => {
             question1={question1}
             question2={question2}
             question3={question3}
-            question4={question4}
-            onHandicapChange={handleHandicapChange}
             onHandicapInputChange={handleHandicapInputChange}
+            onQuestion1Change={handleQuestion1Change}
             onQuestion2Change={handleQuestion2Change}
             onQuestion3Change={handleQuestion3Change}
-            onQuestion4Change={handleQuestion4Change}
             onSave={handleSave}
           />
 
