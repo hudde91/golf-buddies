@@ -8,8 +8,6 @@ import {
   CircularProgress,
   Tabs,
   Tab,
-  useTheme,
-  alpha,
   useMediaQuery,
   Chip,
   Tooltip,
@@ -28,9 +26,10 @@ import PlayersTab from "../components/tournamentDetails/playersTab/PlayersTab";
 import TournamentDialogs from "../components/tournamentDetails/TournamentDialogs";
 import NotFoundView from "../components/tournamentDetails/NotFoundView";
 import TeamManagement from "../components/tournamentDetails/teamsTab/TeamManagement";
-import { TabPanel } from "../components/common/index";
-import { colors } from "../theme/theme";
 import HighlightsTab from "../components/tournamentDetails/highlightsTab/HighlightsTab";
+import { useStyles } from "../styles/hooks/useStyles";
+import { useTheme } from "@mui/material/styles";
+import { alpha } from "@mui/material/styles";
 
 // Map tab names to their respective indices
 const TAB_INDICES = {
@@ -86,6 +85,7 @@ const TournamentDetail: React.FC = () => {
   const { user, isLoaded } = useUser();
   const navigate = useNavigate();
   const location = useLocation();
+  const styles = useStyles();
   const theme = useTheme();
   const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -355,19 +355,9 @@ const TournamentDetail: React.FC = () => {
 
   if (isLoading || !isLoaded) {
     return (
-      <Box
-        sx={{
-          background: colors.backgrounds.dark,
-          minHeight: "calc(100vh - 64px)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          flexDirection: "column",
-          p: 3,
-        }}
-      >
-        <CircularProgress sx={{ color: "white" }} />
-        <Typography sx={{ mt: 2, color: "white" }}>
+      <Box sx={styles.feedback.loading.container}>
+        <CircularProgress sx={styles.feedback.loading.icon} />
+        <Typography sx={styles.feedback.loading.text}>
           Loading tournament details...
         </Typography>
       </Box>
@@ -393,7 +383,7 @@ const TournamentDetail: React.FC = () => {
             border: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
           }}
         >
-          <Typography variant="h6" sx={{ color: "white", mb: 2 }}>
+          <Typography variant="h6" sx={styles.text.heading.section}>
             Team Captains
           </Typography>
           <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
@@ -450,24 +440,9 @@ const TournamentDetail: React.FC = () => {
   );
 
   return (
-    <Box
-      sx={{
-        background: colors.backgrounds.dark,
-        minHeight: "calc(100vh - 64px)",
-        pt: { xs: 2, md: 4 },
-        pb: 6,
-      }}
-    >
-      <Container maxWidth="lg">
-        <Box
-          sx={{
-            backgroundColor: alpha(theme.palette.common.black, 0.3),
-            backdropFilter: "blur(10px)",
-            borderRadius: 2,
-            p: { xs: 2, md: 4 },
-            border: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
-          }}
-        >
+    <Box sx={styles.layout.page.withBackground}>
+      <Container maxWidth="lg" sx={styles.layout.container.responsive}>
+        <Box sx={styles.card.glass}>
           <TournamentHeader
             tournament={tournament}
             isCreator={isCreator}
@@ -478,14 +453,7 @@ const TournamentDetail: React.FC = () => {
 
           <EnhancedTournamentInfo />
 
-          <Box
-            sx={{
-              borderBottom: 1,
-              borderColor: alpha(theme.palette.common.white, 0.2),
-              mb: 2,
-              overflowX: "auto",
-            }}
-          >
+          <Box sx={styles.tabs.container}>
             <Tabs
               value={tabValue}
               onChange={handleTabChange}
@@ -494,124 +462,137 @@ const TournamentDetail: React.FC = () => {
               scrollButtons={isSmall ? "auto" : false}
               allowScrollButtonsMobile
               textColor="inherit"
-              TabIndicatorProps={{
-                style: { background: "white" },
-              }}
             >
               <Tab
                 label="Leaderboard"
-                sx={{ color: "white", minWidth: isSmall ? "auto" : "initial" }}
+                sx={{ minWidth: isSmall ? "auto" : "initial" }}
               />
               <Tab
                 label={`Rounds (${tournament.rounds.length})`}
-                sx={{ color: "white", minWidth: isSmall ? "auto" : "initial" }}
+                sx={{ minWidth: isSmall ? "auto" : "initial" }}
               />
               <Tab
                 label="Players"
-                sx={{ color: "white", minWidth: isSmall ? "auto" : "initial" }}
+                sx={{ minWidth: isSmall ? "auto" : "initial" }}
               />
               {tournament.isTeamEvent && (
                 <Tab
                   label={`Teams (${tournament.teams.length})`}
-                  sx={{
-                    color: "white",
-                    minWidth: isSmall ? "auto" : "initial",
-                  }}
+                  sx={{ minWidth: isSmall ? "auto" : "initial" }}
                 />
               )}
               <Tab
                 label="Highlights"
                 icon={<AchievementIcon />}
                 iconPosition="start"
-                sx={{
-                  color: "white",
-                  minWidth: isSmall ? "auto" : "initial",
-                }}
+                sx={{ minWidth: isSmall ? "auto" : "initial" }}
               />
             </Tabs>
           </Box>
 
-          <TabPanel id="tournament-detail" value={tabValue} index={0}>
-            <LeaderboardTab
-              tournament={tournament}
-              isCreator={isCreator}
-              onAddRound={dialogHandlers.addRound.open}
-              // isCaptain={isPlayerCaptain(player.id)}
-              // renderPlayerExtra={(player) => (
-              //   <>
-              //     {isPlayerCaptain(player.id) && (
-              //       <CaptainBadge
-              //         player={player}
-              //         tournament={tournament}
-              //         showLabel={false}
-              //       />
-              //     )}
-              //   </>
-              // )}
-            />
-          </TabPanel>
-
-          <TabPanel id="tournament-detail" value={tabValue} index={1}>
-            <RoundsTab
-              tournament={tournament}
-              isCreator={isCreator}
-              selectedRoundId={selectedRoundId}
-              onSelectRound={handleSelectRound}
-              onDeleteRound={handleDeleteRound}
-              onAddRound={dialogHandlers.addRound.open}
-              onUpdatePlayerGroups={handleUpdatePlayerGroups}
-              // renderPlayerExtra={(player) => (
-              //   <>
-              //     {isPlayerCaptain(player.id) && (
-              //       <CaptainBadge
-              //         player={player}
-              //         tournament={tournament}
-              //         showLabel={false}
-              //       />
-              //     )}
-              //   </>
-              // )}
-            />
-          </TabPanel>
-
-          <TabPanel id="tournament-detail" value={tabValue} index={2}>
-            <EnhancedPlayersTab />
-          </TabPanel>
-
-          {tournament.isTeamEvent && (
-            <TabPanel id="tournament-detail" value={tabValue} index={3}>
-              <Box>
-                <TeamManagement
-                  teams={tournament.teams}
-                  players={tournament.players}
+          {/* Leaderboard Tab */}
+          <div
+            role="tabpanel"
+            hidden={tabValue !== 0}
+            id="tournament-detail-tabpanel-0"
+            aria-labelledby="tournament-detail-tab-0"
+          >
+            {tabValue === 0 && (
+              <Box sx={styles.tabs.panel}>
+                <LeaderboardTab
+                  tournament={tournament}
                   isCreator={isCreator}
-                  onAddTeam={handleAddTeam}
-                  onUpdateTeam={handleUpdateTeam}
-                  onDeleteTeam={handleDeleteTeam}
-                  onAssignPlayer={handleAssignPlayerToTeam}
+                  onAddRound={dialogHandlers.addRound.open}
                 />
               </Box>
-            </TabPanel>
-          )}
-          <TabPanel
-            id="tournament-detail"
-            value={tabValue}
-            index={tournament.isTeamEvent ? 4 : 3}
+            )}
+          </div>
+
+          {/* Rounds Tab */}
+          <div
+            role="tabpanel"
+            hidden={tabValue !== 1}
+            id="tournament-detail-tabpanel-1"
+            aria-labelledby="tournament-detail-tab-1"
           >
-            <HighlightsTab
-              tournament={tournament}
-              user={
-                user
-                  ? {
-                      id: user.id,
-                      name: user.fullName || "",
-                      email: user.primaryEmailAddress?.emailAddress || "",
-                      avatarUrl: user.imageUrl,
-                    }
-                  : null
-              }
-            />
-          </TabPanel>
+            {tabValue === 1 && (
+              <Box sx={styles.tabs.panel}>
+                <RoundsTab
+                  tournament={tournament}
+                  isCreator={isCreator}
+                  selectedRoundId={selectedRoundId}
+                  onSelectRound={handleSelectRound}
+                  onDeleteRound={handleDeleteRound}
+                  onAddRound={dialogHandlers.addRound.open}
+                  onUpdatePlayerGroups={handleUpdatePlayerGroups}
+                />
+              </Box>
+            )}
+          </div>
+
+          {/* Players Tab */}
+          <div
+            role="tabpanel"
+            hidden={tabValue !== 2}
+            id="tournament-detail-tabpanel-2"
+            aria-labelledby="tournament-detail-tab-2"
+          >
+            {tabValue === 2 && (
+              <Box sx={styles.tabs.panel}>
+                <EnhancedPlayersTab />
+              </Box>
+            )}
+          </div>
+
+          {/* Teams Tab (conditional) */}
+          {tournament.isTeamEvent && (
+            <div
+              role="tabpanel"
+              hidden={tabValue !== 3}
+              id="tournament-detail-tabpanel-3"
+              aria-labelledby="tournament-detail-tab-3"
+            >
+              {tabValue === 3 && (
+                <Box sx={styles.tabs.panel}>
+                  <TeamManagement
+                    teams={tournament.teams}
+                    players={tournament.players}
+                    isCreator={isCreator}
+                    onAddTeam={handleAddTeam}
+                    onUpdateTeam={handleUpdateTeam}
+                    onDeleteTeam={handleDeleteTeam}
+                    onAssignPlayer={handleAssignPlayerToTeam}
+                  />
+                </Box>
+              )}
+            </div>
+          )}
+
+          {/* Highlights Tab */}
+          <div
+            role="tabpanel"
+            hidden={tabValue !== (tournament.isTeamEvent ? 4 : 3)}
+            id="tournament-detail-tabpanel-highlights"
+            aria-labelledby="tournament-detail-tab-highlights"
+          >
+            {tabValue === (tournament.isTeamEvent ? 4 : 3) && (
+              <Box sx={styles.tabs.panel}>
+                <HighlightsTab
+                  tournament={tournament}
+                  user={
+                    user
+                      ? {
+                          id: user.id,
+                          name: user.fullName || "",
+                          email: user.primaryEmailAddress?.emailAddress || "",
+                          avatarUrl: user.imageUrl,
+                        }
+                      : null
+                  }
+                />
+              </Box>
+            )}
+          </div>
         </Box>
       </Container>
 

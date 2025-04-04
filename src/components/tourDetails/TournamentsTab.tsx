@@ -5,9 +5,8 @@ import {
   GolfCourse as TournamentIcon,
 } from "@mui/icons-material";
 import { Tour, Tournament } from "../../types/event";
-import { EmptyState } from "../common/index";
 import TournamentCard from "./TournamentCard";
-import { useTourStyles } from "../../theme/hooks";
+import { useStyles } from "../../styles/hooks/useStyles";
 
 interface TournamentsTabProps {
   tour: Tour;
@@ -22,25 +21,19 @@ const TournamentsTab: React.FC<TournamentsTabProps> = ({
   onAddTournament,
   navigateToTournament,
 }) => {
-  const styles = useTourStyles();
+  const styles = useStyles();
 
   return (
-    <Box sx={styles.tourTabPanel}>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          mb: 3,
-        }}
-      >
-        <Typography variant="h6" sx={styles.tourSectionTitle}>
+    <Box sx={styles.tabs.panel}>
+      <Box sx={styles.headers.tour.headerContainer}>
+        <Typography variant="h6" sx={styles.headers.tour.sectionTitle}>
           Tournaments in this Tour
         </Typography>
         {isCreator && (
           <Button
             variant="contained"
             startIcon={<AddIcon />}
+            sx={styles.button.primary}
             onClick={onAddTournament}
           >
             Add Tournament
@@ -49,13 +42,24 @@ const TournamentsTab: React.FC<TournamentsTabProps> = ({
       </Box>
 
       {tour.tournaments.length === 0 ? (
-        <EmptyState
-          icon={<TournamentIcon />}
-          title="No Tournaments Added Yet"
-          description="Start by adding tournaments to your tour."
-          buttonText={isCreator ? "Add First Tournament" : undefined}
-          onButtonClick={isCreator ? onAddTournament : undefined}
-        />
+        <Box sx={styles.feedback.emptyState.container}>
+          <TournamentIcon sx={styles.feedback.emptyState.icon} />
+          <Typography variant="h6" sx={styles.feedback.emptyState.title}>
+            No Tournaments Added Yet
+          </Typography>
+          <Typography sx={styles.feedback.emptyState.description}>
+            Start by adding tournaments to your tour.
+          </Typography>
+          {isCreator && (
+            <Button
+              variant="contained"
+              sx={styles.button.primary}
+              onClick={onAddTournament}
+            >
+              Add First Tournament
+            </Button>
+          )}
+        </Box>
       ) : (
         <Grid container spacing={3}>
           {tour.tournaments.map((tournament: Tournament) => (

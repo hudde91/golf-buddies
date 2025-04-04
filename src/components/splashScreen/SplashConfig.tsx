@@ -15,13 +15,13 @@ import {
   CardActionArea,
   Tab,
   Tabs,
-  useTheme,
   alpha,
 } from "@mui/material";
 import ImageIcon from "@mui/icons-material/Image";
 import splashService, { SplashPreset } from "../../services/splashService";
-import { TabPanel } from "../common/index";
 import { colors } from "../../theme/theme";
+import { useStyles } from "../../styles/hooks/useStyles";
+import { useTheme } from "@mui/material/styles";
 
 interface SplashConfigProps {
   onSave: (image: string, text: string) => void;
@@ -34,6 +34,7 @@ const SplashConfig: React.FC<SplashConfigProps> = ({
   currentImage,
   currentText,
 }) => {
+  const styles = useStyles();
   const theme = useTheme();
   const [open, setOpen] = useState(false);
   const [image, setImage] = useState(currentImage);
@@ -88,15 +89,7 @@ const SplashConfig: React.FC<SplashConfigProps> = ({
         variant="outlined"
         startIcon={<ImageIcon />}
         onClick={handleOpen}
-        sx={{
-          mt: 2,
-          color: "white",
-          borderColor: alpha(theme.palette.common.white, 0.5),
-          "&:hover": {
-            borderColor: "white",
-            backgroundColor: alpha(theme.palette.common.white, 0.1),
-          },
-        }}
+        sx={styles.button.outlined}
       >
         Configure Splash Screen
       </Button>
@@ -107,24 +100,18 @@ const SplashConfig: React.FC<SplashConfigProps> = ({
         maxWidth="md"
         fullWidth
         PaperProps={{
-          sx: {
-            backgroundColor: alpha(theme.palette.common.black, 0.7),
-            backdropFilter: "blur(20px)",
-            border: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
-            borderRadius: 2,
-            color: "white",
-          },
+          sx: styles.dialogs.paper,
         }}
       >
-        <DialogTitle sx={{ color: "white" }}>
+        <DialogTitle sx={styles.dialogs.title}>
           Configure Splash Screen
         </DialogTitle>
-        <DialogContent>
+        <DialogContent sx={styles.dialogs.content}>
           <Box sx={{ mb: 3 }}>
             <Typography
               variant="subtitle1"
               gutterBottom
-              sx={{ color: "white" }}
+              sx={styles.text.subtitle.section}
             >
               Splash Screen Preview
             </Typography>
@@ -155,10 +142,7 @@ const SplashConfig: React.FC<SplashConfigProps> = ({
                   justifyContent: "center",
                 }}
               >
-                <Typography
-                  variant="h5"
-                  sx={{ color: "white", fontWeight: "bold" }}
-                >
+                <Typography variant="h5" sx={styles.text.heading.card}>
                   {text}
                 </Typography>
               </Box>
@@ -171,142 +155,129 @@ const SplashConfig: React.FC<SplashConfigProps> = ({
             value={text}
             onChange={(e) => setText(e.target.value)}
             margin="normal"
-            sx={{
-              mb: 3,
-              "& .MuiOutlinedInput-root": {
-                "& fieldset": {
-                  borderColor: alpha(theme.palette.common.white, 0.3),
-                },
-                "&:hover fieldset": {
-                  borderColor: alpha(theme.palette.common.white, 0.5),
-                },
-                "&.Mui-focused fieldset": {
-                  borderColor: theme.palette.primary.main,
-                },
-              },
-              "& .MuiInputLabel-root": {
-                color: alpha(theme.palette.common.white, 0.7),
-              },
-              "& .MuiInputBase-input": {
-                color: "white",
-              },
-            }}
+            sx={styles.inputs.formField}
           />
 
-          <Box
-            sx={{
-              borderBottom: 1,
-              borderColor: alpha(theme.palette.common.white, 0.2),
-            }}
-          >
+          <Box sx={styles.tabs.container}>
             <Tabs
               value={tabValue}
               onChange={handleTabChange}
               aria-label="splash screen configuration tabs"
               textColor="inherit"
-              TabIndicatorProps={{
-                style: { background: "white" },
-              }}
             >
-              <Tab label="Choose From Presets" sx={{ color: "white" }} />
-              <Tab label="Upload Custom Image" sx={{ color: "white" }} />
+              <Tab label="Choose From Presets" />
+              <Tab label="Upload Custom Image" />
             </Tabs>
           </Box>
 
-          <TabPanel id="splash" value={tabValue} index={0}>
-            <Grid container spacing={2}>
-              {presets.map((preset) => (
-                <Grid item xs={12} sm={6} md={4} key={preset.id}>
-                  <Card
-                    sx={{
-                      backgroundColor: "transparent",
-                      border:
-                        image === preset.preview
-                          ? `2px solid ${theme.palette.primary.main}`
-                          : `1px solid ${alpha(
-                              theme.palette.common.white,
-                              0.1
-                            )}`,
-                      transition: "all 0.2s",
-                      "&:hover": {
-                        border: `1px solid ${alpha(
-                          theme.palette.common.white,
-                          0.3
-                        )}`,
-                      },
-                    }}
-                  >
-                    <CardActionArea onClick={() => handlePresetSelect(preset)}>
-                      <CardMedia
-                        component="img"
-                        height="140"
-                        image={preset.preview}
-                        alt={preset.name}
-                      />
-                      <CardContent
+          {/* Tab Panel - Presets */}
+          <div
+            role="tabpanel"
+            hidden={tabValue !== 0}
+            id="splash-tabpanel-0"
+            aria-labelledby="splash-tab-0"
+          >
+            {tabValue === 0 && (
+              <Box sx={styles.tabs.panel}>
+                <Grid container spacing={2}>
+                  {presets.map((preset) => (
+                    <Grid item xs={12} sm={6} md={4} key={preset.id}>
+                      <Card
                         sx={{
-                          py: 1,
-                          bgcolor: alpha(theme.palette.common.black, 0.5),
+                          backgroundColor: "transparent",
+                          border:
+                            image === preset.preview
+                              ? `2px solid ${theme.palette.primary.main}`
+                              : `1px solid ${alpha(
+                                  theme.palette.common.white,
+                                  0.1
+                                )}`,
+                          transition: "all 0.2s",
+                          "&:hover": {
+                            border: `1px solid ${alpha(
+                              theme.palette.common.white,
+                              0.3
+                            )}`,
+                          },
                         }}
                       >
-                        <Typography variant="body2" sx={{ color: "white" }}>
-                          {preset.name}
-                        </Typography>
-                      </CardContent>
-                    </CardActionArea>
-                  </Card>
+                        <CardActionArea
+                          onClick={() => handlePresetSelect(preset)}
+                        >
+                          <CardMedia
+                            component="img"
+                            height="140"
+                            image={preset.preview}
+                            alt={preset.name}
+                          />
+                          <CardContent
+                            sx={{
+                              py: 1,
+                              bgcolor: alpha(theme.palette.common.black, 0.5),
+                            }}
+                          >
+                            <Typography
+                              variant="body2"
+                              sx={styles.text.body.primary}
+                            >
+                              {preset.name}
+                            </Typography>
+                          </CardContent>
+                        </CardActionArea>
+                      </Card>
+                    </Grid>
+                  ))}
                 </Grid>
-              ))}
-            </Grid>
-          </TabPanel>
+              </Box>
+            )}
+          </div>
 
-          <TabPanel id="splash" value={tabValue} index={1}>
-            <Box sx={{ textAlign: "center", py: 2 }}>
-              <Button
-                variant="outlined"
-                component="label"
-                startIcon={<ImageIcon />}
-                sx={{
-                  color: "white",
-                  borderColor: alpha(theme.palette.common.white, 0.5),
-                  "&:hover": {
-                    borderColor: "white",
-                    backgroundColor: alpha(theme.palette.common.white, 0.1),
-                  },
-                }}
-              >
-                Upload Custom Background Image
-                <input
-                  type="file"
-                  hidden
-                  accept="image/*"
-                  onChange={handleImageChange}
-                />
-              </Button>
-              <Typography
-                variant="body2"
-                sx={{ color: alpha(theme.palette.common.white, 0.5), mt: 2 }}
-              >
-                For best results, use an image with a 16:9 aspect ratio and a
-                minimum resolution of 1920x1080 pixels.
-              </Typography>
-            </Box>
-          </TabPanel>
-        </DialogContent>
-        <DialogActions sx={{ p: 2 }}>
-          <Button
-            onClick={handleClose}
-            sx={{
-              color: alpha(theme.palette.common.white, 0.7),
-              "&:hover": {
-                color: "white",
-                backgroundColor: alpha(theme.palette.common.white, 0.1),
-              },
-            }}
+          {/* Tab Panel - Upload */}
+          <div
+            role="tabpanel"
+            hidden={tabValue !== 1}
+            id="splash-tabpanel-1"
+            aria-labelledby="splash-tab-1"
           >
+            {tabValue === 1 && (
+              <Box sx={styles.tabs.panel}>
+                <Box sx={{ textAlign: "center", py: 2 }}>
+                  <Button
+                    variant="outlined"
+                    component="label"
+                    startIcon={<ImageIcon />}
+                    sx={styles.button.outlined}
+                  >
+                    Upload Custom Background Image
+                    <input
+                      type="file"
+                      hidden
+                      accept="image/*"
+                      onChange={handleImageChange}
+                    />
+                  </Button>
+                  <Typography
+                    variant="body2"
+                    sx={styles.text.body.muted}
+                    style={{ marginTop: "1rem" }}
+                  >
+                    For best results, use an image with a 16:9 aspect ratio and
+                    a minimum resolution of 1920x1080 pixels.
+                  </Typography>
+                </Box>
+              </Box>
+            )}
+          </div>
+        </DialogContent>
+        <DialogActions sx={styles.dialogs.actions}>
+          <Button onClick={handleClose} sx={styles.button.cancel}>
             Cancel
           </Button>
-          <Button onClick={handleSave} variant="contained" color="primary">
+          <Button
+            onClick={handleSave}
+            variant="contained"
+            sx={styles.button.primary}
+          >
             Save Configuration
           </Button>
         </DialogActions>

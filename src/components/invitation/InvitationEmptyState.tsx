@@ -1,22 +1,22 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
 import { Email as EmailIcon } from "@mui/icons-material";
-import { useInvitationStyles } from "../../theme/hooks";
+import { useStyles } from "../../styles/hooks";
 
 const InvitationEmptyState: React.FC = () => {
-  const styles = useInvitationStyles();
+  const styles = useStyles();
 
   return (
-    <Box sx={styles.emptyStateContainer}>
-      <EmailIcon sx={styles.emptyStateIcon} />
+    <Box sx={styles.feedback.emptyState.container}>
+      <EmailIcon sx={styles.icon.emptyState} />
       <Typography
         variant="h6"
         gutterBottom
-        sx={styles.invitationTypography.title}
+        sx={styles.feedback.emptyState.title}
       >
         No Invitations
       </Typography>
-      <Typography variant="body2" sx={styles.invitationTypography.muted}>
+      <Typography variant="body2" sx={styles.text.body.muted}>
         You don't have any pending tournament invitations.
       </Typography>
     </Box>

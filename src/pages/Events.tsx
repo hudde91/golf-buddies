@@ -7,28 +7,35 @@ import {
   Tab,
   Badge,
   Typography,
-  Dialog,
-  useTheme,
-  alpha,
   Button,
   ButtonGroup,
+  Chip,
+  Dialog,
+  DialogContent,
+  DialogActions,
+  Grid,
+  Divider,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import EventIcon from "@mui/icons-material/Event";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import PeopleIcon from "@mui/icons-material/People";
+
 import eventService from "../services/eventService";
-import { Event, Tournament, Player } from "../types/event";
+import { Event, Tournament, Player, Tour } from "../types/event";
 import TournamentForm from "../components/tournament/TournamentForm";
 import TourForm from "../components/tour/TourForm";
-import EventHeader from "../components/EventHeader";
-import EventGrid from "../components/EventGrid";
 import InvitationList from "../components/invitation/InvitationList";
 import LoadingState from "../components/tournament/LoadingState";
-import { TabPanel } from "../components/common/index";
-import { colors } from "../theme/theme";
+
+// Import useStyles hook
+import { useStyles } from "../styles/hooks/useStyles";
 
 const Events: React.FC = () => {
   const { user, isLoaded } = useUser();
   const navigate = useNavigate();
-  const theme = useTheme();
+  const styles = useStyles();
 
   const [events, setEvents] = useState<Event[]>([]);
   const [invitations, setInvitations] = useState<Tournament[]>([]);
@@ -156,42 +163,171 @@ const Events: React.FC = () => {
     return <LoadingState />;
   }
 
-  return (
-    <Box
-      sx={{
-        background: colors.backgrounds.dark,
-        minHeight: "calc(100vh - 64px)",
-        py: { xs: 3, md: 4 },
-      }}
-    >
-      <Container maxWidth="lg">
-        <Box
-          sx={{
-            backgroundColor: alpha(theme.palette.common.black, 0.3),
-            backdropFilter: "blur(10px)",
-            borderRadius: 2,
-            p: { xs: 2, md: 4 },
-            border: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
-          }}
-        >
-          <EventHeader onCreateEvent={handleCreateEvent} />
+  // Render Event Header
+  const renderEventHeader = () => {
+    return (
+      <Box sx={styles.headers.event.container}>
+        <Box sx={styles.headers.event.iconContainer}>
+          <EventIcon sx={styles.headers.event.icon} />
+          <Box>
+            <Typography variant="h4" sx={styles.headers.event.title}>
+              Events
+            </Typography>
+            <Typography variant="body1" sx={styles.headers.event.subtitle}>
+              Create, join, and manage your golf events
+            </Typography>
+          </Box>
+        </Box>
 
-          <Box
-            sx={{
-              borderBottom: 1,
-              borderColor: alpha(theme.palette.common.white, 0.2),
-            }}
+        <Button
+          variant="contained"
+          onClick={handleCreateEvent}
+          sx={styles.button.create}
+        >
+          Create Event
+        </Button>
+      </Box>
+    );
+  };
+
+  // Render Event Card
+  const renderEventCard = (event: Event) => {
+    // Extract the common data based on event type
+    const eventData = event.data;
+    const name = eventData.name;
+    const description = eventData.description || "No description";
+    const status = eventData.status;
+
+    // Get players array based on event type
+    const players =
+      event.type === "tournament"
+        ? (eventData as Tournament).players
+        : (eventData as Tour).players || [];
+
+    // Get date and location based on event type
+    const date =
+      event.type === "tournament"
+        ? (eventData as Tournament).startDate
+        : (eventData as Tour).startDate;
+
+    const location =
+      event.type === "tournament"
+        ? (eventData as Tournament).location
+        : undefined;
+
+    return (
+      <Box sx={styles.card.event}>
+        <Box sx={styles.card.eventContent}>
+          {/* Chips */}
+          <Box sx={styles.card.eventChipsContainer}>
+            <Chip
+              label={status}
+              size="small"
+              sx={styles.getStatusChip(status)}
+            />
+
+            <Chip
+              label={event.type}
+              size="small"
+              sx={
+                event.type === "tournament"
+                  ? styles.chips.eventType.tournament
+                  : styles.chips.eventType.tour
+              }
+            />
+          </Box>
+
+          {/* Title & Description */}
+          <Typography variant="h6" sx={styles.text.eventTitle}>
+            {name}
+          </Typography>
+
+          <Typography variant="body2" sx={styles.text.eventDescription}>
+            {description}
+          </Typography>
+
+          {/* Info Items */}
+          <Divider sx={styles.divider.standard} />
+
+          <Box sx={styles.infoItem.container}>
+            {date && (
+              <Box sx={styles.infoItem.base}>
+                <CalendarTodayIcon sx={styles.icon.info} />
+                <Typography sx={styles.text.body.muted}>
+                  {new Date(date).toLocaleDateString()}
+                </Typography>
+              </Box>
+            )}
+
+            {location && (
+              <Box sx={styles.infoItem.base}>
+                <LocationOnIcon sx={styles.icon.info} />
+                <Typography sx={styles.text.body.muted}>{location}</Typography>
+              </Box>
+            )}
+
+            {players && players.length > 0 && (
+              <Box sx={styles.infoItem.base}>
+                <PeopleIcon sx={styles.icon.info} />
+                <Typography sx={styles.text.body.muted}>
+                  {players.length} players
+                </Typography>
+              </Box>
+            )}
+          </Box>
+        </Box>
+
+        {/* Card Actions */}
+        <Box sx={styles.card.actions.centered}>
+          <Button
+            variant="contained"
+            onClick={() => handleViewEvent(event.id)}
+            sx={styles.button.viewDetails}
+            fullWidth
           >
+            View Details
+          </Button>
+        </Box>
+      </Box>
+    );
+  };
+
+  // Render Empty State
+  const renderEmptyState = () => {
+    return (
+      <Box sx={styles.feedback.emptyState.container}>
+        <CalendarTodayIcon sx={styles.feedback.emptyState.icon} />
+        <Typography variant="h6" sx={styles.feedback.emptyState.title}>
+          No Events Found
+        </Typography>
+        <Typography sx={styles.feedback.emptyState.description}>
+          You don't have any events yet. Create a new event to get started.
+        </Typography>
+        <Button
+          variant="contained"
+          onClick={handleCreateEvent}
+          sx={styles.button.create}
+        >
+          Create Event
+        </Button>
+      </Box>
+    );
+  };
+
+  return (
+    <Box sx={styles.layout.page.withBackground}>
+      <Container maxWidth="lg" sx={styles.layout.container.responsive}>
+        <Box sx={styles.card.glass}>
+          {renderEventHeader()}
+
+          <Box sx={styles.tabs.container}>
             <Tabs
               value={tabValue}
               onChange={handleTabChange}
               aria-label="event tabs"
               textColor="inherit"
-              TabIndicatorProps={{
-                style: { background: "white" },
-              }}
             >
-              <Tab label="My Events" sx={{ color: "white" }} />
+              <Tab label="My Events" />
               <Tab
                 label={
                   <Badge
@@ -206,22 +342,46 @@ const Events: React.FC = () => {
             </Tabs>
           </Box>
 
-          <TabPanel id="events" value={tabValue} index={0}>
-            <EventGrid
-              events={events}
-              userId={user?.id || ""}
-              onViewDetails={handleViewEvent}
-              onCreateEvent={handleCreateEvent}
-            />
-          </TabPanel>
+          {/* Tab Panels */}
+          <div
+            role="tabpanel"
+            hidden={tabValue !== 0}
+            id="events-tabpanel-0"
+            aria-labelledby="events-tab-0"
+          >
+            {tabValue === 0 && (
+              <Box sx={styles.tabs.panel}>
+                {events.length > 0 ? (
+                  <Grid container spacing={3}>
+                    {events.map((event) => (
+                      <Grid item xs={12} sm={6} md={4} key={event.id}>
+                        {renderEventCard(event)}
+                      </Grid>
+                    ))}
+                  </Grid>
+                ) : (
+                  renderEmptyState()
+                )}
+              </Box>
+            )}
+          </div>
 
-          <TabPanel id="invitations" value={tabValue} index={1}>
-            <InvitationList
-              invitations={invitations}
-              onAcceptInvitation={handleAcceptInvitation}
-              onDeclineInvitation={handleDeclineInvitation}
-            />
-          </TabPanel>
+          <div
+            role="tabpanel"
+            hidden={tabValue !== 1}
+            id="events-tabpanel-1"
+            aria-labelledby="events-tab-1"
+          >
+            {tabValue === 1 && (
+              <Box sx={styles.tabs.panel}>
+                <InvitationList
+                  invitations={invitations}
+                  onAcceptInvitation={handleAcceptInvitation}
+                  onDeclineInvitation={handleDeclineInvitation}
+                />
+              </Box>
+            )}
+          </div>
         </Box>
       </Container>
 
@@ -232,46 +392,44 @@ const Events: React.FC = () => {
         maxWidth="md"
         fullWidth
         PaperProps={{
-          sx: {
-            backgroundColor: alpha(theme.palette.common.black, 0.7),
-            backdropFilter: "blur(20px)",
-            border: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
-            borderRadius: 2,
-          },
+          sx: styles.dialogs.paper,
         }}
       >
         {!eventType ? (
-          <Box sx={{ p: 4, textAlign: "center" }}>
-            <Typography variant="h5" color="white" gutterBottom>
-              Create New Event
-            </Typography>
-            <Typography variant="body1" color="white" sx={{ mb: 4 }}>
-              Choose the type of event you want to create
-            </Typography>
-            <ButtonGroup variant="contained" size="large" sx={{ mb: 2 }}>
-              <Button
-                onClick={() => handleEventTypeSelect("tournament")}
-                sx={{ p: 2, minWidth: "180px" }}
-              >
-                Single Tournament
-              </Button>
-              <Button
-                onClick={() => handleEventTypeSelect("tour")}
-                sx={{ p: 2, minWidth: "180px" }}
-              >
-                Tournament Series (Tour)
-              </Button>
-            </ButtonGroup>
-            <Box sx={{ mt: 4 }}>
+          <>
+            <DialogContent sx={{ textAlign: "center", p: 4 }}>
+              <Typography variant="h5" sx={styles.text.dialog.title}>
+                Create New Event
+              </Typography>
+              <Typography variant="body1" sx={styles.text.dialog.description}>
+                Choose the type of event you want to create
+              </Typography>
+              <ButtonGroup variant="contained" size="large" sx={{ mb: 2 }}>
+                <Button
+                  onClick={() => handleEventTypeSelect("tournament")}
+                  sx={{ p: 2, minWidth: "180px" }}
+                >
+                  Single Tournament
+                </Button>
+                <Button
+                  onClick={() => handleEventTypeSelect("tour")}
+                  sx={{ p: 2, minWidth: "180px" }}
+                >
+                  Tournament Series (Tour)
+                </Button>
+              </ButtonGroup>
+            </DialogContent>
+            <DialogActions sx={{ p: 2, justifyContent: "center" }}>
               <Button
                 variant="outlined"
                 color="inherit"
                 onClick={handleEventFormClose}
+                sx={styles.button.outlined}
               >
                 Cancel
               </Button>
-            </Box>
-          </Box>
+            </DialogActions>
+          </>
         ) : eventType === "tournament" ? (
           <TournamentForm
             onSubmit={handleTournamentSubmit}

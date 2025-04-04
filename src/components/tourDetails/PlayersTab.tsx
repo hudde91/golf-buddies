@@ -2,80 +2,72 @@ import React from "react";
 import {
   Box,
   Typography,
-  Paper,
+  Card,
+  CardContent,
   Grid,
   Chip,
   Avatar,
-  alpha,
 } from "@mui/material";
 import { People as PeopleIcon } from "@mui/icons-material";
 import { Tour } from "../../types/event";
-import { EmptyState } from "../common/index";
-import { useTourStyles } from "../../theme/hooks";
+import { useStyles } from "../../styles/hooks/useStyles";
 
 interface PlayersTabProps {
   tour: Tour;
 }
 
 const PlayersTab: React.FC<PlayersTabProps> = ({ tour }) => {
-  const styles = useTourStyles();
+  const styles = useStyles();
 
   return (
-    <Box sx={styles.tourTabPanel}>
-      <Typography variant="h6" sx={styles.tourSectionTitle}>
+    <Box sx={styles.tabs.panel}>
+      <Typography variant="h6" sx={styles.headers.tour.sectionTitle}>
         Tour Participants
       </Typography>
 
       {!tour.players || tour.players.length === 0 ? (
-        <EmptyState
-          icon={<PeopleIcon />}
-          title="No Players Yet"
-          description="Players will be added when they join tournaments in this tour."
-        />
+        <Box sx={styles.feedback.emptyState.container}>
+          <PeopleIcon sx={styles.feedback.emptyState.icon} />
+          <Typography variant="h6" sx={styles.feedback.emptyState.title}>
+            No Players Yet
+          </Typography>
+          <Typography sx={styles.feedback.emptyState.description}>
+            Players will be added when they join tournaments in this tour.
+          </Typography>
+        </Box>
       ) : (
         <Grid container spacing={2}>
           {tour.players.map((player) => {
             const team = tour.teams?.find((t) => t.id === player.teamId);
+            const teamColor = team?.color;
 
             return (
               <Grid item xs={12} sm={6} md={4} key={player.id}>
-                <Paper
-                  sx={{
-                    p: 2,
-                    ...styles.tourContainer,
-                    mb: 0,
-                  }}
-                >
-                  <Box sx={{ display: "flex", alignItems: "center" }}>
-                    <Avatar
-                      src={player.avatarUrl}
-                      alt={player.name}
-                      sx={{
-                        width: 48,
-                        height: 48,
-                        mr: 2,
-                      }}
-                    >
-                      {player.name.charAt(0)}
-                    </Avatar>
-                    <Box>
-                      <Typography variant="h6" sx={styles.tourTypography.title}>
-                        {player.name}
-                      </Typography>
-                      {team && (
-                        <Chip
-                          label={team.name}
-                          size="small"
-                          sx={{
-                            mt: 0.5,
-                            backgroundColor: alpha(team.color, 0.2),
-                            color: team.color,
-                          }}
-                        />
-                      )}
+                <Card sx={styles.card.glass}>
+                  <CardContent>
+                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                      <Avatar
+                        src={player.avatarUrl}
+                        alt={player.name}
+                        sx={styles.avatars.player(teamColor)}
+                      >
+                        {player.name.charAt(0)}
+                      </Avatar>
+                      <Box>
+                        <Typography variant="h6" sx={styles.text.heading.card}>
+                          {player.name}
+                        </Typography>
+                        {team && (
+                          <Chip
+                            label={team.name}
+                            size="small"
+                            sx={styles.chips.team(team.color)}
+                          />
+                        )}
+                      </Box>
                     </Box>
-                  </Box>
-                </Paper>
+                  </CardContent>
+                </Card>
               </Grid>
             );
           })}

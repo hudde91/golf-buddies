@@ -1,3 +1,4 @@
+// TODO: To be replaces with new design pattern
 import { useTheme, alpha } from "@mui/material/styles";
 import { colors, styleHelpers } from "../theme";
 import { profileStyles } from "../profileStyles";

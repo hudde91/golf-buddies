@@ -15,7 +15,7 @@ import {
   LocationOn as LocationIcon,
 } from "@mui/icons-material";
 import { Tournament } from "../../types/event";
-import { useInvitationStyles } from "../../theme/hooks";
+import { useStyles } from "../../styles/hooks";
 
 interface InvitationCardProps {
   tournament: Tournament;
@@ -28,25 +28,25 @@ const InvitationCard: React.FC<InvitationCardProps> = ({
   onAccept,
   onDecline,
 }) => {
-  const styles = useInvitationStyles();
+  const styles = useStyles();
 
   return (
-    <Card sx={styles.invitationCard}>
+    <Card sx={styles.card.invitation}>
       <CardContent>
-        <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-          <Box sx={styles.iconContainer}>
+        <Box sx={styles.card.header.withIcon}>
+          <Box sx={styles.icon.container.primary}>
             <EmailIcon />
           </Box>
-          <Typography variant="h6" sx={styles.invitationTypography.title}>
+          <Typography variant="h6" sx={styles.text.heading.card}>
             Invitation: {tournament.name}
           </Typography>
         </Box>
 
-        <Divider sx={styles.invitationDivider} />
+        <Divider sx={styles.divider.standard} />
 
         <Grid container spacing={2} sx={{ mt: 1 }}>
           <Grid item xs={12} sm={6}>
-            <Box sx={styles.infoItem}>
+            <Box sx={styles.infoItem.base}>
               <CalendarIcon fontSize="small" />
               <Typography variant="body2">
                 {new Date(tournament.startDate).toLocaleDateString()}
@@ -55,28 +55,18 @@ const InvitationCard: React.FC<InvitationCardProps> = ({
               </Typography>
             </Box>
 
-            <Box sx={styles.infoItem}>
+            <Box sx={styles.infoItem.base}>
               <LocationIcon fontSize="small" />
               <Typography variant="body2">{tournament.location}</Typography>
             </Box>
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                height: "100%",
-                justifyContent: "center",
-              }}
-            >
-              <Typography
-                variant="body2"
-                sx={{ mb: 1, ...styles.invitationTypography.body }}
-              >
+            <Box sx={styles.layout.flex.column}>
+              <Typography variant="body2" sx={styles.text.body.primary}>
                 <strong>Players:</strong> {tournament.players.length}
               </Typography>
-              <Typography variant="body2" sx={styles.invitationTypography.body}>
+              <Typography variant="body2" sx={styles.text.body.primary}>
                 <strong>Created by:</strong>{" "}
                 {tournament.players.find((p) => p.id === tournament.createdBy)
                   ?.name || "Unknown"}
@@ -85,19 +75,19 @@ const InvitationCard: React.FC<InvitationCardProps> = ({
           </Grid>
         </Grid>
       </CardContent>
-      <CardActions sx={{ p: 2, pt: 0 }}>
+      <CardActions sx={styles.card.actions.base}>
         <Button
           color="primary"
           variant="contained"
           onClick={() => onAccept(tournament.id)}
-          sx={styles.invitationButtons.accept}
+          sx={{ ...styles.button.primary, ...styles.button.accept }}
         >
           Accept
         </Button>
         <Button
           variant="outlined"
           onClick={() => onDecline(tournament.id)}
-          sx={styles.invitationButtons.decline}
+          sx={styles.button.danger}
         >
           Decline
         </Button>

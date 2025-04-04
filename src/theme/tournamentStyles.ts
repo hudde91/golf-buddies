@@ -1,3 +1,4 @@
+// TODO: To be replaces with new design pattern
 import { alpha, Theme } from "@mui/material";
 import { colors } from "./theme";
 

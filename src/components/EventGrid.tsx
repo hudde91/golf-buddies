@@ -7,8 +7,6 @@ import {
   Typography,
   Button,
   Chip,
-  useTheme,
-  alpha,
   Divider,
 } from "@mui/material";
 import EventIcon from "@mui/icons-material/Event";
@@ -19,7 +17,7 @@ import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import AddIcon from "@mui/icons-material/Add";
 import { format } from "date-fns";
 import { Event, Tournament, Tour } from "../types/event";
-import { getStatusColor } from "./util";
+import { useEventStyles } from "../styles/modules/event";
 
 interface EventCardProps {
   event: Event;
@@ -32,7 +30,7 @@ const EventCard: React.FC<EventCardProps> = ({
   userId,
   onViewDetails,
 }) => {
-  const theme = useTheme();
+  const styles = useEventStyles();
 
   let name = "";
   let description = "";
@@ -72,40 +70,13 @@ const EventCard: React.FC<EventCardProps> = ({
   }
 
   return (
-    <Card
-      sx={{
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        backgroundColor: alpha(theme.palette.common.black, 0.3),
-        backdropFilter: "blur(10px)",
-        borderRadius: 2,
-        border: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
-        transition: "transform 0.2s, box-shadow 0.2s",
-        "&:hover": {
-          transform: "translateY(-4px)",
-          boxShadow: `0 12px 20px ${alpha(theme.palette.common.black, 0.3)}`,
-        },
-      }}
-    >
-      <CardContent sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
-        <Box
-          sx={{
-            mb: 2,
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "flex-start",
-          }}
-        >
+    <Card sx={styles.eventCard}>
+      <CardContent sx={styles.eventCardContent}>
+        <Box sx={styles.eventChipsContainer}>
           <Chip
             label={status.charAt(0).toUpperCase() + status.slice(1)}
             size="small"
-            sx={{
-              backgroundColor: alpha(getStatusColor(status, theme), 0.1),
-              color: getStatusColor(status, theme),
-              fontWeight: "medium",
-              borderRadius: 1,
-            }}
+            sx={styles.getStatusChip(status)}
           />
 
           <Chip
@@ -118,37 +89,11 @@ const EventCard: React.FC<EventCardProps> = ({
                 <MoreHorizIcon />
               )
             }
-            sx={{
-              backgroundColor: alpha(
-                event.type === "tournament"
-                  ? theme.palette.primary.main
-                  : theme.palette.secondary.main,
-                0.2
-              ),
-              color:
-                event.type === "tournament"
-                  ? theme.palette.primary.main
-                  : theme.palette.secondary.main,
-              fontWeight: "medium",
-              borderRadius: 1,
-            }}
+            sx={styles.getEventTypeChip(event.type)}
           />
         </Box>
 
-        <Typography
-          variant="h6"
-          component="h2"
-          sx={{
-            fontWeight: "bold",
-            color: alpha(theme.palette.common.white, 0.9),
-            mb: 1,
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            display: "-webkit-box",
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: "vertical",
-          }}
-        >
+        <Typography variant="h6" component="h2" sx={styles.eventTitle}>
           {name}
         </Typography>
 
@@ -156,15 +101,7 @@ const EventCard: React.FC<EventCardProps> = ({
           <Typography
             variant="body2"
             color="textSecondary"
-            sx={{
-              mb: 2,
-              color: alpha(theme.palette.common.white, 0.7),
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              display: "-webkit-box",
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: "vertical",
-            }}
+            sx={styles.eventDescription}
           >
             {description}
           </Typography>
@@ -172,53 +109,27 @@ const EventCard: React.FC<EventCardProps> = ({
 
         <Box sx={{ flex: 1 }} />
 
-        <Divider
-          sx={{ my: 2, borderColor: alpha(theme.palette.common.white, 0.1) }}
-        />
+        <Divider sx={styles.eventDivider} />
 
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            gap: 1,
-          }}
-        >
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <EventIcon
-              fontSize="small"
-              sx={{ color: alpha(theme.palette.common.white, 0.5) }}
-            />
-            <Typography
-              variant="body2"
-              sx={{ color: alpha(theme.palette.common.white, 0.7) }}
-            >
+        <Box sx={styles.eventInfoContainer}>
+          <Box sx={styles.eventInfoItem}>
+            <EventIcon fontSize="small" sx={styles.eventInfoIcon} />
+            <Typography variant="body2" sx={styles.eventInfoText}>
               {format(new Date(startDate), "MMM d, yyyy")} -{" "}
               {format(new Date(endDate), "MMM d, yyyy")}
             </Typography>
           </Box>
 
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <RoomIcon
-              fontSize="small"
-              sx={{ color: alpha(theme.palette.common.white, 0.5) }}
-            />
-            <Typography
-              variant="body2"
-              sx={{ color: alpha(theme.palette.common.white, 0.7) }}
-            >
+          <Box sx={styles.eventInfoItem}>
+            <RoomIcon fontSize="small" sx={styles.eventInfoIcon} />
+            <Typography variant="body2" sx={styles.eventInfoText}>
               {location}
             </Typography>
           </Box>
 
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <PeopleIcon
-              fontSize="small"
-              sx={{ color: alpha(theme.palette.common.white, 0.5) }}
-            />
-            <Typography
-              variant="body2"
-              sx={{ color: alpha(theme.palette.common.white, 0.7) }}
-            >
+          <Box sx={styles.eventInfoItem}>
+            <PeopleIcon fontSize="small" sx={styles.eventInfoIcon} />
+            <Typography variant="body2" sx={styles.eventInfoText}>
               {participants} participant{participants !== 1 ? "s" : ""}
               {event.type === "tour" &&
                 tournamentCount > 0 &&
@@ -230,24 +141,13 @@ const EventCard: React.FC<EventCardProps> = ({
         </Box>
       </CardContent>
 
-      <Box
-        sx={{
-          p: 2,
-          pt: 0,
-          display: "flex",
-          justifyContent: "center",
-        }}
-      >
+      <Box sx={styles.eventCardActions}>
         <Button
           variant="contained"
           color="primary"
           fullWidth
           onClick={() => onViewDetails(event.id)}
-          sx={{
-            textTransform: "none",
-            borderRadius: 1.5,
-            py: 1,
-          }}
+          sx={styles.viewDetailsButton}
         >
           View Details
         </Button>
@@ -269,43 +169,16 @@ const EventGrid: React.FC<EventGridProps> = ({
   onViewDetails,
   onCreateEvent,
 }) => {
-  const theme = useTheme();
+  const styles = useEventStyles();
 
   if (events.length === 0) {
     return (
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          p: 6,
-          textAlign: "center",
-          backgroundColor: alpha(theme.palette.common.black, 0.4),
-          borderRadius: 2,
-          border: `1px dashed ${alpha(theme.palette.common.white, 0.2)}`,
-        }}
-      >
-        <GolfCourseIcon
-          sx={{
-            fontSize: 64,
-            color: alpha(theme.palette.common.white, 0.3),
-            mb: 2,
-          }}
-        />
-        <Typography
-          variant="h6"
-          sx={{ color: alpha(theme.palette.common.white, 0.9), mb: 1 }}
-        >
+      <Box sx={styles.emptyStateContainer}>
+        <GolfCourseIcon sx={styles.emptyStateIcon} />
+        <Typography variant="h6" sx={styles.emptyStateTitle}>
           No Events Yet
         </Typography>
-        <Typography
-          sx={{
-            color: alpha(theme.palette.common.white, 0.7),
-            mb: 3,
-            maxWidth: 450,
-          }}
-        >
+        <Typography sx={styles.emptyStateDescription}>
           Create your first tournament or tour series to start organizing your
           competitions.
         </Typography>
@@ -314,13 +187,7 @@ const EventGrid: React.FC<EventGridProps> = ({
           color="primary"
           startIcon={<AddIcon />}
           onClick={onCreateEvent}
-          sx={{
-            py: 1.5,
-            px: 3,
-            borderRadius: 2,
-            textTransform: "none",
-            fontWeight: "bold",
-          }}
+          sx={styles.createEventButton}
         >
           Create Event
         </Button>

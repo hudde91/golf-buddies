@@ -6,14 +6,11 @@ import {
   Grid,
   Chip,
   Avatar,
-  LinearProgress,
-  alpha,
+  useTheme,
 } from "@mui/material";
 import { Leaderboard as LeaderboardIcon } from "@mui/icons-material";
 import { Tour } from "../../types/event";
-import { EmptyState } from "../common/index";
-import { useTourStyles } from "../../theme/hooks";
-import { useTheme } from "@mui/material";
+import { useStyles } from "../../styles/hooks/useStyles";
 
 interface LeaderboardTabProps {
   tour: Tour;
@@ -24,36 +21,43 @@ const LeaderboardTab: React.FC<LeaderboardTabProps> = ({
   tour,
   leaderboard,
 }) => {
-  const styles = useTourStyles();
+  const styles = useStyles();
   const theme = useTheme();
 
   return (
-    <Box sx={styles.tourTabPanel}>
-      <Typography variant="h6" sx={styles.tourSectionTitle}>
+    <Box sx={styles.tabs.panel}>
+      <Typography variant="h6" sx={styles.headers.tour.sectionTitle}>
         Tour Leaderboard
       </Typography>
 
       {leaderboard.length === 0 ? (
-        <EmptyState
-          icon={<LeaderboardIcon />}
-          title="No Leaderboard Data Available"
-          description="Leaderboard data will appear when tournaments have been completed."
-        />
+        <Box sx={styles.feedback.emptyState.container}>
+          <LeaderboardIcon sx={styles.feedback.emptyState.icon} />
+          <Typography variant="h6" sx={styles.feedback.emptyState.title}>
+            No Leaderboard Data Available
+          </Typography>
+          <Typography sx={styles.feedback.emptyState.description}>
+            Leaderboard data will appear when tournaments have been completed.
+          </Typography>
+        </Box>
       ) : (
-        <Paper elevation={0} sx={styles.leaderboardTable}>
-          <Box sx={styles.leaderboardHeader}>
+        <Paper elevation={0} sx={styles.card.glass}>
+          {/* Leaderboard Header */}
+          <Box sx={styles.tables.leaderboard.header}>
             <Grid container>
               <Grid item xs={1} sx={{ textAlign: "center" }}>
-                #
+                <Typography sx={styles.text.body.secondary}>#</Typography>
               </Grid>
               <Grid item xs={4} sm={3}>
-                Player
+                <Typography sx={styles.text.body.secondary}>Player</Typography>
               </Grid>
               <Grid item xs={3} sm={2}>
-                Team
+                <Typography sx={styles.text.body.secondary}>Team</Typography>
               </Grid>
               <Grid item xs={4} sm={3}>
-                Tournaments
+                <Typography sx={styles.text.body.secondary}>
+                  Tournaments
+                </Typography>
               </Grid>
               <Grid
                 item
@@ -64,24 +68,26 @@ const LeaderboardTab: React.FC<LeaderboardTabProps> = ({
                   display: { xs: "none", sm: "block" },
                 }}
               >
-                Points
+                <Typography sx={styles.text.body.secondary}>Points</Typography>
               </Grid>
             </Grid>
           </Box>
 
+          {/* Leaderboard Rows */}
           {leaderboard.map((player, index) => {
             const tournamentCount = Object.keys(
               player.tournamentResults
             ).length;
 
-            const medalStyle = styles.getMedalStyle(index);
+            // Use the getPositionStyle helper to determine styling based on position
+            const positionStyle = styles.getPositionStyle(index);
 
             return (
               <Box
                 key={player.playerId}
                 sx={{
-                  ...styles.tourPlayerItem,
-                  bgcolor: medalStyle.bgcolor,
+                  ...styles.tables.leaderboard.row,
+                  bgcolor: positionStyle.bgcolor,
                 }}
               >
                 <Grid container alignItems="center">
@@ -89,7 +95,7 @@ const LeaderboardTab: React.FC<LeaderboardTabProps> = ({
                     <Typography
                       sx={{
                         fontWeight: "bold",
-                        color: medalStyle.color,
+                        color: positionStyle.color,
                       }}
                     >
                       {index + 1}
@@ -100,13 +106,13 @@ const LeaderboardTab: React.FC<LeaderboardTabProps> = ({
                       <Avatar
                         src={player.avatarUrl}
                         alt={player.playerName}
-                        sx={styles.tourAvatar}
+                        sx={styles.avatars.leaderboard()}
                       >
                         {player.playerName.charAt(0)}
                       </Avatar>
                       <Typography
                         sx={{
-                          ...styles.tourTypography.body,
+                          ...styles.text.body.primary,
                           overflow: "hidden",
                           textOverflow: "ellipsis",
                           whiteSpace: "nowrap",
@@ -121,73 +127,32 @@ const LeaderboardTab: React.FC<LeaderboardTabProps> = ({
                       <Chip
                         label={player.teamName}
                         size="small"
-                        sx={{
-                          backgroundColor: alpha(
-                            theme.palette.primary.main,
-                            0.2
-                          ),
-                          color: theme.palette.primary.main,
-                        }}
+                        sx={styles.chips.eventType.custom(
+                          player.teamColor || theme.palette.primary.main
+                        )}
                       />
                     ) : (
-                      <Typography sx={styles.tourTypography.muted}>
+                      <Typography sx={styles.text.body.muted}>
                         No Team
                       </Typography>
                     )}
                   </Grid>
                   <Grid item xs={4} sm={3}>
-                    <Typography sx={styles.tourTypography.body}>
+                    <Typography sx={styles.text.body.primary}>
                       {tournamentCount} / {tour.tournaments.length}
                     </Typography>
                   </Grid>
                   <Grid item xs={12} sm={3} sx={{ mt: { xs: 1, sm: 0 } }}>
-                    <Box
+                    <Typography
+                      variant="h6"
                       sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "flex-end",
+                        color: "white",
+                        fontWeight: "bold",
+                        textAlign: "right",
                       }}
                     >
-                      <Box
-                        sx={{
-                          flex: 1,
-                          mr: 2,
-                          display: { xs: "block", sm: "none" },
-                        }}
-                      >
-                        <LinearProgress
-                          variant="determinate"
-                          value={
-                            (player.totalPoints /
-                              (leaderboard[0]?.totalPoints || 1)) *
-                            100
-                          }
-                          sx={{
-                            height: 8,
-                            borderRadius: 4,
-                            backgroundColor: alpha(
-                              theme.palette.common.white,
-                              0.1
-                            ),
-                            "& .MuiLinearProgress-bar": {
-                              backgroundColor:
-                                index === 0
-                                  ? theme.palette.warning.main
-                                  : theme.palette.primary.main,
-                            },
-                          }}
-                        />
-                      </Box>
-                      <Typography
-                        variant="h6"
-                        sx={{
-                          ...styles.tourTypography.title,
-                          textAlign: "right",
-                        }}
-                      >
-                        {player.totalPoints}
-                      </Typography>
-                    </Box>
+                      {player.totalPoints}
+                    </Typography>
                   </Grid>
                 </Grid>
               </Box>

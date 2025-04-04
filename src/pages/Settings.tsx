@@ -13,31 +13,25 @@ import {
   Tabs,
   Switch,
   FormControlLabel,
+  Container,
+  Button,
   alpha,
 } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import ImageIcon from "@mui/icons-material/Image";
 import ColorLensIcon from "@mui/icons-material/ColorLens";
 import PersonIcon from "@mui/icons-material/Person";
-import { useTheme } from "@mui/material/styles";
 import BackgroundService from "../services/backgroundService";
 import SplashConfig from "../components/splashScreen/SplashConfig";
 
-import {
-  PageContainer,
-  GlassPanel,
-  PageHeader,
-  SectionHeader,
-  PrimaryButton,
-  OutlinedButton,
-} from "../components/common";
-import { useAppStyles, useResponsiveStyles } from "../theme/hooks";
-import { TabPanel } from "../components/common/index";
+// Import the useStyles hook from your new design system
+import { useStyles } from "../styles/hooks/useStyles";
+import { tabs } from "../styles/components/tabs"; // Import tabs directly
 
 const Settings: React.FC = () => {
   const theme = useTheme();
+  const styles = useStyles(); // Use the new styles hook
   const { user } = useUser();
-  const styles = useAppStyles();
-  const responsive = useResponsiveStyles();
 
   const [splashImage, setSplashImage] = useState<string>(
     "/splash-background.jpg"
@@ -142,256 +136,336 @@ const Settings: React.FC = () => {
   };
 
   return (
-    <PageContainer>
-      <PageHeader
-        title="Settings"
-        subtitle="Customize your application appearance and view account information"
-      />
+    <Box sx={styles.layout.page.withBackground}>
+      <Container maxWidth="lg" sx={styles.layout.container.responsive}>
+        {/* Page Header */}
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h4" sx={styles.text.heading.page}>
+            Settings
+          </Typography>
+          <Typography sx={styles.text.subtitle.page}>
+            Customize your application appearance and view account information
+          </Typography>
+        </Box>
 
-      <Box sx={styles.tabs}>
-        <Tabs
-          value={tabValue}
-          onChange={handleTabChange}
-          aria-label="settings tabs"
-          textColor="inherit"
-          TabIndicatorProps={{
-            style: { background: theme.palette.common.white },
-          }}
+        {/* Tabs */}
+        <Box sx={tabs.container(theme)}>
+          <Tabs
+            value={tabValue}
+            onChange={handleTabChange}
+            aria-label="settings tabs"
+            textColor="inherit"
+          >
+            <Tab
+              label="Appearance"
+              icon={<ColorLensIcon />}
+              iconPosition="start"
+            />
+            <Tab label="Account" icon={<PersonIcon />} iconPosition="start" />
+          </Tabs>
+        </Box>
+
+        {/* Tab Panel - Appearance */}
+        <div
+          role="tabpanel"
+          hidden={tabValue !== 0}
+          id="settings-tabpanel-0"
+          aria-labelledby="settings-tab-0"
         >
-          <Tab
-            label="Appearance"
-            icon={<ColorLensIcon />}
-            iconPosition="start"
-            sx={{ color: "white" }}
-          />
-          <Tab
-            label="Account"
-            icon={<PersonIcon />}
-            iconPosition="start"
-            sx={{ color: "white" }}
-          />
-        </Tabs>
-      </Box>
+          {tabValue === 0 && (
+            <Box sx={{ p: { xs: 2, md: 3 } }}>
+              {/* Splash Screen Section */}
+              <Card sx={{ ...styles.card.glass, mb: 4 }}>
+                <CardContent>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      mb: 2,
+                    }}
+                  >
+                    <Typography variant="h6" sx={styles.text.heading.section}>
+                      Splash Screen
+                    </Typography>
+                  </Box>
+                  <Typography sx={styles.text.body.secondary}>
+                    Customize the splash screen that appears when the
+                    application starts.
+                  </Typography>
+                  <SplashConfig
+                    onSave={handleSplashConfigSave}
+                    currentImage={splashImage}
+                    currentText={splashText}
+                  />
+                </CardContent>
+              </Card>
 
-      <TabPanel id="settings" value={tabValue} index={0}>
-        <GlassPanel sx={{ mb: 4 }}>
-          <SectionHeader title="Splash Screen" />
-          <Typography
-            variant="body2"
-            sx={{ color: "rgba(255,255,255,0.7)", mb: 2 }}
-          >
-            Customize the splash screen that appears when the application
-            starts.
-          </Typography>
-          <SplashConfig
-            onSave={handleSplashConfigSave}
-            currentImage={splashImage}
-            currentText={splashText}
-          />
-        </GlassPanel>
+              {/* App Background Section */}
+              <Card sx={styles.card.glass}>
+                <CardContent>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      mb: 2,
+                    }}
+                  >
+                    <Typography variant="h6" sx={styles.text.heading.section}>
+                      App Background
+                    </Typography>
+                  </Box>
+                  <Typography sx={styles.text.body.secondary}>
+                    Customize the background image of the application.
+                  </Typography>
 
-        <GlassPanel>
-          <SectionHeader title="App Background" />
-          <Typography
-            variant="body2"
-            sx={{ color: "rgba(255,255,255,0.7)", mb: 2 }}
-          >
-            Customize the background image of the application.
-          </Typography>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={customBackground}
+                        onChange={handleBackgroundToggle}
+                        color="primary"
+                      />
+                    }
+                    label="Enable custom background"
+                    sx={{ color: "white", mb: 2 }}
+                  />
 
-          <FormControlLabel
-            control={
-              <Switch
-                checked={customBackground}
-                onChange={handleBackgroundToggle}
-                color="primary"
-              />
-            }
-            label="Enable custom background"
-            sx={{ color: theme.palette.common.white, mb: 2 }}
-          />
+                  {customBackground && (
+                    <>
+                      <Box sx={{ mt: 3, mb: 2 }}>
+                        <Typography
+                          variant="subtitle1"
+                          gutterBottom
+                          sx={styles.text.subtitle.section}
+                        >
+                          Background Preview
+                        </Typography>
+                        <Box
+                          sx={{
+                            width: "100%",
+                            height: 150,
+                            borderRadius: 1,
+                            overflow: "hidden",
+                            position: "relative",
+                            backgroundImage: `url(${backgroundPreviewUrl})`,
+                            backgroundSize: "cover",
+                            backgroundPosition: "center",
+                            mb: 2,
+                            border: `1px solid ${alpha(
+                              theme.palette.common.white,
+                              0.2
+                            )}`,
+                          }}
+                        />
+                      </Box>
 
-          {customBackground && (
-            <>
-              <Box sx={{ mt: 3, mb: 2 }}>
-                <Typography
-                  variant="subtitle1"
-                  gutterBottom
-                  sx={{ color: "white" }}
-                >
-                  Background Preview
-                </Typography>
-                <Box
-                  sx={{
-                    width: "100%",
-                    height: 150,
-                    borderRadius: 1,
-                    overflow: "hidden",
-                    position: "relative",
-                    backgroundImage: `url(${backgroundPreviewUrl})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                    mb: 2,
-                    border: `1px solid ${alpha("#ffffff", 0.2)}`,
-                  }}
-                />
-              </Box>
+                      <Box sx={{ mt: 3 }}>
+                        <Typography
+                          variant="subtitle1"
+                          gutterBottom
+                          sx={styles.text.subtitle.section}
+                        >
+                          Choose a Background
+                        </Typography>
 
-              <Box sx={{ mt: 3 }}>
-                <Typography
-                  variant="subtitle1"
-                  gutterBottom
-                  sx={{ color: "white" }}
-                >
-                  Choose a Background
-                </Typography>
+                        <Grid container spacing={2}>
+                          {backgroundPresets.map((preset) => (
+                            <Grid item xs={6} sm={4} md={3} key={preset.id}>
+                              <Card
+                                sx={{
+                                  backgroundColor: "transparent",
+                                  border:
+                                    backgroundImage === preset.preview
+                                      ? `2px solid #30b3ff`
+                                      : `1px solid ${alpha(
+                                          theme.palette.common.white,
+                                          0.1
+                                        )}`,
+                                  transition: "all 0.2s",
+                                  "&:hover": {
+                                    border: `1px solid ${alpha(
+                                      theme.palette.common.white,
+                                      0.3
+                                    )}`,
+                                  },
+                                }}
+                              >
+                                <CardActionArea
+                                  onClick={() =>
+                                    handleBackgroundPresetSelect(preset.preview)
+                                  }
+                                >
+                                  <CardMedia
+                                    component="img"
+                                    height="80"
+                                    image={preset.preview}
+                                    alt={preset.name}
+                                  />
+                                  <CardContent
+                                    sx={{
+                                      py: 1,
+                                      bgcolor: alpha(
+                                        theme.palette.common.black,
+                                        0.5
+                                      ),
+                                    }}
+                                  >
+                                    <Typography
+                                      variant="body2"
+                                      noWrap
+                                      sx={styles.text.body.muted}
+                                    >
+                                      {preset.name}
+                                    </Typography>
+                                  </CardContent>
+                                </CardActionArea>
+                              </Card>
+                            </Grid>
+                          ))}
+                        </Grid>
+                      </Box>
 
-                <Grid container spacing={2}>
-                  {backgroundPresets.map((preset) => (
-                    <Grid item xs={6} sm={4} md={3} key={preset.id}>
-                      <Card
+                      <Box sx={{ mt: 3 }}>
+                        <Typography
+                          variant="subtitle1"
+                          gutterBottom
+                          sx={styles.text.subtitle.section}
+                        >
+                          Upload Custom Background
+                        </Typography>
+
+                        <Button
+                          variant="outlined"
+                          startIcon={<ImageIcon />}
+                          sx={styles.button.outlined}
+                        >
+                          Upload Image
+                          <input
+                            type="file"
+                            hidden
+                            accept="image/*"
+                            onChange={handleBackgroundUpload}
+                          />
+                        </Button>
+
+                        <Typography
+                          variant="body2"
+                          sx={styles.text.body.muted}
+                          style={{ marginTop: "0.5rem" }}
+                        >
+                          For best results, use a high-resolution image in
+                          landscape orientation.
+                        </Typography>
+                      </Box>
+
+                      <Box
                         sx={{
-                          backgroundColor: "transparent",
-                          border:
-                            backgroundImage === preset.preview
-                              ? `2px solid #30b3ff`
-                              : `1px solid rgba(255, 255, 255, 0.1)`,
-                          transition: "all 0.2s",
-                          "&:hover": {
-                            border: `1px solid rgba(255, 255, 255, 0.3)`,
-                          },
+                          mt: 3,
+                          display: "flex",
+                          justifyContent: "flex-end",
                         }}
                       >
-                        <CardActionArea
-                          onClick={() =>
-                            handleBackgroundPresetSelect(preset.preview)
-                          }
+                        <Button
+                          variant="contained"
+                          sx={styles.button.primary}
+                          onClick={handleSaveBackground}
                         >
-                          <CardMedia
-                            component="img"
-                            height="80"
-                            image={preset.preview}
-                            alt={preset.name}
-                          />
-                          <CardContent
-                            sx={{ py: 1, bgcolor: "rgba(0, 0, 0, 0.5)" }}
-                          >
-                            <Typography
-                              variant="body2"
-                              noWrap
-                              sx={{ color: "white" }}
-                            >
-                              {preset.name}
-                            </Typography>
-                          </CardContent>
-                        </CardActionArea>
-                      </Card>
-                    </Grid>
-                  ))}
-                </Grid>
-              </Box>
-
-              <Box sx={{ mt: 3 }}>
-                <Typography
-                  variant="subtitle1"
-                  gutterBottom
-                  sx={{ color: "white" }}
-                >
-                  Upload Custom Background
-                </Typography>
-
-                <OutlinedButton startIcon={<ImageIcon />}>
-                  Upload Image
-                  <input
-                    type="file"
-                    hidden
-                    accept="image/*"
-                    onChange={handleBackgroundUpload}
-                  />
-                </OutlinedButton>
-
-                <Typography
-                  variant="body2"
-                  sx={{ color: "rgba(255,255,255,0.5)", mt: 1 }}
-                >
-                  For best results, use a high-resolution image in landscape
-                  orientation.
-                </Typography>
-              </Box>
-
-              <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end" }}>
-                <PrimaryButton onClick={handleSaveBackground}>
-                  Save Background Settings
-                </PrimaryButton>
-              </Box>
-            </>
+                          Save Background Settings
+                        </Button>
+                      </Box>
+                    </>
+                  )}
+                </CardContent>
+              </Card>
+            </Box>
           )}
-        </GlassPanel>
-      </TabPanel>
+        </div>
 
-      <TabPanel id="settings" value={tabValue} index={1}>
-        <GlassPanel>
-          <SectionHeader title="Account Information" />
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={4}>
-              <Typography
-                variant="subtitle2"
-                sx={{ color: "rgba(255,255,255,0.7)" }}
-              >
-                Email Address
-              </Typography>
-            </Grid>
-            <Grid item xs={12} sm={8}>
-              <Typography variant="body1" sx={{ color: "white" }}>
-                {user?.primaryEmailAddress?.emailAddress}
-              </Typography>
-            </Grid>
+        {/* Tab Panel - Account */}
+        <div
+          role="tabpanel"
+          hidden={tabValue !== 1}
+          id="settings-tabpanel-1"
+          aria-labelledby="settings-tab-1"
+        >
+          {tabValue === 1 && (
+            <Box sx={{ p: { xs: 2, md: 3 } }}>
+              <Card sx={styles.card.glass}>
+                <CardContent>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      mb: 2,
+                    }}
+                  >
+                    <Typography variant="h6" sx={styles.text.heading.section}>
+                      Account Information
+                    </Typography>
+                  </Box>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} sm={4}>
+                      <Typography
+                        variant="subtitle2"
+                        sx={styles.text.body.secondary}
+                      >
+                        Email Address
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={12} sm={8}>
+                      <Typography variant="body1" sx={{ color: "white" }}>
+                        {user?.primaryEmailAddress?.emailAddress}
+                      </Typography>
+                    </Grid>
 
-            <Grid item xs={12}>
-              <Divider
-                sx={{ my: 1, backgroundColor: "rgba(255,255,255,0.1)" }}
-              />
-            </Grid>
+                    <Grid item xs={12}>
+                      <Divider sx={styles.divider.standard} />
+                    </Grid>
 
-            <Grid item xs={12} sm={4}>
-              <Typography
-                variant="subtitle2"
-                sx={{ color: "rgba(255,255,255,0.7)" }}
-              >
-                User ID
-              </Typography>
-            </Grid>
-            <Grid item xs={12} sm={8}>
-              <Typography variant="body1" sx={{ color: "white" }}>
-                {user?.id}
-              </Typography>
-            </Grid>
+                    <Grid item xs={12} sm={4}>
+                      <Typography
+                        variant="subtitle2"
+                        sx={styles.text.body.secondary}
+                      >
+                        User ID
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={12} sm={8}>
+                      <Typography variant="body1" sx={{ color: "white" }}>
+                        {user?.id}
+                      </Typography>
+                    </Grid>
 
-            <Grid item xs={12}>
-              <Divider
-                sx={{ my: 1, backgroundColor: "rgba(255,255,255,0.1)" }}
-              />
-            </Grid>
+                    <Grid item xs={12}>
+                      <Divider sx={styles.divider.standard} />
+                    </Grid>
 
-            <Grid item xs={12} sm={4}>
-              <Typography
-                variant="subtitle2"
-                sx={{ color: "rgba(255,255,255,0.7)" }}
-              >
-                Created
-              </Typography>
-            </Grid>
-            <Grid item xs={12} sm={8}>
-              <Typography variant="body1" sx={{ color: "white" }}>
-                {user?.createdAt
-                  ? new Date(user.createdAt).toLocaleDateString()
-                  : "N/A"}
-              </Typography>
-            </Grid>
-          </Grid>
-        </GlassPanel>
-      </TabPanel>
-    </PageContainer>
+                    <Grid item xs={12} sm={4}>
+                      <Typography
+                        variant="subtitle2"
+                        sx={styles.text.body.secondary}
+                      >
+                        Created
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={12} sm={8}>
+                      <Typography variant="body1" sx={{ color: "white" }}>
+                        {user?.createdAt
+                          ? new Date(user.createdAt).toLocaleDateString()
+                          : "N/A"}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                </CardContent>
+              </Card>
+            </Box>
+          )}
+        </div>
+      </Container>
+    </Box>
   );
 };
 

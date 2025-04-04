@@ -3,12 +3,12 @@ import {
   Box,
   Typography,
   Button,
-  useTheme,
-  alpha,
   useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
+import { useEventStyles } from "../styles/modules/event";
 
 interface EventHeaderProps {
   onCreateEvent: () => void;
@@ -17,44 +17,21 @@ interface EventHeaderProps {
 const EventHeader: React.FC<EventHeaderProps> = ({ onCreateEvent }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const styles = useEventStyles();
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: { xs: "column", sm: "row" },
-        justifyContent: "space-between",
-        alignItems: { xs: "flex-start", sm: "center" },
-        mb: 4,
-        gap: { xs: 2, sm: 0 },
-      }}
-    >
-      <Box sx={{ display: "flex", alignItems: "center" }}>
-        <EmojiEventsIcon
-          sx={{
-            fontSize: { xs: 32, md: 40 },
-            color: alpha(theme.palette.common.white, 0.9),
-            mr: 2,
-          }}
-        />
+    <Box sx={styles.eventHeaderContainer}>
+      <Box sx={styles.eventHeaderIconContainer}>
+        <EmojiEventsIcon sx={styles.eventHeaderIcon} />
         <Box>
           <Typography
             variant={isMobile ? "h5" : "h4"}
             component="h1"
-            sx={{
-              fontWeight: "bold",
-              color: alpha(theme.palette.common.white, 0.9),
-            }}
+            sx={styles.eventHeaderTitle}
           >
             My Events
           </Typography>
-          <Typography
-            variant="body1"
-            sx={{
-              color: alpha(theme.palette.common.white, 0.7),
-              maxWidth: "600px",
-            }}
-          >
+          <Typography variant="body1" sx={styles.eventHeaderSubtitle}>
             Manage your tournaments and series
           </Typography>
         </Box>
@@ -65,19 +42,7 @@ const EventHeader: React.FC<EventHeaderProps> = ({ onCreateEvent }) => {
         color="primary"
         startIcon={<AddIcon />}
         onClick={onCreateEvent}
-        sx={{
-          py: { xs: 1, md: 1.5 },
-          px: { xs: 2, md: 3 },
-          borderRadius: 2,
-          textTransform: "none",
-          fontWeight: "bold",
-          fontSize: { xs: "0.875rem", md: "1rem" },
-          backgroundColor: theme.palette.primary.main,
-          "&:hover": {
-            backgroundColor: theme.palette.primary.dark,
-          },
-          // boxShadow: `0 4px 14px ${alpha(theme.palette.primary.main, 0.4)}`,
-        }}
+        sx={styles.createEventButton}
       >
         Create Event
       </Button>

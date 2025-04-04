@@ -58,6 +58,29 @@ golf-app/
 │   ├── App.tsx
 │   ├── index.css
 │   └── main.tsx
+├── styles/
+│   ├── components/
+│   │   ├── button.ts       - Button styles
+│   │   ├── card.ts         - Card and panel styles
+│   │   ├── chips.ts        - Chip and badge styles
+│   │   ├── divider.ts      - Divider styles
+│   │   ├── feedback.ts     - Feedback, dialogs, empty states
+│   │   ├── headers.ts      - Page and section headers
+│   │   ├── icon.ts         - Icon styling
+│   │   ├── infoItems.ts    - Information items with icons
+│   │   ├── layout.ts       - Layout containers and structures
+│   │   ├── tabs.ts         - Tab styling
+│   │   ├── text.ts         - Typography styles
+│   │   └── index.ts        - Exports all component styles
+│   ├── foundations/
+│   │   ├── mixins.ts       - Reusable style mixins
+│   │   └── animations.ts   - Animation patterns
+│   ├── patterns/
+│   │   └── layouts.ts      - Common layout patterns
+│   ├── tokens/
+│   │   ├── spacing.ts      - Spacing values
+│   │   └── colors.ts       - Color definitions
+│   └── index.ts            - Main style exports
 ├── .gitignore
 ├── package.json
 ├── tsconfig.json
