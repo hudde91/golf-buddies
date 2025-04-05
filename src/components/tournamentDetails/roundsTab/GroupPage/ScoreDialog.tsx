@@ -153,6 +153,7 @@ const ScoreDialog: React.FC<ScoreDialogProps> = ({
       </DialogTitle>
       <DialogContent sx={styles.dialogs.content}>
         <Box sx={{ mb: 1 }}>
+          {/* Make selectedScore with this text displayed center and bigger */}
           <Typography variant="subtitle2" gutterBottom>
             Select Score:
           </Typography>
@@ -195,7 +196,7 @@ const ScoreDialog: React.FC<ScoreDialogProps> = ({
                 alignItems: "center",
               }}
             >
-              <Box
+              {/* <Box
                 sx={{
                   display: "flex",
                   alignItems: "center",
@@ -225,12 +226,14 @@ const ScoreDialog: React.FC<ScoreDialogProps> = ({
                 >
                   <NavigateNextIcon />
                 </IconButton>
-              </Box>
+              </Box> */}
             </Box>
           </Box>
 
           <Box
             sx={{
+              // TODO: Display the scores in a grid with 3 columns
+              // or come up with a better way to display the scores in order to not make it scrollable
               display: "flex",
               overflowX: "auto",
               py: 1,
@@ -239,7 +242,6 @@ const ScoreDialog: React.FC<ScoreDialogProps> = ({
               "&::-webkit-scrollbar": {
                 display: "none", // Chrome, Safari, Edge
               },
-              // Add padding to ensure all items are visible when scrolling
               px: 1,
               mx: -1,
             }}
@@ -312,6 +314,19 @@ const ScoreDialog: React.FC<ScoreDialogProps> = ({
           justifyContent: "space-between",
         }}
       >
+        {/* TODO: Should now save the selectedScore and also move on focus to select the score for the next person in the group.
+          When it is the last person in the group, it should save the selectedScore and close the dialog.
+        */}
+        <Button
+          onClick={handleSaveAndNext}
+          variant="contained"
+          color="primary"
+          disabled={selectedScore === undefined || players.length <= 1}
+          endIcon={<NavigateNextIcon />}
+          sx={styles.button.primary}
+        >
+          Next
+        </Button>
         <Button
           onClick={onClose}
           variant="outlined"
@@ -319,6 +334,7 @@ const ScoreDialog: React.FC<ScoreDialogProps> = ({
         >
           Cancel
         </Button>
+        {/* TODO: Remove Save button and instead add functionality to Next button so save selectedScore */}
         <Box sx={{ display: "flex", gap: 1 }}>
           <Button
             onClick={handleSave}
@@ -328,16 +344,6 @@ const ScoreDialog: React.FC<ScoreDialogProps> = ({
             sx={styles.button.primary}
           >
             Save
-          </Button>
-          <Button
-            onClick={handleSaveAndNext}
-            variant="contained"
-            color="primary"
-            disabled={selectedScore === undefined || players.length <= 1}
-            endIcon={<NavigateNextIcon />}
-            sx={styles.button.primary}
-          >
-            Next
           </Button>
         </Box>
       </DialogActions>

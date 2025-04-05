@@ -505,16 +505,14 @@ const GroupDetailPage: React.FC<GroupDetailPageProps> = ({
                     timeout="auto"
                     unmountOnExit
                   >
-                    <Box sx={{ p: 3, bgcolor: "action.hover" }}>
-                      <PlayerScorecard
-                        player={player}
-                        tournament={{
-                          ...tournament,
-                          rounds: [round],
-                        }}
-                        showAllRounds={false}
-                      />
-                    </Box>
+                    <PlayerScorecard
+                      player={player}
+                      tournament={{
+                        ...tournament,
+                        rounds: [round],
+                      }}
+                      showAllRounds={false}
+                    />
                   </Collapse>
                 </React.Fragment>
               );

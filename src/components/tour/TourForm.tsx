@@ -20,7 +20,7 @@ import PeopleIcon from "@mui/icons-material/People";
 import { TourFormData } from "../../types/event";
 import { useStyles } from "../../styles/hooks/useStyles";
 import { useUser } from "@clerk/clerk-react";
-import friendsService from "../../services/friendsService";
+import friendsService, { Friend } from "../../services/friendsService";
 import FriendInviteList from "../FriendInviteList";
 
 interface TourFormProps {
@@ -51,7 +51,7 @@ const TourForm: React.FC<TourFormProps> = ({
   });
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [friends, setFriends] = useState([]);
+  const [friends, setFriends] = useState<Friend[]>([]);
   const [loadingFriends, setLoadingFriends] = useState(true);
   const [selectedFriends, setSelectedFriends] = useState<string[]>([]);
   const [expandFriends, setExpandFriends] = useState(false);

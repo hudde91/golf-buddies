@@ -8,10 +8,12 @@ export const dialogs = {
     border: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
     borderRadius: { xs: "16px 16px 0 0", sm: 2 }, // Bottom sheet style on mobile
     position: { xs: "absolute", sm: "relative" }, // Position at bottom on mobile
-    bottom: { xs: 0, sm: "auto" }, // Anchor to bottom on mobile
+    top: { xs: 0, sm: "auto" }, // Set to top on mobile
+    // bottom: { xs: 0, sm: "auto" }, // Anchor to bottom on mobile
     margin: { xs: 0, sm: undefined }, // Remove margin on mobile
     maxHeight: { xs: "85vh", sm: undefined }, // Limit height on mobile
     width: { xs: "100%", sm: undefined }, // Full width on mobile
+    height: { xs: "100%", sm: undefined }, // Auto height on mobile
   }),
 
   title: (theme: Theme) => ({

@@ -452,7 +452,7 @@ const eventService = {
       const updatedRounds = tournament.rounds.map((round) => {
         if (!round.scores[player.id]) {
           const emptyScores: HoleScore[] = [];
-          for (let i = 1; i <= round.courseDetails?.holes || 18; i++) {
+          for (let i = 1; i <= round.courseDetails?.holes! || 18; i++) {
             emptyScores.push({ hole: i });
           }
           return {
@@ -498,7 +498,7 @@ const eventService = {
         const updatedRounds = tournament.rounds.map((round) => {
           if (!round.scores[player.id]) {
             const emptyScores: HoleScore[] = [];
-            for (let i = 1; i <= round.courseDetails?.holes || 18; i++) {
+            for (let i = 1; i <= round.courseDetails?.holes! || 18; i++) {
               emptyScores.push({ hole: i });
             }
             return {
@@ -921,29 +921,6 @@ const eventService = {
 
     return updatedTournament;
   },
-  // Get user's pending invitations - only for tournaments, not tours
-  getUserInvitations: (userEmail: string): Tournament[] => {
-    const events = eventService.getAllEvents();
-    const invitations: Tournament[] = [];
-
-    events.forEach((event) => {
-      if (event.type === "tournament") {
-        const tournament = event.data as Tournament;
-        if (tournament.invitations.includes(userEmail)) {
-          invitations.push(tournament);
-        }
-      } else if (event.type === "tour") {
-        const tour = event.data as Tour;
-        tour.tournaments.forEach((tournament) => {
-          if (tournament.invitations?.includes(userEmail)) {
-            invitations.push(tournament);
-          }
-        });
-      }
-    });
-
-    return invitations;
-  },
 
   // Invite players to a tournament or tour
   invitePlayersToTournament: (
@@ -1060,7 +1037,7 @@ const eventService = {
         updatedTournament.rounds = updatedTournament.rounds.map((round) => {
           if (!round.scores[player.id]) {
             const emptyScores: HoleScore[] = [];
-            for (let i = 1; i <= round.courseDetails?.holes || 18; i++) {
+            for (let i = 1; i <= round.courseDetails?.holes! || 18; i++) {
               emptyScores.push({ hole: i });
             }
             return {
@@ -1120,7 +1097,7 @@ const eventService = {
       const updatedRounds = tournament.rounds.map((round) => {
         if (!round.scores[player.id]) {
           const emptyScores: HoleScore[] = [];
-          for (let i = 1; i <= round.courseDetails?.holes || 18; i++) {
+          for (let i = 1; i <= round.courseDetails?.holes! || 18; i++) {
             emptyScores.push({ hole: i });
           }
           return {
@@ -1183,7 +1160,7 @@ const eventService = {
         updatedTournament.rounds = updatedTournament.rounds.map((round) => {
           if (!round.scores[player.id]) {
             const emptyScores: HoleScore[] = [];
-            for (let i = 1; i <= round.courseDetails?.holes || 18; i++) {
+            for (let i = 1; i <= round.courseDetails?.holes! || 18; i++) {
               emptyScores.push({ hole: i });
             }
             return {

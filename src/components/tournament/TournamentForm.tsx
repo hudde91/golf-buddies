@@ -29,7 +29,7 @@ import { TournamentFormData } from "../../types/event";
 import { useStyles } from "../../styles/hooks/useStyles";
 import { useTheme } from "@mui/material";
 import { useUser } from "@clerk/clerk-react";
-import friendsService from "../../services/friendsService";
+import friendsService, { Friend } from "../../services/friendsService";
 import FriendInviteList from "../FriendInviteList";
 
 interface TournamentFormProps {
@@ -67,7 +67,7 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [friends, setFriends] = useState([]);
+  const [friends, setFriends] = useState<Friend[]>([]);
   const [loadingFriends, setLoadingFriends] = useState(true);
   const [selectedFriends, setSelectedFriends] = useState<string[]>([]);
   const [expandFriends, setExpandFriends] = useState(false);

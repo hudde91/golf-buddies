@@ -1,7 +1,6 @@
 // src/styles/components/card.ts
 import { Theme } from "@mui/material";
 import { alpha } from "@mui/material/styles";
-import { mixins } from "../foundations";
 
 export const card = {
   // Base card style
@@ -43,7 +42,7 @@ export const card = {
     height: "100%",
     display: "flex",
     flexDirection: "column",
-    p: { xs: 0, md: 3 },
+    p: { xs: 3, md: 3 },
     borderRadius: { xs: 3, sm: 2 },
   }),
 

@@ -24,6 +24,7 @@ interface PlayerScoreEditorProps {
   onSave: (roundId: string, playerId: string, scores: HoleScore[]) => void;
 }
 
+// Is not used today!!
 const PlayerScoreEditor: React.FC<PlayerScoreEditorProps> = ({
   playerId,
   playerName,
@@ -188,5 +189,5 @@ const PlayerScoreEditor: React.FC<PlayerScoreEditorProps> = ({
     </Dialog>
   );
 };
-
+// Is not used today!!
 export default PlayerScoreEditor;

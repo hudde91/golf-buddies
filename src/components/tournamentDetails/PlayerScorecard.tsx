@@ -112,17 +112,17 @@ const PlayerScorecard: React.FC<PlayerScorecardProps> = ({
 
   return (
     <Box>
+      {/* TODO: Make this whole section scrollable. Needs to be able to see this on mobile screen */}
       {showAllRounds && (
         <Box
           sx={{
-            mb: 2,
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
           }}
         >
           <Box>
-            <Typography variant="h6">{player.name}'s Scorecard</Typography>
+            <Typography variant="h6">Scorecard</Typography>
 
             {tournament.isTeamEvent && playerTeam && (
               <Chip
@@ -154,7 +154,6 @@ const PlayerScorecard: React.FC<PlayerScorecardProps> = ({
           )}
         </Box>
       )}
-
       {displayRounds.length > 1 && (
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
           <Tabs
@@ -175,7 +174,6 @@ const PlayerScorecard: React.FC<PlayerScorecardProps> = ({
           </Tabs>
         </Box>
       )}
-
       {displayRounds.map((round, roundIndex) => {
         const sections = getRoundSections(round);
 
@@ -189,7 +187,6 @@ const PlayerScorecard: React.FC<PlayerScorecardProps> = ({
                   {new Date(round.date).toLocaleDateString()}
                 </Typography>
               )}
-
               {sections.map((section, sectionIndex) => (
                 <TableContainer
                   key={`section-${sectionIndex}`}
@@ -304,7 +301,6 @@ const PlayerScorecard: React.FC<PlayerScorecardProps> = ({
                   </Table>
                 </TableContainer>
               ))}
-
               <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
                 <Typography variant="h6">
                   Round Total: {calculateTotal(player.id, round)}
@@ -332,7 +328,6 @@ const PlayerScorecard: React.FC<PlayerScorecardProps> = ({
           </TabPanel>
         );
       })}
-
       {showAllRounds &&
         sortedRounds.length > 0 &&
         tournament.status === "completed" && (
