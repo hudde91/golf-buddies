@@ -1,14 +1,14 @@
 import React from "react";
 import { Box, Typography, CircularProgress } from "@mui/material";
-import { useTournamentStyles } from "../../theme/hooks";
+import { useStyles } from "../../styles/hooks/useStyles";
 
 const LoadingState: React.FC = () => {
-  const styles = useTournamentStyles();
+  const styles = useStyles();
 
   return (
-    <Box sx={styles.loadingState}>
-      <CircularProgress sx={{ color: "white" }} />
-      <Typography sx={{ mt: 2, color: "white" }}>
+    <Box sx={styles.feedback.loading.container}>
+      <CircularProgress sx={styles.feedback.loading.icon} />
+      <Typography sx={styles.feedback.loading.text}>
         Loading tournaments...
       </Typography>
     </Box>

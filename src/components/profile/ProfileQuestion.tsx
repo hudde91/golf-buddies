@@ -1,6 +1,6 @@
 import React from "react";
-import { Box, Typography, Divider, alpha, useTheme } from "@mui/material";
-import { useProfileStyles } from "../../theme/hooks";
+import { Box, Typography, Divider } from "@mui/material";
+import { useStyles } from "../../styles/hooks/useStyles";
 
 interface ProfileQuestionProps {
   question: string;
@@ -13,31 +13,26 @@ const ProfileQuestion: React.FC<ProfileQuestionProps> = ({
   answer,
   isLast = false,
 }) => {
-  const styles = useProfileStyles();
-  const theme = useTheme();
+  const styles = useStyles();
 
   return (
     <Box sx={{ mb: isLast ? 3 : 4 }}>
-      <Typography variant="subtitle1" sx={styles.profileTypography.subtitle}>
+      <Typography
+        variant="subtitle1"
+        sx={styles.profileCard.typography.subtitle}
+      >
         {question}
       </Typography>
       <Typography
         variant="body1"
         sx={{
-          ...styles.profileTypography.body,
+          ...styles.profileCard.typography.body,
           ml: 2,
         }}
       >
         {answer}
       </Typography>
-      {!isLast && (
-        <Divider
-          sx={{
-            mt: 2,
-            backgroundColor: alpha(theme.palette.common.white, 0.1),
-          }}
-        />
-      )}
+      {!isLast && <Divider sx={styles.divider.standard} />}
     </Box>
   );
 };

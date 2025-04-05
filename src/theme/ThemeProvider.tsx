@@ -7,7 +7,6 @@ import React, {
 } from "react";
 import { ThemeProvider as MuiThemeProvider, CssBaseline } from "@mui/material";
 import theme from "./theme";
-import BackgroundService from "../services/backgroundService";
 
 type ThemeContextType = {
   isDarkMode: boolean;
@@ -30,13 +29,20 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
 }) => {
   const [isDarkMode, setIsDarkMode] = useState<boolean>(true);
 
-  // Apply background settings from BackgroundService when the component mounts
+  // Apply background settings when the component mounts
   useEffect(() => {
-    BackgroundService.applyBackgroundSettings();
+    // You can add any initialization logic here
+    // For example, check localStorage for theme preference
+    const savedTheme = localStorage.getItem("theme-preference");
+    if (savedTheme === "light") {
+      setIsDarkMode(false);
+    }
   }, []);
 
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
+    localStorage.setItem("theme-preference", !isDarkMode ? "dark" : "light");
+    // Here you would also update the theme object with light theme values if needed
   };
 
   return (

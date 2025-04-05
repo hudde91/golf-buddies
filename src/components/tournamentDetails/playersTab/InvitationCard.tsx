@@ -1,31 +1,21 @@
 import React from "react";
-import { Box, Typography, Paper, Avatar, useTheme, alpha } from "@mui/material";
+import { Box, Typography, Paper, Avatar } from "@mui/material";
+import { useStyles } from "../../../styles/hooks/useStyles";
 
 interface InvitationCardProps {
   email: string;
 }
 
 const InvitationCard: React.FC<InvitationCardProps> = ({ email }) => {
-  const theme = useTheme();
+  const styles = useStyles();
 
   return (
-    <Paper
-      variant="outlined"
-      sx={{
-        p: 2,
-        backgroundColor: alpha(theme.palette.common.black, 0.3),
-        backdropFilter: "blur(10px)",
-        borderRadius: 2,
-        border: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
-      }}
-    >
+    <Paper variant="outlined" sx={styles.card.glass}>
       <Box sx={{ display: "flex", alignItems: "center" }}>
         <Avatar
           sx={{
-            width: 40,
-            height: 40,
-            mr: 2,
-            bgcolor: alpha(theme.palette.primary.light, 0.5),
+            ...styles.avatars.standard(),
+            bgcolor: (theme) => theme.palette.primary.light,
           }}
         >
           {email[0].toUpperCase()}

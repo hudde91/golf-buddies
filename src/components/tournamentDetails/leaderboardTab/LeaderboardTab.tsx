@@ -7,38 +7,38 @@ import {
 import { Tournament } from "../../../types/event";
 import TournamentLeaderboard from "./TournamentLeaderboard";
 import TeamLeaderboard from "./TeamLeaderboard";
-import { useTournamentLeaderboardStyles } from "../../../theme/hooks";
+import { useStyles } from "../../../styles/hooks/useStyles";
 
 interface LeaderboardTabProps {
   tournament: Tournament;
   isCreator: boolean;
-  // isCaptain: boolean;
   onAddRound: () => void;
 }
 
 const LeaderboardTab: React.FC<LeaderboardTabProps> = ({
   tournament,
   isCreator,
-  // isCaptain,
   onAddRound,
 }) => {
-  const styles = useTournamentLeaderboardStyles();
+  const styles = useStyles();
 
   if (tournament.rounds.length === 0) {
     return (
-      <Box sx={styles.leaderboardEmptyState}>
-        <TrophyIcon sx={styles.leaderboardEmptyStateIcon} />
+      <Box sx={styles.tournamentLeaderboard.leaderboardEmptyState}>
+        <TrophyIcon
+          sx={styles.tournamentLeaderboard.leaderboardEmptyStateIcon}
+        />
         <Typography
           variant="h6"
           gutterBottom
-          sx={styles.tournamentTypography.title}
+          sx={styles.tournamentLeaderboard.leaderboardTypography.title}
         >
           No Rounds Added Yet
         </Typography>
         <Typography
           variant="body2"
           sx={{
-            ...styles.tournamentTypography.muted,
+            ...styles.text.body.muted,
             maxWidth: 500,
             mx: "auto",
           }}
@@ -52,6 +52,7 @@ const LeaderboardTab: React.FC<LeaderboardTabProps> = ({
             color="primary"
             startIcon={<AddCircleIcon />}
             onClick={onAddRound}
+            sx={styles.button.primary}
           >
             Add First Round
           </Button>
@@ -68,7 +69,7 @@ const LeaderboardTab: React.FC<LeaderboardTabProps> = ({
 
       {tournament.isTeamEvent && tournament.scoringType !== "individual" && (
         <Box sx={{ mt: 6 }}>
-          <Divider sx={styles.leaderboardDivider} />
+          <Divider sx={styles.tournamentLeaderboard.leaderboardDivider} />
           <TeamLeaderboard tournament={tournament} />
         </Box>
       )}

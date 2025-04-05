@@ -1,14 +1,5 @@
 import React from "react";
-import {
-  Box,
-  Typography,
-  Button,
-  Paper,
-  Grid,
-  Chip,
-  alpha,
-  Theme,
-} from "@mui/material";
+import { Box, Typography, Button, Paper, Grid, Chip } from "@mui/material";
 import {
   CalendarToday as CalendarIcon,
   People as PeopleIcon,
@@ -19,14 +10,13 @@ import {
 } from "@mui/icons-material";
 import { format } from "date-fns";
 import { Tour } from "../../types/event";
-import { getStatusColor } from "../util";
+import { useStyles } from "../../styles/hooks/useStyles";
 
 interface TourHeaderProps {
   tour: Tour;
   isCreator: boolean;
   onEdit: () => void;
   onDelete: () => void;
-  theme: Theme;
 }
 
 const TourHeader: React.FC<TourHeaderProps> = ({
@@ -34,91 +24,42 @@ const TourHeader: React.FC<TourHeaderProps> = ({
   isCreator,
   onEdit,
   onDelete,
-  theme,
 }) => {
+  const styles = useStyles();
+
   return (
-    <Paper
-      sx={{
-        backgroundColor: alpha(theme.palette.common.black, 0.3),
-        backdropFilter: "blur(10px)",
-        borderRadius: 2,
-        p: { xs: 2, md: 4 },
-        mb: 4,
-        border: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
-      }}
-    >
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          flexWrap: "wrap",
-          gap: 2,
-        }}
-      >
+    <Paper sx={styles.tour.header.container}>
+      <Box sx={styles.tour.header.contentWrapper}>
         <Box>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1 }}>
+          <Box sx={styles.tour.header.statusChipsContainer}>
             <Chip
               label={tour.status.charAt(0).toUpperCase() + tour.status.slice(1)}
               size="small"
-              sx={{
-                backgroundColor: alpha(getStatusColor(tour.status, theme), 0.2),
-                color: getStatusColor(tour.status, theme),
-                fontWeight: "medium",
-                borderRadius: 1,
-              }}
+              sx={styles.tour.getStatusChip(tour.status)}
             />
             <Chip
               label="Tour Series"
               size="small"
               icon={<TrophyIcon />}
-              sx={{
-                backgroundColor: alpha(theme.palette.secondary.main, 0.2),
-                color: theme.palette.secondary.main,
-                fontWeight: "medium",
-                borderRadius: 1,
-              }}
+              sx={styles.tour.getTourChip}
             />
           </Box>
 
-          <Typography
-            variant="h4"
-            sx={{
-              fontWeight: "bold",
-              color: "white",
-              mb: 2,
-            }}
-          >
+          <Typography variant="h4" sx={styles.tour.header.title}>
             {tour.name}
           </Typography>
 
           {tour.description && (
-            <Typography
-              variant="body1"
-              sx={{
-                color: alpha(theme.palette.common.white, 0.8),
-                mb: 3,
-                maxWidth: "800px",
-              }}
-            >
+            <Typography variant="body1" sx={styles.tour.header.description}>
               {tour.description}
             </Typography>
           )}
 
-          <Grid container spacing={4} sx={{ mb: 3 }}>
+          <Grid container spacing={4} sx={styles.tour.header.infoContainer}>
             <Grid item xs={12} sm={"auto"}>
               <Box sx={{ display: "flex", alignItems: "center" }}>
-                <CalendarIcon
-                  sx={{
-                    color: alpha(theme.palette.common.white, 0.6),
-                    mr: 1,
-                  }}
-                />
-                <Typography
-                  sx={{
-                    color: alpha(theme.palette.common.white, 0.8),
-                    whiteSpace: "nowrap",
-                  }}
-                >
+                <CalendarIcon sx={styles.tour.header.infoIcon} />
+                <Typography sx={styles.tour.header.infoText}>
                   {format(new Date(tour.startDate), "MMM d, yyyy")} -{" "}
                   {format(new Date(tour.endDate), "MMM d, yyyy")}
                 </Typography>
@@ -127,15 +68,8 @@ const TourHeader: React.FC<TourHeaderProps> = ({
 
             <Grid item xs={12} sm={"auto"}>
               <Box sx={{ display: "flex", alignItems: "center" }}>
-                <TournamentIcon
-                  sx={{
-                    color: alpha(theme.palette.common.white, 0.6),
-                    mr: 1,
-                  }}
-                />
-                <Typography
-                  sx={{ color: alpha(theme.palette.common.white, 0.8) }}
-                >
+                <TournamentIcon sx={styles.tour.header.infoIcon} />
+                <Typography sx={styles.tour.header.infoText}>
                   {tour.tournaments.length} Tournament
                   {tour.tournaments.length !== 1 ? "s" : ""}
                 </Typography>
@@ -144,15 +78,8 @@ const TourHeader: React.FC<TourHeaderProps> = ({
 
             <Grid item xs={12} sm={"auto"}>
               <Box sx={{ display: "flex", alignItems: "center" }}>
-                <PeopleIcon
-                  sx={{
-                    color: alpha(theme.palette.common.white, 0.6),
-                    mr: 1,
-                  }}
-                />
-                <Typography
-                  sx={{ color: alpha(theme.palette.common.white, 0.8) }}
-                >
+                <PeopleIcon sx={styles.tour.header.infoIcon} />
+                <Typography sx={styles.tour.header.infoText}>
                   {tour.players?.length || 0} Participant
                   {(tour.players?.length || 0) !== 1 ? "s" : ""}
                 </Typography>
@@ -162,25 +89,12 @@ const TourHeader: React.FC<TourHeaderProps> = ({
         </Box>
 
         {isCreator && (
-          <Box
-            sx={{
-              display: "flex",
-              gap: 1,
-              alignItems: "flex-start",
-            }}
-          >
+          <Box sx={styles.tour.header.actionButtons}>
             <Button
               variant="outlined"
               startIcon={<EditIcon />}
               onClick={onEdit}
-              sx={{
-                color: "white",
-                borderColor: alpha(theme.palette.common.white, 0.3),
-                "&:hover": {
-                  borderColor: alpha(theme.palette.common.white, 0.6),
-                  backgroundColor: alpha(theme.palette.common.white, 0.1),
-                },
-              }}
+              sx={styles.tour.header.editButton}
             >
               Edit Tour
             </Button>
@@ -189,6 +103,7 @@ const TourHeader: React.FC<TourHeaderProps> = ({
               color="error"
               startIcon={<DeleteIcon />}
               onClick={onDelete}
+              sx={styles.button.danger}
             >
               Delete
             </Button>

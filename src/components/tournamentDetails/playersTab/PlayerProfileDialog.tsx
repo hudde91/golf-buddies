@@ -10,7 +10,6 @@ import {
   Button,
   Avatar,
   Chip,
-  alpha,
 } from "@mui/material";
 import {
   Close as CloseIcon,
@@ -21,7 +20,7 @@ import {
 } from "@mui/icons-material";
 import { Tournament, Player } from "../../../types/event";
 import ProfileInfoItem from "./ProfileInfoItem";
-import { useTournamentPlayerStyles } from "../../../theme/hooks";
+import { useStyles } from "../../../styles/hooks/useStyles";
 
 interface PlayerProfileDialogProps {
   open: boolean;
@@ -36,7 +35,7 @@ const PlayerProfileDialog: React.FC<PlayerProfileDialogProps> = ({
   tournament,
   onClose,
 }) => {
-  const styles = useTournamentPlayerStyles();
+  const styles = useStyles();
 
   if (!player) return null;
 
@@ -53,7 +52,7 @@ const PlayerProfileDialog: React.FC<PlayerProfileDialogProps> = ({
       maxWidth="sm"
       fullWidth
       PaperProps={{
-        sx: styles.profileDialog,
+        sx: styles.tournamentPlayers.profileDialog,
       }}
     >
       <DialogTitle sx={{ color: "white", pr: 6 }}>
@@ -61,7 +60,7 @@ const PlayerProfileDialog: React.FC<PlayerProfileDialogProps> = ({
         <IconButton
           aria-label="close"
           onClick={onClose}
-          sx={styles.closeButton}
+          sx={styles.tournamentPlayers.closeButton}
         >
           <CloseIcon />
         </IconButton>
@@ -72,16 +71,19 @@ const PlayerProfileDialog: React.FC<PlayerProfileDialogProps> = ({
           sx={{
             display: "flex",
             alignItems: "center",
-            ...styles.profileDivider,
+            ...styles.tournamentPlayers.profileDivider,
           }}
         >
           <Avatar
             src={player.avatarUrl}
             alt={player.name}
-            sx={styles.getProfileAvatar(playerTeam?.color)}
+            sx={styles.tournamentPlayers.getProfileAvatar(playerTeam?.color)}
           />
           <Box>
-            <Typography variant="h5" sx={styles.playerTypography.profileTitle}>
+            <Typography
+              variant="h5"
+              sx={styles.tournamentPlayers.playerTypography.profileTitle}
+            >
               {player.name}
             </Typography>
             <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mt: 1 }}>
@@ -93,7 +95,9 @@ const PlayerProfileDialog: React.FC<PlayerProfileDialogProps> = ({
                 <Chip
                   size="small"
                   label={playerTeam.name}
-                  sx={styles.chips.getTeamChip(playerTeam.color)}
+                  sx={styles.tournamentPlayers.chips.getTeamChip(
+                    playerTeam.color
+                  )}
                 />
               )}
 
@@ -102,7 +106,9 @@ const PlayerProfileDialog: React.FC<PlayerProfileDialogProps> = ({
                   size="small"
                   icon={<GolfIcon style={{ color: playerTeam.color }} />}
                   label="Team Captain"
-                  sx={styles.chips.getCaptainChip(playerTeam.color)}
+                  sx={styles.tournamentPlayers.chips.getCaptainChip(
+                    playerTeam.color
+                  )}
                 />
               )}
             </Box>
@@ -112,10 +118,16 @@ const PlayerProfileDialog: React.FC<PlayerProfileDialogProps> = ({
         {/* Bio Section */}
         {player.bio && (
           <Box sx={{ mb: 3 }}>
-            <Typography variant="h6" sx={styles.playerTypography.sectionTitle}>
+            <Typography
+              variant="h6"
+              sx={styles.tournamentPlayers.playerTypography.sectionTitle}
+            >
               About
             </Typography>
-            <Typography variant="body1" sx={styles.playerTypography.bio}>
+            <Typography
+              variant="body1"
+              sx={styles.tournamentPlayers.playerTypography.bio}
+            >
               {player.bio}
             </Typography>
           </Box>
@@ -123,7 +135,10 @@ const PlayerProfileDialog: React.FC<PlayerProfileDialogProps> = ({
 
         {/* Golf Details */}
         <Box sx={{ mb: 2 }}>
-          <Typography variant="h6" sx={styles.playerTypography.sectionTitle}>
+          <Typography
+            variant="h6"
+            sx={styles.tournamentPlayers.playerTypography.sectionTitle}
+          >
             Golf Profile
           </Typography>
 
@@ -169,8 +184,12 @@ const PlayerProfileDialog: React.FC<PlayerProfileDialogProps> = ({
         </Box>
       </DialogContent>
 
-      <DialogActions sx={styles.dialogActions}>
-        <Button onClick={onClose} variant="outlined" sx={styles.buttons.close}>
+      <DialogActions sx={styles.tournamentPlayers.dialogActions}>
+        <Button
+          onClick={onClose}
+          variant="outlined"
+          sx={styles.tournamentPlayers.buttons.close}
+        >
           Close
         </Button>
       </DialogActions>

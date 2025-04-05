@@ -2,7 +2,7 @@ import React from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { Container, Typography, Button, Box } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { text, button, layout } from "../styles";
+import { text, button } from "../styles";
 
 const NotFound: React.FC = () => {
   const theme = useTheme();

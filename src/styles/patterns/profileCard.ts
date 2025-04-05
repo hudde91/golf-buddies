@@ -1,17 +1,19 @@
-// TODO: To be replaces with new design pattern
-import { alpha, Theme } from "@mui/material";
-import { colors, styleHelpers } from "./theme";
+// src/styles/patterns/profileCard.ts
+import { Theme } from "@mui/material";
+import { alpha } from "@mui/material/styles";
+import { card } from "../components/card";
+import { text } from "../components/text";
 
-export const profileStyles = {
-  profileCard: (theme: Theme) => ({
-    ...styleHelpers.glassBox(theme),
+export const profileCard = {
+  container: (theme: Theme) => ({
+    ...card.glass(theme),
     p: { xs: 3, md: 4 },
     mb: 4,
     border: `2px solid ${alpha(theme.palette.common.white, 0.1)}`,
   }),
 
   sectionTitle: (theme: Theme) => ({
-    color: colors.text.primary,
+    color: "white",
     fontWeight: 600,
     borderBottom: `2px solid ${alpha(theme.palette.primary.main, 0.5)}`,
     paddingBottom: "8px",
@@ -20,7 +22,7 @@ export const profileStyles = {
 
   formField: (theme: Theme) => ({
     input: {
-      color: colors.text.primary,
+      color: "white",
       fontSize: "1.1rem",
       lineHeight: 1.6,
     },
@@ -46,45 +48,66 @@ export const profileStyles = {
   avatar: (theme: Theme) => ({
     border: `4px solid ${alpha(theme.palette.common.white, 0.2)}`,
     boxShadow: "0 8px 16px rgba(0,0,0,0.3)",
+    width: { xs: 180, md: 220 },
+    height: { xs: 180, md: 220 },
   }),
 
   typography: {
-    profileHeading: (theme: Theme) => ({
-      color: colors.text.primary,
-      fontWeight: 600,
-      textShadow: "0 2px 4px rgba(0,0,0,0.2)",
+    heading: (theme: Theme) => ({
+      ...text.heading.profile(theme),
+      fontSize: { xs: "2rem", sm: "2.5rem", md: "3rem" },
     }),
-    profileSubtitle: (theme: Theme) => ({
-      color: theme.palette.primary.light,
+    subtitle: (theme: Theme) => ({
+      ...text.subtitle.section(theme),
       fontWeight: 600,
       fontSize: "1.2rem",
       mb: 1,
     }),
-    profileBody: (theme: Theme) => ({
-      color: alpha(theme.palette.common.white, 0.9),
+    body: (theme: Theme) => ({
+      ...text.body.primary(theme),
       fontSize: "1.2rem",
       lineHeight: 1.7,
       letterSpacing: "0.2px",
     }),
-    profileMuted: (theme: Theme) => ({
-      color: alpha(theme.palette.common.white, 0.6),
+    muted: (theme: Theme) => ({
+      ...text.body.muted(theme),
       fontSize: "0.95rem",
     }),
   },
 
   buttons: {
-    editButton: (theme: Theme) => ({
+    edit: (theme: Theme) => ({
       bgcolor: alpha(theme.palette.common.white, 0.1),
       padding: "12px",
+      color: "white",
       "&:hover": {
         bgcolor: alpha(theme.palette.common.white, 0.2),
       },
     }),
-    saveButton: (theme: Theme) => ({
+    save: (theme: Theme) => ({
       padding: "12px 24px",
       fontSize: "1.1rem",
       fontWeight: 600,
+      color: "white",
+      bgcolor: theme.palette.primary.main,
+      "&:hover": {
+        bgcolor: theme.palette.primary.dark,
+      },
     }),
+  },
+
+  slider: {
+    height: 8,
+    borderRadius: 4,
+    "& .MuiSlider-track": {
+      border: "none",
+    },
+    "& .MuiSlider-thumb": {
+      height: 16,
+      width: 16,
+      backgroundColor: (theme: Theme) => theme.palette.primary.main,
+      border: (theme: Theme) => `2px solid ${theme.palette.primary.main}`,
+    },
   },
 
   achievements: {
@@ -95,7 +118,7 @@ export const profileStyles = {
       fontSize: "1.125rem",
       fontWeight: 600,
       mb: 2,
-      color: colors.text.primary,
+      color: "white",
     }),
     list: (theme: Theme) => ({
       display: "flex",
@@ -132,7 +155,7 @@ export const profileStyles = {
         };
       } else {
         return {
-          bgcolor: theme.palette.background.paper,
+          bgcolor: alpha(theme.palette.common.black, 0.2),
           borderLeft: `4px solid ${alpha(theme.palette.common.white, 0.1)}`,
         };
       }

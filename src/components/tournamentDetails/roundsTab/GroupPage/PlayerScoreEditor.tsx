@@ -12,6 +12,8 @@ import {
   Paper,
 } from "@mui/material";
 import { HoleScore, Round } from "../../../../types/event";
+import { useStyles } from "../../../../styles/hooks/useStyles";
+import theme from "../../../../theme/theme";
 
 interface PlayerScoreEditorProps {
   playerId: string;
@@ -30,6 +32,7 @@ const PlayerScoreEditor: React.FC<PlayerScoreEditorProps> = ({
   onClose,
   onSave,
 }) => {
+  const styles = useStyles();
   const [scores, setScores] = useState<HoleScore[]>([]);
 
   const getHoleSections = () => {
@@ -110,12 +113,18 @@ const PlayerScoreEditor: React.FC<PlayerScoreEditorProps> = ({
   const sections = getHoleSections();
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="md"
+      fullWidth
+      PaperProps={{ sx: styles.dialogs.paper }}
+    >
+      <DialogTitle sx={styles.dialogs.title}>
         Edit Scores for {playerName} - {round.name}
       </DialogTitle>
 
-      <DialogContent>
+      <DialogContent sx={styles.dialogs.content}>
         {sections.map((section, sectionIndex) => (
           <Box key={`section-${sectionIndex}`} sx={{ mb: 3 }}>
             <Typography variant="subtitle1" fontWeight="medium" sx={{ mb: 1 }}>
@@ -146,6 +155,12 @@ const PlayerScoreEditor: React.FC<PlayerScoreEditorProps> = ({
                           size="small"
                           inputProps={{ min: 1, max: 15 }}
                           fullWidth
+                          InputLabelProps={styles.tournamentCard.formStyles.labelProps(
+                            theme
+                          )}
+                          InputProps={styles.tournamentCard.formStyles.inputProps(
+                            theme
+                          )}
                         />
                       </Box>
                     </Grid>
@@ -157,11 +172,16 @@ const PlayerScoreEditor: React.FC<PlayerScoreEditorProps> = ({
         ))}
       </DialogContent>
 
-      <DialogActions>
-        <Button onClick={onClose} color="inherit">
+      <DialogActions sx={styles.dialogs.actions}>
+        <Button onClick={onClose} sx={styles.button.cancel}>
           Cancel
         </Button>
-        <Button onClick={handleSave} color="primary" variant="contained">
+        <Button
+          onClick={handleSave}
+          color="primary"
+          variant="contained"
+          sx={styles.button.primary}
+        >
           Save Scores
         </Button>
       </DialogActions>

@@ -8,13 +8,12 @@ import {
   TextField,
   Typography,
   useMediaQuery,
-  alpha,
   useTheme,
 } from "@mui/material";
 import { Tournament, RoundFormData } from "../../types/event";
 import TournamentForm from "../tournament/TournamentForm";
 import RoundForm from "./RoundForm";
-import { useTournamentStyles } from "../../theme/hooks";
+import { useStyles } from "../../styles/hooks/useStyles";
 
 interface TournamentDialogsProps {
   tournament: Tournament;
@@ -42,16 +41,9 @@ const TournamentDialogs: React.FC<TournamentDialogsProps> = ({
   dialogState,
   handlers,
 }) => {
-  const styles = useTournamentStyles();
+  const styles = useStyles();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
-  const dialogPaperStyles = {
-    backgroundColor: alpha(theme.palette.common.black, 0.8),
-    backdropFilter: "blur(20px)",
-    border: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
-    borderRadius: 2,
-  };
 
   return (
     <>
@@ -61,13 +53,13 @@ const TournamentDialogs: React.FC<TournamentDialogsProps> = ({
         onClose={handlers.closeInvite}
         maxWidth="sm"
         fullWidth
-        PaperProps={{ sx: dialogPaperStyles }}
+        PaperProps={{ sx: styles.dialogs.paper }}
       >
-        <DialogTitle sx={styles.dialogStyles.title}>Invite Players</DialogTitle>
-        <DialogContent>
+        <DialogTitle sx={styles.dialogs.title}>Invite Players</DialogTitle>
+        <DialogContent sx={styles.dialogs.content}>
           <Typography
             variant="body2"
-            sx={{ mb: 2, mt: 2, ...styles.tournamentTypography.body }}
+            sx={{ mb: 2, mt: 2, ...styles.text.body.primary }}
           >
             Enter email addresses of players you want to invite to this
             tournament. Separate multiple emails with commas.
@@ -83,18 +75,12 @@ const TournamentDialogs: React.FC<TournamentDialogsProps> = ({
             placeholder="example@email.com, another@email.com"
             error={!!dialogState.inviteError}
             helperText={dialogState.inviteError}
-            InputLabelProps={styles.formStyles.labelProps}
-            InputProps={styles.formStyles.inputProps}
+            InputLabelProps={styles.tournamentCard.formStyles.labelProps(theme)}
+            InputProps={styles.tournamentCard.formStyles.inputProps(theme)}
           />
         </DialogContent>
-        <DialogActions sx={styles.dialogStyles.actions}>
-          <Button
-            onClick={handlers.closeInvite}
-            sx={{
-              color: alpha(theme.palette.common.white, 0.9),
-              order: { xs: 2, sm: 1 },
-            }}
-          >
+        <DialogActions sx={styles.dialogs.actions}>
+          <Button onClick={handlers.closeInvite} sx={styles.button.cancel}>
             Cancel
           </Button>
           <Button
@@ -102,9 +88,7 @@ const TournamentDialogs: React.FC<TournamentDialogsProps> = ({
             variant="contained"
             color="primary"
             fullWidth={isMobile}
-            sx={{
-              order: { xs: 1, sm: 2 },
-            }}
+            sx={styles.button.primary}
           >
             Send Invitations
           </Button>
@@ -117,7 +101,7 @@ const TournamentDialogs: React.FC<TournamentDialogsProps> = ({
         onClose={handlers.closeAddRound}
         maxWidth="md"
         fullWidth
-        PaperProps={{ sx: dialogPaperStyles }}
+        PaperProps={{ sx: styles.dialogs.paper }}
       >
         <RoundForm
           onSubmit={handlers.handleAddRound}
@@ -134,7 +118,7 @@ const TournamentDialogs: React.FC<TournamentDialogsProps> = ({
         onClose={handlers.closeEditTournament}
         maxWidth="md"
         fullWidth
-        PaperProps={{ sx: dialogPaperStyles }}
+        PaperProps={{ sx: styles.dialogs.paper }}
       >
         <TournamentForm
           onSubmit={handlers.handleUpdateTournament}

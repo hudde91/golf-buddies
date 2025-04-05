@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import { Add as AddIcon } from "@mui/icons-material";
 import { Team, Player, TeamFormData } from "../../../types/event";
+import { useStyles } from "../../../styles/hooks/useStyles";
 
 import TeamCard from "./TeamCard";
 import UnassignedPlayersList from "./UnassignedPlayersList";
@@ -37,6 +38,8 @@ const TeamManagement: React.FC<TeamManagementProps> = ({
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const styles = useStyles();
+
   const [openTeamDialog, setOpenTeamDialog] = useState(false);
   const [openPlayersDialog, setOpenPlayersDialog] = useState(false);
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
@@ -144,17 +147,8 @@ const TeamManagement: React.FC<TeamManagementProps> = ({
   return (
     <Box>
       {/* Header with Add Team button */}
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: { xs: "flex-start", sm: "center" },
-          mb: 3,
-          flexDirection: { xs: "column", sm: "row" },
-          gap: 2,
-        }}
-      >
-        <Typography variant="h6" sx={{ color: "white" }}>
+      <Box sx={styles.tournamentTeams.header}>
+        <Typography variant="h6" sx={styles.text.heading.section}>
           Teams ({teams.length})
         </Typography>
 
@@ -165,6 +159,7 @@ const TeamManagement: React.FC<TeamManagementProps> = ({
             startIcon={<AddIcon />}
             onClick={() => handleOpenTeamDialog()}
             fullWidth={isMobile}
+            sx={styles.button.primary}
           >
             Add Team
           </Button>

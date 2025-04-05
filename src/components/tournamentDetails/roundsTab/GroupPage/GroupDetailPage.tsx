@@ -12,15 +12,10 @@ import {
   ListItemAvatar,
   ListItemText,
   Collapse,
-  useTheme,
   Divider,
   AppBar,
   Toolbar,
   Container,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
 } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom";
 import {
@@ -33,332 +28,19 @@ import {
 } from "@mui/icons-material";
 import { Tournament, Player } from "../../../../types/event";
 import PlayerScorecard from "../../PlayerScorecard";
+import ScoreDialog from "./ScoreDialog";
+import { useStyles } from "../../../../styles/hooks/useStyles";
 
 interface GroupDetailPageProps {
   tournament: Tournament;
   onUpdateScores: (roundId: string, playerId: string, scores: any[]) => void;
 }
 
-interface ScoreDialogProps {
-  open: boolean;
-  onClose: () => void;
-  playerId: string;
-  playerName: string;
-  hole: number;
-  holePar: number | null;
-  currentScore: number | undefined;
-  onSave: (score: number) => void;
-  players: Player[];
-  onNextPlayer: () => void;
-  onSelectPlayer: (playerId: string) => void;
-  playerScores: Record<string, { score?: number }[]>;
-}
-
-const ScoreDialog: React.FC<ScoreDialogProps> = ({
-  open,
-  onClose,
-  playerId,
-  playerName,
-  hole,
-  holePar,
-  currentScore,
-  onSave,
-  players,
-  onNextPlayer,
-  onSelectPlayer,
-  playerScores,
-}) => {
-  const theme = useTheme();
-  const [selectedScore, setSelectedScore] = useState<number | undefined>(
-    currentScore
-  );
-  const scoreOptions = Array.from({ length: 12 }, (_, i) => i + 1);
-
-  const getScoreStatus = (score: number) => {
-    if (!holePar) return { label: "", color: "" };
-
-    const relation = score - holePar;
-    if (relation < -1) return { label: "Eagle", color: "#d32f2f" };
-    if (relation === -1) return { label: "Birdie", color: "#f44336" };
-    if (relation === 0) return { label: "Par", color: "#2e7d32" };
-    if (relation === 1) return { label: "Bogey", color: "#0288d1" };
-    if (relation === 2) return { label: "Double", color: "#9e9e9e" };
-    if (relation > 2) return { label: `+${relation}`, color: "#9e9e9e" };
-    return { label: "", color: "" };
-  };
-
-  const handleSave = () => {
-    if (selectedScore !== undefined) {
-      onSave(selectedScore);
-      onClose();
-    }
-  };
-
-  const handleSaveAndNext = () => {
-    if (selectedScore !== undefined) {
-      onSave(selectedScore);
-      onNextPlayer();
-    }
-  };
-
-  const handleScoreSelect = (score: number) => {
-    setSelectedScore(score);
-  };
-
-  const handlePlayerSelect = (playerId: string) => {
-    if (selectedScore !== undefined) {
-      onSave(selectedScore);
-    }
-    onSelectPlayer(playerId);
-
-    // Update selected score for new player
-    const playerHoleScore = playerScores[playerId]?.[hole - 1]?.score;
-    setSelectedScore(playerHoleScore);
-  };
-
-  return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle sx={{ pb: 1 }}>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "flex-start",
-          }}
-        >
-          <Box>
-            <Typography variant="h6">{playerName}</Typography>
-            <Box sx={{ display: "flex", gap: 1, mt: 0.5 }}>
-              <Chip label={`Hole ${hole}`} size="small" color="primary" />
-              {holePar && (
-                <Chip
-                  label={`Par ${holePar}`}
-                  size="small"
-                  variant="outlined"
-                />
-              )}
-            </Box>
-          </Box>
-
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            {players.map((player) => (
-              <Avatar
-                key={player.id}
-                src={player.avatarUrl}
-                alt={player.name}
-                sx={{
-                  width: 40,
-                  height: 40,
-                  opacity: player.id === playerId ? 1 : 0.6,
-                  border:
-                    player.id === playerId
-                      ? `2px solid ${theme.palette.primary.main}`
-                      : "none",
-                  cursor: "pointer",
-                }}
-                onClick={() => {
-                  if (player.id !== playerId) {
-                    handlePlayerSelect(player.id);
-                  }
-                }}
-              />
-            ))}
-          </Box>
-        </Box>
-      </DialogTitle>
-      <DialogContent sx={{ pt: 1, pb: 0 }}>
-        <Box sx={{ mb: 1 }}>
-          <Typography variant="subtitle2" gutterBottom>
-            Select Score:
-          </Typography>
-
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              mb: 2,
-            }}
-          >
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
-            >
-              <Typography variant="h3" sx={{ fontWeight: "bold" }}>
-                {selectedScore || "-"}
-              </Typography>
-              {selectedScore && holePar && (
-                <Typography
-                  variant="body2"
-                  sx={{
-                    color: getScoreStatus(selectedScore).color,
-                    fontWeight: "medium",
-                  }}
-                >
-                  {getScoreStatus(selectedScore).label}
-                </Typography>
-              )}
-            </Box>
-
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
-            >
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  border: `1px solid ${theme.palette.divider}`,
-                  borderRadius: 2,
-                  px: 1,
-                }}
-              >
-                <IconButton
-                  disabled={!selectedScore || selectedScore <= 1}
-                  onClick={() =>
-                    selectedScore && setSelectedScore(selectedScore - 1)
-                  }
-                >
-                  <NavigateBeforeIcon />
-                </IconButton>
-                <Box sx={{ width: 80, textAlign: "center" }}>
-                  <Typography variant="h5">{selectedScore || "-"}</Typography>
-                </Box>
-                <IconButton
-                  disabled={!selectedScore || selectedScore >= 12}
-                  onClick={() =>
-                    selectedScore && setSelectedScore(selectedScore + 1)
-                  }
-                >
-                  <NavigateNextIcon />
-                </IconButton>
-              </Box>
-            </Box>
-          </Box>
-
-          <Box
-            sx={{
-              display: "flex",
-              overflowX: "auto",
-              py: 1,
-              gap: 1,
-              scrollbarWidth: "none", // Firefox
-              "&::-webkit-scrollbar": {
-                display: "none", // Chrome, Safari, Edge
-              },
-              // Add padding to ensure all items are visible when scrolling
-              px: 1,
-              mx: -1,
-            }}
-          >
-            {scoreOptions.map((score) => {
-              const scoreStatus = holePar
-                ? getScoreStatus(score)
-                : { label: "", color: "" };
-              return (
-                <Box
-                  key={score}
-                  onClick={() => handleScoreSelect(score)}
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    minWidth: 60,
-                    height: 60,
-                    borderRadius: 1,
-                    border: `1px solid ${
-                      score === selectedScore
-                        ? theme.palette.primary.main
-                        : theme.palette.divider
-                    }`,
-                    bgcolor:
-                      score === selectedScore
-                        ? `${theme.palette.primary.main}10`
-                        : scoreStatus.label
-                        ? `${scoreStatus.color}10`
-                        : "transparent",
-                    cursor: "pointer",
-                    transition: "all 0.2s",
-                    "&:hover": {
-                      bgcolor:
-                        score === selectedScore
-                          ? `${theme.palette.primary.main}20`
-                          : `${theme.palette.action.hover}`,
-                    },
-                    flexShrink: 0,
-                  }}
-                >
-                  <Typography
-                    variant="h5"
-                    fontWeight={score === selectedScore ? "bold" : "normal"}
-                    color={
-                      score === selectedScore
-                        ? theme.palette.primary.main
-                        : "inherit"
-                    }
-                  >
-                    {score}
-                  </Typography>
-                  {scoreStatus.label && (
-                    <Typography
-                      variant="caption"
-                      sx={{
-                        color: scoreStatus.color,
-                        fontWeight: score === selectedScore ? "bold" : "medium",
-                        mt: -0.5,
-                      }}
-                    >
-                      {scoreStatus.label}
-                    </Typography>
-                  )}
-                </Box>
-              );
-            })}
-          </Box>
-        </Box>
-      </DialogContent>
-      <DialogActions
-        sx={{ px: 3, py: 2, display: "flex", justifyContent: "space-between" }}
-      >
-        <Button onClick={onClose} variant="outlined">
-          Cancel
-        </Button>
-        <Box sx={{ display: "flex", gap: 1 }}>
-          <Button
-            onClick={handleSave}
-            variant="contained"
-            color="primary"
-            disabled={selectedScore === undefined}
-          >
-            Save
-          </Button>
-          <Button
-            onClick={handleSaveAndNext}
-            variant="contained"
-            color="primary"
-            disabled={selectedScore === undefined || players.length <= 1}
-            endIcon={<NavigateNextIcon />}
-          >
-            Next
-          </Button>
-        </Box>
-      </DialogActions>
-    </Dialog>
-  );
-};
-
 const GroupDetailPage: React.FC<GroupDetailPageProps> = ({
   tournament,
   onUpdateScores,
 }) => {
-  const theme = useTheme();
+  const styles = useStyles();
   const navigate = useNavigate();
   const { tournamentId, roundId, groupId } = useParams<{
     tournamentId: string;
@@ -534,7 +216,7 @@ const GroupDetailPage: React.FC<GroupDetailPageProps> = ({
             variant="contained"
             startIcon={<ArrowBackIcon />}
             onClick={handleBack}
-            sx={{ mt: 2 }}
+            sx={{ mt: 2, ...styles.button.primary }}
           >
             Back to Tournament
           </Button>
@@ -554,6 +236,7 @@ const GroupDetailPage: React.FC<GroupDetailPageProps> = ({
             color="inherit"
             onClick={handleBack}
             aria-label="back"
+            sx={styles.navigation.backButton}
           >
             <ArrowBackIcon />
           </IconButton>
@@ -582,19 +265,19 @@ const GroupDetailPage: React.FC<GroupDetailPageProps> = ({
       </AppBar>
 
       <Container sx={{ mt: 3 }}>
-        <Paper sx={{ p: 2 }}>
+        <Paper sx={{ p: 2, ...styles.card.glass }}>
           <Typography variant="h6">{round.name}</Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" sx={styles.text.body.secondary}>
             {new Date(round.date).toLocaleDateString()}
           </Typography>
           {round.courseDetails?.name && (
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={styles.text.body.secondary}>
               {round.courseDetails.name}
             </Typography>
           )}
         </Paper>
 
-        <Paper sx={{ mb: 3, overflow: "hidden" }}>
+        <Paper sx={{ mb: 3, overflow: "hidden", ...styles.card.glass }}>
           <List disablePadding>
             {groupPlayers.map((player, playerIndex) => {
               const playerScores = round.scores[player.id] || [];
@@ -650,13 +333,13 @@ const GroupDetailPage: React.FC<GroupDetailPageProps> = ({
 
               return (
                 <React.Fragment key={player.id}>
-                  {playerIndex > 0 && <Divider />}
+                  {playerIndex > 0 && <Divider sx={styles.divider.standard} />}
                   <ListItem
                     button
                     onClick={() => togglePlayerExpanded(player.id)}
                     sx={{
                       py: 2,
-                      "&:hover": { bgcolor: theme.palette.action.hover },
+                      "&:hover": { bgcolor: "action.hover" },
                     }}
                   >
                     <ListItemAvatar>
@@ -700,7 +383,7 @@ const GroupDetailPage: React.FC<GroupDetailPageProps> = ({
                                   navigateToPrevHole();
                                 }}
                                 sx={{
-                                  border: `1px solid ${theme.palette.divider}`,
+                                  border: `1px solid ${"divider"}`,
                                   borderRadius: "50%",
                                   width: 36,
                                   height: 36,
@@ -735,12 +418,10 @@ const GroupDetailPage: React.FC<GroupDetailPageProps> = ({
                                 borderRadius: "50%",
                                 bgcolor: scoreStatus
                                   ? `${scoreColor}20`
-                                  : theme.palette.action.hover,
+                                  : "action.hover",
                                 color: scoreStatus ? scoreColor : "inherit",
                                 border: `1px solid ${
-                                  scoreStatus
-                                    ? scoreColor
-                                    : theme.palette.divider
+                                  scoreStatus ? scoreColor : "divider"
                                 }`,
                                 fontWeight: "bold",
                                 cursor: "pointer",
@@ -776,7 +457,7 @@ const GroupDetailPage: React.FC<GroupDetailPageProps> = ({
                                   navigateToNextHole(holeCount);
                                 }}
                                 sx={{
-                                  border: `1px solid ${theme.palette.divider}`,
+                                  border: `1px solid ${"divider"}`,
                                   borderRadius: "50%",
                                   width: 36,
                                   height: 36,
@@ -795,7 +476,10 @@ const GroupDetailPage: React.FC<GroupDetailPageProps> = ({
                               alignItems: "center",
                             }}
                           >
-                            <Typography variant="body2" color="text.secondary">
+                            <Typography
+                              variant="body2"
+                              sx={styles.text.body.secondary}
+                            >
                               Total: <strong>{totalScore}</strong>
                             </Typography>
 
@@ -821,7 +505,7 @@ const GroupDetailPage: React.FC<GroupDetailPageProps> = ({
                     timeout="auto"
                     unmountOnExit
                   >
-                    <Box sx={{ p: 3, bgcolor: theme.palette.action.hover }}>
+                    <Box sx={{ p: 3, bgcolor: "action.hover" }}>
                       <PlayerScorecard
                         player={player}
                         tournament={{

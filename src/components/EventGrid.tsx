@@ -25,6 +25,7 @@ interface EventCardProps {
   onViewDetails: (eventId: string) => void;
 }
 
+// To be removed, not used
 const EventCard: React.FC<EventCardProps> = ({
   event,
   userId,

@@ -15,14 +15,14 @@ import {
   useTheme,
 } from "@mui/material";
 import { Tournament, Player, Round } from "../../types/event";
-import { useTournamentScorecardStyles } from "../../theme/hooks";
+import { useStyles } from "../../styles/hooks/useStyles";
 import {
   calculateSectionTotal,
   calculateTotal,
   formatScoreToPar,
   getScoreColor,
+  getScoreClass,
 } from "./roundsTab/scorecardUtils";
-import { getScoreClass } from "./roundsTab/scorecardUtils";
 
 interface PlayerScorecardProps {
   player: Player;
@@ -65,7 +65,7 @@ const PlayerScorecard: React.FC<PlayerScorecardProps> = ({
   showAllRounds = true, // Default to showing all rounds
 }) => {
   const theme = useTheme();
-  const styles = useTournamentScorecardStyles();
+  const styles = useStyles();
 
   // Sort rounds by date for consistent tab order
   const sortedRounds = [...tournament.rounds].sort(
@@ -128,11 +128,7 @@ const PlayerScorecard: React.FC<PlayerScorecardProps> = ({
               <Chip
                 label={playerTeam.name}
                 size="small"
-                sx={{
-                  bgcolor: playerTeam.color || theme.palette.primary.main,
-                  color: "#fff",
-                  mt: 0.5,
-                }}
+                sx={styles.chips.team(playerTeam.color || "primary.main")}
               />
             )}
           </Box>
@@ -167,6 +163,7 @@ const PlayerScorecard: React.FC<PlayerScorecardProps> = ({
             aria-label="Round tabs"
             variant="scrollable"
             scrollButtons="auto"
+            sx={styles.tabs.container}
           >
             {displayRounds.map((round, index) => (
               <Tab
@@ -284,10 +281,10 @@ const PlayerScorecard: React.FC<PlayerScorecardProps> = ({
                               sx={{ padding: "4px" }}
                             >
                               <Box
-                                sx={{
-                                  ...styles.scoreCell.getContainer(scoreClass),
-                                  color: "#000",
-                                }}
+                                sx={styles.tournamentScorecard.scoreCell.container(
+                                  theme,
+                                  scoreClass
+                                )}
                               >
                                 {score === undefined ? "-" : score}
                               </Box>

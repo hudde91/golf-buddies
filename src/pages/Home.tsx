@@ -11,7 +11,6 @@ import GolfCourseIcon from "@mui/icons-material/GolfCourse";
 import PeopleIcon from "@mui/icons-material/People";
 import AnalyticsIcon from "@mui/icons-material/Analytics";
 
-// Import the useStyles hook
 import { useStyles } from "../styles/hooks/useStyles";
 
 interface FeatureProps {

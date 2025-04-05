@@ -24,7 +24,7 @@ import {
   StarBorder as StarBorderIcon,
 } from "@mui/icons-material";
 import { Team, Player } from "../../../types/event";
-import { useTournamentTeamStyles } from "../../../theme/hooks";
+import { useStyles } from "../../../styles/hooks/useStyles";
 
 interface TeamPlayersDialogProps {
   open: boolean;
@@ -47,7 +47,7 @@ const TeamPlayersDialog: React.FC<TeamPlayersDialogProps> = ({
   onSetCaptain,
   onAssignPlayer,
 }) => {
-  const styles = useTournamentTeamStyles();
+  const styles = useStyles();
 
   if (!team) return null;
 
@@ -58,12 +58,12 @@ const TeamPlayersDialog: React.FC<TeamPlayersDialogProps> = ({
       maxWidth="md"
       fullWidth
       PaperProps={{
-        sx: styles.dialogPaper,
+        sx: styles.tournamentTeams.dialogPaper,
       }}
     >
-      <DialogTitle sx={styles.dialogTitle}>
-        <Box sx={styles.teamHeader}>
-          <Avatar sx={styles.getTeamAvatar(team.color)}>
+      <DialogTitle sx={styles.tournamentTeams.dialogTitle}>
+        <Box sx={styles.tournamentTeams.teamHeader}>
+          <Avatar sx={styles.tournamentTeams.getTeamAvatar(team.color)}>
             {team.name[0].toUpperCase()}
           </Avatar>
           Manage Players for {team.name}
@@ -72,8 +72,11 @@ const TeamPlayersDialog: React.FC<TeamPlayersDialogProps> = ({
       <DialogContent>
         <Grid container spacing={3} sx={{ mt: 0.5 }}>
           <Grid item xs={12} md={6}>
-            <Box sx={styles.teamInfoHeader}>
-              <Typography variant="subtitle1" sx={styles.teamName}>
+            <Box sx={styles.tournamentTeams.teamInfoHeader}>
+              <Typography
+                variant="subtitle1"
+                sx={styles.tournamentTeams.teamName}
+              >
                 Current Team Members ({teamPlayers.length})
               </Typography>
 
@@ -83,7 +86,7 @@ const TeamPlayersDialog: React.FC<TeamPlayersDialogProps> = ({
                   label="Select Captain"
                   size="small"
                   variant="outlined"
-                  sx={styles.getCaptainChip(team.color)}
+                  sx={styles.tournamentTeams.getCaptainChip(team.color)}
                 />
               </Tooltip>
             </Box>
@@ -92,12 +95,12 @@ const TeamPlayersDialog: React.FC<TeamPlayersDialogProps> = ({
               <List
                 component={Paper}
                 variant="outlined"
-                sx={styles.playersListDialog}
+                sx={styles.tournamentTeams.playersListDialog}
               >
                 {teamPlayers.map((player) => (
                   <ListItem
                     key={player.id}
-                    sx={styles.getPlayerListItem(
+                    sx={styles.tournamentTeams.getPlayerListItem(
                       selectedCaptain === player.id,
                       team.color
                     )}
@@ -109,12 +112,14 @@ const TeamPlayersDialog: React.FC<TeamPlayersDialogProps> = ({
                     </ListItemAvatar>
                     <ListItemText
                       primary={
-                        <Typography sx={styles.teamName}>
+                        <Typography sx={styles.tournamentTeams.teamName}>
                           {player.name}
                           {selectedCaptain === player.id && (
                             <Typography
                               component="span"
-                              sx={styles.getCaptainLabel(team.color)}
+                              sx={styles.tournamentTeams.getCaptainLabel(
+                                team.color
+                              )}
                             >
                               (Captain)
                             </Typography>
@@ -122,7 +127,10 @@ const TeamPlayersDialog: React.FC<TeamPlayersDialogProps> = ({
                         </Typography>
                       }
                       secondary={
-                        <Typography variant="body2" sx={styles.noPlayersText}>
+                        <Typography
+                          variant="body2"
+                          sx={styles.tournamentTeams.noPlayersText}
+                        >
                           {player.email}
                         </Typography>
                       }
@@ -131,7 +139,7 @@ const TeamPlayersDialog: React.FC<TeamPlayersDialogProps> = ({
                       <IconButton
                         edge="end"
                         onClick={() => onSetCaptain(player.id)}
-                        sx={styles.getCaptainIcon(
+                        sx={styles.tournamentTeams.getCaptainIcon(
                           selectedCaptain === player.id,
                           team.color
                         )}
@@ -146,7 +154,7 @@ const TeamPlayersDialog: React.FC<TeamPlayersDialogProps> = ({
                       <IconButton
                         edge="end"
                         onClick={() => onAssignPlayer(player.id, undefined)}
-                        sx={styles.removePlayerIcon}
+                        sx={styles.tournamentTeams.removePlayerIcon}
                       >
                         <DeleteIcon />
                       </IconButton>
@@ -155,8 +163,11 @@ const TeamPlayersDialog: React.FC<TeamPlayersDialogProps> = ({
                 ))}
               </List>
             ) : (
-              <Paper variant="outlined" sx={styles.emptyListPaper}>
-                <Typography sx={styles.noPlayersText}>
+              <Paper
+                variant="outlined"
+                sx={styles.tournamentTeams.emptyListPaper}
+              >
+                <Typography sx={styles.tournamentTeams.noPlayersText}>
                   No players in this team
                 </Typography>
               </Paper>
@@ -164,7 +175,11 @@ const TeamPlayersDialog: React.FC<TeamPlayersDialogProps> = ({
           </Grid>
 
           <Grid item xs={12} md={6}>
-            <Typography variant="subtitle1" gutterBottom sx={styles.teamName}>
+            <Typography
+              variant="subtitle1"
+              gutterBottom
+              sx={styles.tournamentTeams.teamName}
+            >
               Available Players ({unassignedPlayers.length})
             </Typography>
 
@@ -172,14 +187,17 @@ const TeamPlayersDialog: React.FC<TeamPlayersDialogProps> = ({
               <List
                 component={Paper}
                 variant="outlined"
-                sx={styles.playersList}
+                sx={styles.tournamentTeams.playersList}
               >
                 {unassignedPlayers.map((player) => (
                   <ListItem
                     key={player.id}
                     button
                     onClick={() => onAssignPlayer(player.id, team.id)}
-                    sx={styles.getPlayerListItem(false, team.color)}
+                    sx={styles.tournamentTeams.getPlayerListItem(
+                      false,
+                      team.color
+                    )}
                   >
                     <ListItemAvatar>
                       <Avatar src={player.avatarUrl} alt={player.name}>
@@ -188,12 +206,15 @@ const TeamPlayersDialog: React.FC<TeamPlayersDialogProps> = ({
                     </ListItemAvatar>
                     <ListItemText
                       primary={
-                        <Typography sx={styles.teamName}>
+                        <Typography sx={styles.tournamentTeams.teamName}>
                           {player.name}
                         </Typography>
                       }
                       secondary={
-                        <Typography variant="body2" sx={styles.noPlayersText}>
+                        <Typography
+                          variant="body2"
+                          sx={styles.tournamentTeams.noPlayersText}
+                        >
                           {player.email}
                         </Typography>
                       }
@@ -203,14 +224,17 @@ const TeamPlayersDialog: React.FC<TeamPlayersDialogProps> = ({
                       size="small"
                       color="primary"
                       variant="outlined"
-                      sx={styles.addPlayerChip}
+                      sx={styles.tournamentTeams.addPlayerChip}
                     />
                   </ListItem>
                 ))}
               </List>
             ) : (
-              <Paper variant="outlined" sx={styles.emptyListPaper}>
-                <Typography sx={styles.noPlayersText}>
+              <Paper
+                variant="outlined"
+                sx={styles.tournamentTeams.emptyListPaper}
+              >
+                <Typography sx={styles.tournamentTeams.noPlayersText}>
                   No unassigned players available
                 </Typography>
               </Paper>
@@ -218,11 +242,11 @@ const TeamPlayersDialog: React.FC<TeamPlayersDialogProps> = ({
           </Grid>
         </Grid>
       </DialogContent>
-      <DialogActions sx={styles.dialogActions}>
+      <DialogActions sx={styles.tournamentTeams.dialogActions}>
         <Button
           onClick={onClose}
           variant="outlined"
-          sx={styles.managePlayersButton}
+          sx={styles.tournamentTeams.managePlayersButton}
         >
           Close
         </Button>

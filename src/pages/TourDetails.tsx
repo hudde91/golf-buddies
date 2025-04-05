@@ -19,7 +19,7 @@ import LoadingState from "../components/tournament/LoadingState";
 import TourHeader from "../components/tour/TourHeader";
 import TourTabs from "../components/tourDetails/TourTabs";
 import { BackButton } from "../components/common/index";
-import { colors } from "../theme/theme";
+import { colors } from "../styles";
 
 const TourDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -168,7 +168,7 @@ const TourDetails: React.FC = () => {
   return (
     <Box
       sx={{
-        background: colors.backgrounds.dark,
+        background: colors.background.main,
         minHeight: "calc(100vh - 64px)",
         py: { xs: 3, md: 4 },
       }}
@@ -181,7 +181,6 @@ const TourDetails: React.FC = () => {
           isCreator={isCreator}
           onEdit={handleEditTour}
           onDelete={handleDeleteTour}
-          theme={theme}
         />
 
         <TourTabs

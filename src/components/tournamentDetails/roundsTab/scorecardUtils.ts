@@ -1,146 +1,70 @@
-import { Round, Player, HoleScore } from "../../../types/event";
+import { Theme } from "@mui/material";
+import { Round } from "../../../types/event";
 
-export const calculateTotal = (playerId: string, round: Round): number => {
-  if (!round.scores[playerId]) return 0;
-
-  return round.scores[playerId].reduce((total, hole) => {
-    return total + (hole.score || 0);
-  }, 0);
-};
-
-export const calculateParTotal = (round: Round): number => {
-  if (!round.courseDetails?.par) return 0;
-  return round.courseDetails.par;
-};
-
+/**
+ * Calculate total score for a specific section of holes in a round
+ */
 export const calculateSectionTotal = (
   playerId: string,
   round: Round,
-  sectionHoles: number[]
+  holeNumbers: number[]
 ): number => {
-  const playerScores = round.scores[playerId] || [];
-  return sectionHoles.reduce((total, holeNum) => {
+  if (!round.scores[playerId]) return 0;
+
+  return holeNumbers.reduce((total, holeNum) => {
     const holeIndex = holeNum - 1;
-    return total + (playerScores[holeIndex]?.score || 0);
+    const score = round.scores[playerId]?.[holeIndex]?.score;
+    return total + (score !== undefined ? score : 0);
   }, 0);
 };
 
-// Format score relative to par (e.g., "-2", "E", "+3")
+/**
+ * Calculate total score for all holes in a round
+ */
+export const calculateTotal = (playerId: string, round: Round): number => {
+  if (!round.scores[playerId]) return 0;
+
+  return round.scores[playerId].reduce(
+    (total, holeScore) => total + (holeScore?.score || 0),
+    0
+  );
+};
+
+/**
+ * Format score relative to par (e.g., -2, +1, E)
+ */
 export const formatScoreToPar = (score: number, par: number): string => {
-  const relativeToPar = score - par;
-
-  if (relativeToPar === 0) {
-    return "E"; // Even par
-  } else if (relativeToPar < 0) {
-    return relativeToPar.toString(); // Already has negative sign
-  } else {
-    return `+${relativeToPar}`; // Add plus sign
-  }
+  const diff = score - par;
+  if (diff === 0) return "E";
+  return diff > 0 ? `+${diff}` : `${diff}`;
 };
 
-// Get color based on score relative to par
+/**
+ * Get the appropriate color for a score relative to par
+ */
 export const getScoreColor = (score: number, par: number): string => {
-  const relativeToPar = score - par;
+  const diff = score - par;
 
-  if (relativeToPar < -1) return "#d32f2f"; // Eagle or better - Red
-  if (relativeToPar === -1) return "#f44336"; // Birdie - Light Red
-  if (relativeToPar === 0) return "#2e7d32"; // Par - Green
-  if (relativeToPar === 1) return "#0288d1"; // Bogey - Blue
-  return "#9e9e9e"; // Double bogey or worse - Gray
+  if (diff < 0) return "#4caf50"; // Green for under par (good)
+  if (diff > 0) return "#f44336"; // Red for over par (not as good)
+  return "#ffffff"; // White for even par
 };
 
-// Split holes into front 9 and back 9 (or appropriate splits for other hole counts)
-export const getHoleSections = (
-  round: Round,
-  isXsScreen: boolean,
-  isMobile: boolean
-) => {
-  const totalHoles = round.courseDetails?.holes || 18;
-  const holes = Array.from({ length: totalHoles }, (_, i) => i + 1);
+/**
+ * Get the CSS class for a score based on relation to par
+ */
+export const getScoreClass = (
+  score?: number,
+  par?: number
+): string | undefined => {
+  if (score === undefined || par === undefined) return undefined;
 
-  if (isXsScreen) {
-    // For extra small screens, split into even smaller chunks
-    if (totalHoles === 18) {
-      return [
-        { label: "Holes 1-6", holes: holes.slice(0, 6) },
-        { label: "Holes 7-12", holes: holes.slice(6, 12) },
-        { label: "Holes 13-18", holes: holes.slice(12, 18) },
-      ];
-    } else if (totalHoles === 9) {
-      return [
-        { label: "Holes 1-5", holes: holes.slice(0, 5) },
-        { label: "Holes 6-9", holes: holes.slice(5, 9) },
-      ];
-    } else if (totalHoles > 18) {
-      // Split into chunks of 6 for larger hole counts
-      const sections = [];
-      for (let i = 0; i < totalHoles; i += 6) {
-        const end = Math.min(i + 6, totalHoles);
-        sections.push({
-          label: `Holes ${i + 1}-${end}`,
-          holes: holes.slice(i, end),
-        });
-      }
-      return sections;
-    }
-  } else if (isMobile) {
-    // For regular mobile screens, use slightly larger chunks
-    if (totalHoles === 18) {
-      return [
-        { label: "Front 9", holes: holes.slice(0, 9) },
-        { label: "Back 9", holes: holes.slice(9, 18) },
-      ];
-    } else if (totalHoles === 9) {
-      return [{ label: "Holes", holes: holes }];
-    } else if (totalHoles === 27) {
-      return [
-        { label: "First 9", holes: holes.slice(0, 9) },
-        { label: "Second 9", holes: holes.slice(9, 18) },
-        { label: "Third 9", holes: holes.slice(18, 27) },
-      ];
-    } else if (totalHoles === 36) {
-      return [
-        { label: "First 9", holes: holes.slice(0, 9) },
-        { label: "Second 9", holes: holes.slice(9, 18) },
-        { label: "Third 9", holes: holes.slice(18, 27) },
-        { label: "Fourth 9", holes: holes.slice(27, 36) },
-      ];
-    }
-  } else {
-    // Desktop view
-    if (totalHoles <= 9) {
-      return [{ label: "Holes", holes: holes }];
-    } else if (totalHoles === 18) {
-      return [
-        { label: "Front 9", holes: holes.slice(0, 9) },
-        { label: "Back 9", holes: holes.slice(9, 18) },
-      ];
-    } else if (totalHoles === 27) {
-      return [
-        { label: "First 9", holes: holes.slice(0, 9) },
-        { label: "Second 9", holes: holes.slice(9, 18) },
-        { label: "Third 9", holes: holes.slice(18, 27) },
-      ];
-    } else if (totalHoles === 36) {
-      return [
-        { label: "First 9", holes: holes.slice(0, 9) },
-        { label: "Second 9", holes: holes.slice(9, 18) },
-        { label: "Third 9", holes: holes.slice(18, 27) },
-        { label: "Fourth 9", holes: holes.slice(27, 36) },
-      ];
-    }
-  }
+  const diff = score - par;
 
-  // Default fallback - just show all holes
-  return [{ label: "Holes", holes: holes }];
-};
+  if (diff <= -2) return "eagle"; // Double under par or better
+  if (diff === -1) return "birdie"; // One under par
+  if (diff === 1) return "bogey"; // One over par
+  if (diff >= 2) return "double-bogey"; // Two or more over par
 
-export const getScoreClass = (score?: number, par?: number): string => {
-  if (score === undefined || par === undefined) return "";
-
-  if (score < par - 1) return "eagle";
-  if (score === par - 1) return "birdie";
-  if (score === par) return "par";
-  if (score === par + 1) return "bogey";
-  return "double-bogey";
+  return undefined; // Par (no special class)
 };

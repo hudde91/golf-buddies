@@ -1,18 +1,10 @@
 import React, { useState } from "react";
-import {
-  Box,
-  Typography,
-  TextField,
-  Button,
-  Grid,
-  useTheme,
-  Paper,
-  alpha,
-} from "@mui/material";
+import { Box, Typography, TextField, Button, Grid, Paper } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { TourFormData } from "../../types/event";
+import { useStyles } from "../../styles/hooks/useStyles";
 
 interface TourFormProps {
   onSubmit: (data: TourFormData) => void;
@@ -25,7 +17,7 @@ const TourForm: React.FC<TourFormProps> = ({
   onCancel,
   initialData,
 }) => {
-  const theme = useTheme();
+  const styles = useStyles();
   const today = new Date();
 
   const [formData, setFormData] = useState<TourFormData>({
@@ -104,14 +96,8 @@ const TourForm: React.FC<TourFormProps> = ({
   };
 
   return (
-    <Paper
-      sx={{
-        p: { xs: 2, sm: 4 },
-        backgroundColor: "transparent",
-      }}
-      elevation={0}
-    >
-      <Typography variant="h5" align="center" color="white" gutterBottom>
+    <Paper sx={styles.tour.form.container} elevation={0}>
+      <Typography variant="h5" sx={styles.tour.form.title}>
         {initialData ? "Edit Tour Series" : "Create New Tour Series"}
       </Typography>
 
@@ -128,20 +114,7 @@ const TourForm: React.FC<TourFormProps> = ({
               error={!!errors.name}
               helperText={errors.name}
               variant="outlined"
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  color: "white",
-                  "& fieldset": {
-                    borderColor: alpha(theme.palette.common.white, 0.3),
-                  },
-                  "&:hover fieldset": {
-                    borderColor: alpha(theme.palette.common.white, 0.5),
-                  },
-                },
-                "& .MuiInputLabel-root": {
-                  color: alpha(theme.palette.common.white, 0.7),
-                },
-              }}
+              sx={styles.tour.form.formField}
             />
           </Grid>
 
@@ -157,20 +130,7 @@ const TourForm: React.FC<TourFormProps> = ({
                     required: true,
                     error: !!errors.startDate,
                     helperText: errors.startDate,
-                    sx: {
-                      "& .MuiOutlinedInput-root": {
-                        color: "white",
-                        "& fieldset": {
-                          borderColor: alpha(theme.palette.common.white, 0.3),
-                        },
-                        "&:hover fieldset": {
-                          borderColor: alpha(theme.palette.common.white, 0.5),
-                        },
-                      },
-                      "& .MuiInputLabel-root": {
-                        color: alpha(theme.palette.common.white, 0.7),
-                      },
-                    },
+                    sx: styles.tour.form.formField,
                   },
                 }}
               />
@@ -189,20 +149,7 @@ const TourForm: React.FC<TourFormProps> = ({
                     required: true,
                     error: !!errors.endDate,
                     helperText: errors.endDate,
-                    sx: {
-                      "& .MuiOutlinedInput-root": {
-                        color: "white",
-                        "& fieldset": {
-                          borderColor: alpha(theme.palette.common.white, 0.3),
-                        },
-                        "&:hover fieldset": {
-                          borderColor: alpha(theme.palette.common.white, 0.5),
-                        },
-                      },
-                      "& .MuiInputLabel-root": {
-                        color: alpha(theme.palette.common.white, 0.7),
-                      },
-                    },
+                    sx: styles.tour.form.formField,
                   },
                 }}
               />
@@ -219,38 +166,16 @@ const TourForm: React.FC<TourFormProps> = ({
               multiline
               rows={4}
               variant="outlined"
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  color: "white",
-                  "& fieldset": {
-                    borderColor: alpha(theme.palette.common.white, 0.3),
-                  },
-                  "&:hover fieldset": {
-                    borderColor: alpha(theme.palette.common.white, 0.5),
-                  },
-                },
-                "& .MuiInputLabel-root": {
-                  color: alpha(theme.palette.common.white, 0.7),
-                },
-              }}
+              sx={styles.tour.form.formField}
             />
           </Grid>
         </Grid>
 
-        <Box
-          sx={{ mt: 4, display: "flex", justifyContent: "flex-end", gap: 2 }}
-        >
+        <Box sx={styles.tour.form.actionButtons}>
           <Button
             variant="outlined"
             onClick={onCancel}
-            sx={{
-              color: "white",
-              borderColor: alpha(theme.palette.common.white, 0.5),
-              "&:hover": {
-                borderColor: "white",
-                backgroundColor: alpha(theme.palette.common.white, 0.1),
-              },
-            }}
+            sx={styles.tour.form.cancelButton}
           >
             Cancel
           </Button>
@@ -258,12 +183,7 @@ const TourForm: React.FC<TourFormProps> = ({
             type="submit"
             variant="contained"
             color="primary"
-            sx={{
-              backgroundColor: "#1976d2",
-              "&:hover": {
-                backgroundColor: "#1565c0",
-              },
-            }}
+            sx={styles.tour.form.submitButton}
           >
             {initialData ? "Update Tour" : "Create Tour"}
           </Button>

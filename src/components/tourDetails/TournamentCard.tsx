@@ -16,7 +16,9 @@ import {
 } from "@mui/icons-material";
 import { format } from "date-fns";
 import { Tournament } from "../../types/event";
-import { useTourStyles } from "../../theme/hooks";
+import { useStyles } from "../../styles/hooks/useStyles";
+import { getStatusColor } from "../../components/util";
+import { useTheme } from "@mui/material";
 
 interface TournamentCardProps {
   tournament: Tournament;
@@ -27,10 +29,11 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
   tournament,
   onViewTournament,
 }) => {
-  const styles = useTourStyles();
+  const styles = useStyles();
+  const theme = useTheme();
 
   return (
-    <Card sx={styles.tourCard} onClick={onViewTournament}>
+    <Card sx={styles.tour.tournamentCard} onClick={onViewTournament}>
       <CardContent sx={{ flex: 1 }}>
         <Box sx={{ mb: 1 }}>
           <Chip
@@ -39,14 +42,16 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
               tournament.status.slice(1)
             }
             size="small"
-            sx={styles.getStatusChip(tournament.status)}
+            sx={styles.chips.status.custom(
+              getStatusColor(tournament.status, theme)
+            )}
           />
         </Box>
         <Typography
           variant="h6"
           component="h3"
           sx={{
-            ...styles.tourTypography.title,
+            ...styles.tour.typography.title,
             mb: 1,
             overflow: "hidden",
             textOverflow: "ellipsis",
@@ -58,21 +63,21 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
           {tournament.name}
         </Typography>
 
-        <Divider sx={styles.tourDivider} />
+        <Divider sx={styles.tour.divider} />
 
         <Box sx={{ mb: 1 }}>
-          <Box sx={styles.infoItem}>
+          <Box sx={styles.tour.infoItem}>
             <CalendarIcon fontSize="small" />
             <Typography variant="body2">
               {format(new Date(tournament.startDate), "MMM d, yyyy")} -{" "}
               {format(new Date(tournament.endDate), "MMM d, yyyy")}
             </Typography>
           </Box>
-          <Box sx={styles.infoItem}>
+          <Box sx={styles.tour.infoItem}>
             <PlaceIcon fontSize="small" />
             <Typography variant="body2">{tournament.location}</Typography>
           </Box>
-          <Box sx={styles.infoItem}>
+          <Box sx={styles.tour.infoItem}>
             <PeopleIcon fontSize="small" />
             <Typography variant="body2">
               {tournament.players.length} player
@@ -82,15 +87,7 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
         </Box>
       </CardContent>
       <CardActions>
-        <Button
-          fullWidth
-          variant="contained"
-          sx={{
-            mb: 1.5,
-            mx: 1.5,
-            textTransform: "none",
-          }}
-        >
+        <Button fullWidth variant="contained" sx={styles.button.primary}>
           View Tournament
         </Button>
       </CardActions>

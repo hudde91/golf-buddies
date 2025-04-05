@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import { Tournament } from "../../../types/event";
 import tournamentService from "../../../services/eventService";
-import { useTournamentLeaderboardStyles } from "../../../theme/hooks";
+import { useStyles } from "../../../styles/hooks/useStyles";
 import { useTheme } from "@mui/material";
 
 interface TeamLeaderboardProps {
@@ -23,7 +23,7 @@ interface TeamLeaderboardProps {
 }
 
 const TeamLeaderboard: React.FC<TeamLeaderboardProps> = ({ tournament }) => {
-  const styles = useTournamentLeaderboardStyles();
+  const styles = useStyles();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const isXsScreen = useMediaQuery(theme.breakpoints.down("sm"));
@@ -52,13 +52,13 @@ const TeamLeaderboard: React.FC<TeamLeaderboardProps> = ({ tournament }) => {
         <Typography
           variant="h6"
           gutterBottom
-          sx={styles.leaderboardTypography.title}
+          sx={styles.tournamentLeaderboard.leaderboardTypography.title}
         >
           Team Leaderboard
         </Typography>
         <Typography
           variant="body2"
-          sx={styles.leaderboardTypography.noDataText}
+          sx={styles.tournamentLeaderboard.leaderboardTypography.noDataText}
         >
           No team data available. Create teams and assign players to see the
           team leaderboard.
@@ -79,21 +79,28 @@ const TeamLeaderboard: React.FC<TeamLeaderboardProps> = ({ tournament }) => {
       <Typography
         variant="h6"
         gutterBottom
-        sx={styles.leaderboardTypography.title}
+        sx={styles.tournamentLeaderboard.leaderboardTypography.title}
       >
         Team Leaderboard
       </Typography>
       <TableContainer
         component={Paper}
         variant="outlined"
-        sx={styles.tableContainer}
+        sx={styles.tournamentLeaderboard.tableContainer}
       >
         <Table size="medium">
           <TableHead>
             <TableRow>
-              <TableCell sx={styles.positionHeaderCell}>Pos</TableCell>
-              <TableCell sx={styles.headerCell}>Team</TableCell>
-              <TableCell align="center" sx={styles.headerCell}>
+              <TableCell sx={styles.tournamentLeaderboard.positionHeaderCell}>
+                Pos
+              </TableCell>
+              <TableCell sx={styles.tournamentLeaderboard.headerCell}>
+                Team
+              </TableCell>
+              <TableCell
+                align="center"
+                sx={styles.tournamentLeaderboard.headerCell}
+              >
                 Players
               </TableCell>
 
@@ -101,13 +108,16 @@ const TeamLeaderboard: React.FC<TeamLeaderboardProps> = ({ tournament }) => {
                 <TableCell
                   key={`round-${round.id}`}
                   align="center"
-                  sx={styles.headerCell}
+                  sx={styles.tournamentLeaderboard.headerCell}
                 >
                   {round.name}
                 </TableCell>
               ))}
 
-              <TableCell align="center" sx={styles.headerCell}>
+              <TableCell
+                align="center"
+                sx={styles.tournamentLeaderboard.headerCell}
+              >
                 Total
               </TableCell>
             </TableRow>
@@ -128,31 +138,43 @@ const TeamLeaderboard: React.FC<TeamLeaderboardProps> = ({ tournament }) => {
               return (
                 <TableRow
                   key={`leaderboard-${team.teamId}`}
-                  sx={styles.getTableRowStyle(index)}
+                  sx={styles.tournamentLeaderboard.getTableRowStyle(index)}
                 >
-                  <TableCell sx={styles.centeredDataCell}>
+                  <TableCell sx={styles.tournamentLeaderboard.centeredDataCell}>
                     {position}
                     {index === 0 && tournament.status === "completed" && (
                       <Chip
                         label="Winner"
                         color="primary"
                         size="small"
-                        sx={styles.winnerChip}
+                        sx={styles.tournamentLeaderboard.winnerChip}
                       />
                     )}
                   </TableCell>
-                  <TableCell sx={styles.dataCell}>
+                  <TableCell sx={styles.tournamentLeaderboard.dataCell}>
                     <Box sx={{ display: "flex", alignItems: "center" }}>
-                      <Avatar sx={styles.getTeamAvatar(team.teamColor)}>
+                      <Avatar
+                        sx={styles.tournamentLeaderboard.getTeamAvatar(
+                          team.teamColor
+                        )}
+                      >
                         {team.teamName[0].toUpperCase()}
                       </Avatar>
-                      <Typography sx={styles.tournamentTypography.body}>
+                      <Typography
+                        sx={
+                          styles.tournamentLeaderboard.leaderboardTypography
+                            .body
+                        }
+                      >
                         {team.teamName}
                       </Typography>
                     </Box>
                   </TableCell>
 
-                  <TableCell align="center" sx={styles.dataCell}>
+                  <TableCell
+                    align="center"
+                    sx={styles.tournamentLeaderboard.dataCell}
+                  >
                     {team.playerCount}
                   </TableCell>
 
@@ -160,7 +182,7 @@ const TeamLeaderboard: React.FC<TeamLeaderboardProps> = ({ tournament }) => {
                     <TableCell
                       key={`${team.teamId}-round-${round.id}`}
                       align="center"
-                      sx={styles.dataCell}
+                      sx={styles.tournamentLeaderboard.dataCell}
                     >
                       {team.roundTotals[round.id] || "-"}
                     </TableCell>
@@ -169,7 +191,7 @@ const TeamLeaderboard: React.FC<TeamLeaderboardProps> = ({ tournament }) => {
                   <TableCell
                     align="center"
                     sx={{
-                      ...styles.dataCell,
+                      ...styles.tournamentLeaderboard.dataCell,
                       fontWeight: "bold",
                     }}
                   >
@@ -182,7 +204,10 @@ const TeamLeaderboard: React.FC<TeamLeaderboardProps> = ({ tournament }) => {
         </Table>
       </TableContainer>
       {isMobile && sortedRounds.length > 2 && (
-        <Typography variant="caption" sx={styles.mobileInfoText}>
+        <Typography
+          variant="caption"
+          sx={styles.tournamentLeaderboard.mobileInfoText}
+        >
           {isXsScreen
             ? "Individual round scores are hidden on small screens. View on a larger screen to see all rounds."
             : `Showing only the last ${displayRounds.length} rounds. View on a larger screen to see all rounds.`}

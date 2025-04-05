@@ -8,7 +8,7 @@ import {
   FormHelperText,
 } from "@mui/material";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
-import { useProfileStyles } from "../../theme/hooks";
+import { useStyles } from "../../styles/hooks/useStyles";
 
 interface HandicapFieldProps {
   question: string;
@@ -23,18 +23,21 @@ const HandicapField: React.FC<HandicapFieldProps> = ({
   error,
   onInputChange,
 }) => {
-  const styles = useProfileStyles();
+  const styles = useStyles();
 
   return (
     <Box sx={{ mb: 4 }}>
       <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-        <Typography variant="subtitle1" sx={styles.profileTypography.subtitle}>
+        <Typography
+          variant="subtitle1"
+          sx={styles.profileCard.typography.subtitle}
+        >
           {question}
         </Typography>
         <Tooltip title="A golf handicap is a numerical measure of a golfer's potential ability. Lower numbers indicate better players (scratch golfers have 0). Beginners typically have handicaps between 20-30.">
           <IconButton
             size="small"
-            sx={{ ml: 1, color: styles.profileTypography.muted.color }}
+            sx={{ ml: 1, color: styles.text.body.muted.color }}
           >
             <HelpOutlineIcon fontSize="small" />
           </IconButton>
@@ -58,11 +61,11 @@ const HandicapField: React.FC<HandicapFieldProps> = ({
           helperText={error}
           sx={{
             width: "100px",
-            ...styles.formField,
+            ...styles.inputs.formField,
           }}
         />
       </Box>
-      <FormHelperText sx={styles.profileTypography.muted}>
+      <FormHelperText sx={styles.profileCard.typography.muted}>
         Pro golfers can have negative handicaps. Beginners usually start around
         20-30.
       </FormHelperText>

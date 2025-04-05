@@ -4,7 +4,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import HandicapField from "./HandicapField";
 import ProfileTextField from "./ProfileTextField";
 import ProfileQuestion from "./ProfileQuestion";
-import { useProfileStyles } from "../../theme/hooks";
+import { useStyles } from "../../styles/hooks/useStyles";
 
 interface QuestionData {
   handicap: string;
@@ -42,13 +42,13 @@ const QuestionsSection: React.FC<QuestionsSectionProps> = ({
   onQuestion3Change,
   onSave,
 }) => {
-  const styles = useProfileStyles();
+  const styles = useStyles();
 
   const sectionTitle = (
     <Typography
       variant="h5"
       sx={{
-        ...styles.profileSectionTitle,
+        ...styles.profileCard.sectionTitle,
         mt: 5,
         mb: 3,
       }}
@@ -100,7 +100,7 @@ const QuestionsSection: React.FC<QuestionsSectionProps> = ({
             onClick={onSave}
             startIcon={<SaveIcon />}
             size="large"
-            sx={styles.profileButtons.save}
+            sx={styles.profileCard.buttons.save}
           >
             Save Profile
           </Button>

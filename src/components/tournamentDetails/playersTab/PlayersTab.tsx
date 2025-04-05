@@ -12,7 +12,7 @@ import { Tournament, Player } from "../../../types/event";
 import PlayerCard from "./PlayerCard";
 import InvitationCard from "./InvitationCard";
 import PlayerProfileDialog from "./PlayerProfileDialog";
-import { useTournamentPlayerStyles } from "../../../theme/hooks";
+import { useStyles } from "../../../styles/hooks/useStyles";
 
 interface PlayersTabProps {
   tournament: Tournament;
@@ -28,7 +28,7 @@ const PlayersTab: React.FC<PlayersTabProps> = ({
   renderPlayerExtra,
 }) => {
   const theme = useTheme();
-  const styles = useTournamentPlayerStyles();
+  const styles = useStyles();
   const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
   const [profileDialogOpen, setProfileDialogOpen] = useState(false);
@@ -44,8 +44,11 @@ const PlayersTab: React.FC<PlayersTabProps> = ({
 
   return (
     <Box>
-      <Box sx={styles.layouts.tabHeader}>
-        <Typography variant="h6" sx={styles.playerTypography.playerName}>
+      <Box sx={styles.tournamentPlayers.layouts.tabHeader}>
+        <Typography
+          variant="h6"
+          sx={styles.tournamentPlayers.playerTypography.playerName}
+        >
           Players ({tournament.players.length})
         </Typography>
 
@@ -56,7 +59,7 @@ const PlayersTab: React.FC<PlayersTabProps> = ({
             onClick={onInvitePlayers}
             variant="outlined"
             fullWidth={isSmall}
-            sx={styles.buttons.invite}
+            sx={styles.tournamentPlayers.buttons.invite}
           >
             Invite Players
           </Button>
@@ -81,7 +84,7 @@ const PlayersTab: React.FC<PlayersTabProps> = ({
           <Typography
             variant="h6"
             gutterBottom
-            sx={styles.playerTypography.playerName}
+            sx={styles.tournamentPlayers.playerTypography.playerName}
           >
             Pending Invitations ({tournament.invitations.length})
           </Typography>

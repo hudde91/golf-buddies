@@ -12,14 +12,15 @@ import {
 import eventService from "../../../services/eventService";
 import HighlightForm from "./HighlightForm";
 import HighlightsFeed from "./HighlightsFeed";
-import { useTournamentHighlightsStyles } from "../../../theme/hooks";
+import { useStyles } from "../../../styles/hooks/useStyles";
+
 interface HighlightsTabProps {
   tournament: Tournament;
   user: Player | null;
 }
 
 const HighlightsTab: React.FC<HighlightsTabProps> = ({ tournament, user }) => {
-  const styles = useTournamentHighlightsStyles();
+  const styles = useStyles();
   const [shoutOuts, setShoutOuts] = useState<ShoutOut[]>([]);
   const [highlights, setHighlights] = useState<Highlight[]>([]);
   const [feedItems, setFeedItems] = useState<FeedItem[]>([]);
@@ -120,9 +121,9 @@ const HighlightsTab: React.FC<HighlightsTabProps> = ({ tournament, user }) => {
   };
 
   return (
-    <Box sx={styles.container}>
-      <Box sx={styles.header}>
-        <Typography variant="h5" sx={styles.headerTitle}>
+    <Box sx={styles.tournamentHighlights.container}>
+      <Box sx={styles.tournamentHighlights.header}>
+        <Typography variant="h5" sx={styles.tournamentHighlights.headerTitle}>
           Highlights & shout-outs!
         </Typography>
         <Box>
@@ -130,10 +131,14 @@ const HighlightsTab: React.FC<HighlightsTabProps> = ({ tournament, user }) => {
             variant="contained"
             startIcon={<AddIcon />}
             onClick={handleOpenDialog}
+            sx={styles.button.primary}
           >
             Upload a highlight
           </Button>
-          <Typography variant="subtitle2" sx={styles.headerSubtitle}>
+          <Typography
+            variant="subtitle2"
+            sx={styles.tournamentHighlights.headerSubtitle}
+          >
             Share your best moments from the tournament
           </Typography>
         </Box>

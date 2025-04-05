@@ -29,7 +29,7 @@ import {
 import { Tournament, PlayerGroup } from "../../../types/event";
 import PlayerScoreEditor from "./GroupPage/PlayerScoreEditor";
 import PlayerGroupManager from "./GroupPage/PlayerGroupManager";
-import { useTournamentScorecardStyles } from "../../../theme/hooks";
+import { useStyles } from "../../../styles/hooks/useStyles";
 import WeatherDisplay from "./WeatherDisplay";
 import {
   fetchWeather,
@@ -58,7 +58,7 @@ const RoundsTab: React.FC<RoundsTabProps> = ({
 }) => {
   const theme = useTheme();
   const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
-  const styles = useTournamentScorecardStyles();
+  const styles = useStyles();
   const navigate = useNavigate();
 
   const [groupManagementOpen, setGroupManagementOpen] = useState(false);
@@ -72,6 +72,7 @@ const RoundsTab: React.FC<RoundsTabProps> = ({
   };
 
   const selectedRound = getSelectedRound();
+
   // Fetch weather data when component mounts or round changes
   useEffect(() => {
     const getWeather = async () => {
@@ -106,19 +107,19 @@ const RoundsTab: React.FC<RoundsTabProps> = ({
 
   if (tournament.rounds.length === 0) {
     return (
-      <Box sx={styles.roundsTab.emptyState}>
-        <EventIcon sx={styles.roundsTab.emptyStateIcon} />
+      <Box sx={styles.tournamentRounds.roundsTab.emptyState}>
+        <EventIcon sx={styles.tournamentRounds.roundsTab.emptyStateIcon} />
         <Typography
           variant="h6"
           gutterBottom
-          sx={styles.roundsTab.emptyStateTitle}
+          sx={styles.tournamentRounds.roundsTab.emptyStateTitle}
         >
           No Rounds Added Yet
         </Typography>
         <Typography
           variant="body2"
           paragraph
-          sx={styles.roundsTab.emptyStateMessage}
+          sx={styles.tournamentRounds.roundsTab.emptyStateMessage}
         >
           Add rounds to track scores for this tournament.
         </Typography>
@@ -128,6 +129,7 @@ const RoundsTab: React.FC<RoundsTabProps> = ({
             color="primary"
             startIcon={<AddCircleIcon />}
             onClick={onAddRound}
+            sx={styles.button.primary}
           >
             Add First Round
           </Button>
@@ -149,9 +151,10 @@ const RoundsTab: React.FC<RoundsTabProps> = ({
 
   return (
     <Box>
-      <ScorecardHeader round={selectedRound!} />
-      <Box sx={styles.roundsTab.header}>
-        <Typography variant="h6" sx={styles.header.title}>
+      {selectedRound && <ScorecardHeader round={selectedRound} />}
+
+      <Box sx={styles.tournamentRounds.roundsTab.header}>
+        <Typography variant="h6" sx={styles.headers.section.title}>
           Tournament Rounds
         </Typography>
 
@@ -162,6 +165,7 @@ const RoundsTab: React.FC<RoundsTabProps> = ({
             startIcon={<AddCircleIcon />}
             onClick={onAddRound}
             fullWidth={isSmall}
+            sx={styles.button.primary}
           >
             Add Round
           </Button>
@@ -173,7 +177,7 @@ const RoundsTab: React.FC<RoundsTabProps> = ({
           <List
             component={Paper}
             variant="outlined"
-            sx={styles.roundsTab.roundsList}
+            sx={styles.tournamentRounds.roundsTab.roundsList}
           >
             {[...tournament.rounds]
               .sort(
@@ -186,23 +190,27 @@ const RoundsTab: React.FC<RoundsTabProps> = ({
                   button
                   selected={selectedRoundId === round.id}
                   onClick={() => onSelectRound(round.id)}
-                  sx={styles.roundsTab.roundItem}
+                  sx={styles.tournamentRounds.roundsTab.roundItem}
                 >
-                  <ListItemAvatar sx={styles.roundsTab.roundItemAvatar}>
-                    <Avatar sx={styles.roundsTab.avatar}>
+                  <ListItemAvatar
+                    sx={styles.tournamentRounds.roundsTab.roundItemAvatar}
+                  >
+                    <Avatar sx={styles.tournamentRounds.roundsTab.avatar}>
                       <EventIcon />
                     </Avatar>
                   </ListItemAvatar>
                   <ListItemText
                     primary={
-                      <Typography sx={styles.roundsTab.roundName}>
+                      <Typography
+                        sx={styles.tournamentRounds.roundsTab.roundName}
+                      >
                         {round.name}
                       </Typography>
                     }
                     secondary={
                       <Typography
                         variant="body2"
-                        sx={styles.roundsTab.roundDate}
+                        sx={styles.tournamentRounds.roundsTab.roundDate}
                       >
                         {new Date(round.date).toLocaleDateString()}
                       </Typography>
@@ -214,7 +222,7 @@ const RoundsTab: React.FC<RoundsTabProps> = ({
                         edge="end"
                         aria-label="delete"
                         onClick={() => onDeleteRound(round.id)}
-                        sx={styles.roundsTab.deleteButton}
+                        sx={styles.tournamentRounds.roundsTab.deleteButton}
                       >
                         <DeleteIcon />
                       </IconButton>
@@ -232,19 +240,13 @@ const RoundsTab: React.FC<RoundsTabProps> = ({
                 weather={weather}
                 courseName={selectedRound.courseDetails?.name}
               />
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  mb: 3,
-                }}
-              >
+              <Box sx={styles.layout.flex.spaceBetween} mb={3}>
                 {isCreator && (
                   <Button
                     variant="outlined"
                     startIcon={<GroupsIcon />}
                     onClick={() => setGroupManagementOpen(true)}
+                    sx={styles.button.outlined}
                   >
                     Manage Groups
                   </Button>
@@ -253,56 +255,42 @@ const RoundsTab: React.FC<RoundsTabProps> = ({
 
               <Box sx={{ mb: 4 }}>
                 {playerGroups.map((group) => (
-                  <Box key={group.id} sx={{ mb: 4 }}>
+                  <Box
+                    key={group.id}
+                    sx={styles.tournamentRounds.group.container}
+                  >
                     <Paper
                       variant="outlined"
-                      sx={{
-                        p: 2,
-                        bgcolor: theme.palette.primary.main,
-                        color: "white",
-                        borderRadius: "4px",
-                        cursor: "pointer",
-                        "&:hover": {
-                          bgcolor: theme.palette.primary.dark,
-                        },
-                      }}
+                      sx={styles.tournamentRounds.group.header}
                       onClick={() =>
                         navigate(
                           `/tournaments/${tournament.id}/rounds/${selectedRoundId}/groups/${group.id}`
                         )
                       }
                     >
-                      <Box
-                        sx={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                        }}
-                      >
+                      <Box sx={styles.tournamentRounds.group.headerContent}>
                         <Box>
-                          <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                          <Typography
+                            variant="h6"
+                            sx={styles.tournamentRounds.group.title}
+                          >
                             {group.name}
                           </Typography>
-                          <Typography variant="body2">
+                          <Typography
+                            variant="body2"
+                            sx={styles.tournamentRounds.group.playerCount}
+                          >
                             {group.playerIds.length} players
                           </Typography>
                         </Box>
-                        <Box
-                          sx={{
-                            display: "flex",
-                            gap: 1,
-                          }}
-                        >
+                        <Box sx={styles.tournamentRounds.group.chips}>
                           {group.teeTime && (
                             <Chip
                               icon={<ScheduleIcon />}
                               label={`${group.teeTime}`}
                               variant="filled"
                               size="small"
-                              sx={{
-                                bgcolor: "rgba(255,255,255,0.2)",
-                                color: "white",
-                              }}
+                              sx={styles.tournamentRounds.group.timeChip}
                             />
                           )}
                           {group.startingHole && (
@@ -311,23 +299,13 @@ const RoundsTab: React.FC<RoundsTabProps> = ({
                               label={`Hole ${group.startingHole}`}
                               variant="filled"
                               size="small"
-                              sx={{
-                                bgcolor: "rgba(255,255,255,0.2)",
-                                color: "white",
-                              }}
+                              sx={styles.tournamentRounds.group.holeChip}
                             />
                           )}
                         </Box>
                       </Box>
 
-                      <Box
-                        sx={{
-                          mt: 2,
-                          display: "flex",
-                          flexWrap: "wrap",
-                          gap: 1,
-                        }}
-                      >
+                      <Box sx={styles.tournamentRounds.group.playerChips}>
                         {group.playerIds.slice(0, 3).map((playerId) => {
                           const player = tournament.players.find(
                             (p) => p.id === playerId
@@ -346,10 +324,7 @@ const RoundsTab: React.FC<RoundsTabProps> = ({
                               label={player.name}
                               variant="filled"
                               size="small"
-                              sx={{
-                                bgcolor: "rgba(255,255,255,0.2)",
-                                color: "white",
-                              }}
+                              sx={styles.tournamentRounds.group.playerChip}
                             />
                           );
                         })}
@@ -358,10 +333,7 @@ const RoundsTab: React.FC<RoundsTabProps> = ({
                             label={`+${group.playerIds.length - 3} more`}
                             variant="filled"
                             size="small"
-                            sx={{
-                              bgcolor: "rgba(255,255,255,0.2)",
-                              color: "white",
-                            }}
+                            sx={styles.tournamentRounds.group.playerChip}
                           />
                         )}
                       </Box>
@@ -370,107 +342,70 @@ const RoundsTab: React.FC<RoundsTabProps> = ({
                 ))}
 
                 {ungroupedPlayers.length > 0 && (
-                  <Box sx={{ mb: 4 }}>
+                  <Box sx={styles.tournamentRounds.ungrouped.container}>
                     <Paper
                       variant="outlined"
-                      sx={{
-                        mb: 2,
-                        p: 2,
-                        bgcolor: theme.palette.grey[700],
-                        color: "white",
-                        borderRadius: "4px 4px 0 0",
-                        borderBottom: "none",
-                      }}
+                      sx={styles.tournamentRounds.ungrouped.header}
                     >
                       <Typography variant="h6">Ungrouped Players</Typography>
                     </Paper>
 
-                    <Box
-                      sx={{
-                        mb: 2,
-                        border: `1px solid ${theme.palette.divider}`,
-                        borderTop: "none",
-                        borderRadius: "0 0 4px 4px",
-                        overflow: "hidden",
-                      }}
-                    >
-                      {ungroupedPlayers.map((player, playerIndex) => {
-                        return (
-                          <Box
-                            key={player.id}
+                    <Box sx={styles.tournamentRounds.ungrouped.playerList}>
+                      {ungroupedPlayers.map((player, playerIndex) => (
+                        <Box
+                          key={player.id}
+                          sx={{
+                            ...styles.tournamentRounds.ungrouped.playerItem,
+                            borderBottom:
+                              playerIndex < ungroupedPlayers.length - 1
+                                ? `1px solid ${theme.palette.divider}`
+                                : "none",
+                          }}
+                        >
+                          <ListItem
                             sx={{
-                              borderBottom:
-                                playerIndex < ungroupedPlayers.length - 1
-                                  ? `1px solid ${theme.palette.divider}`
-                                  : "none",
+                              bgcolor: theme.palette.background.paper,
                             }}
                           >
-                            <ListItem
-                              sx={{
-                                // cursor: "pointer",
-                                bgcolor: theme.palette.background.paper,
-                                // "&:hover": {
-                                //   bgcolor: theme.palette.action.hover,
-                                // },
-                              }}
-                            >
-                              <ListItemAvatar>
-                                <Avatar
-                                  src={player.avatarUrl}
-                                  alt={player.name}
-                                />
-                              </ListItemAvatar>
-
-                              <ListItemText
-                                primary={
-                                  <Box
-                                    sx={{
-                                      display: "flex",
-                                      alignItems: "center",
-                                    }}
-                                  >
-                                    <Typography
-                                      variant="subtitle1"
-                                      fontWeight="medium"
-                                    >
-                                      {player.name}
-                                    </Typography>
-                                    {player.handicap !== undefined && (
-                                      <Chip
-                                        icon={
-                                          <GolfCourseIcon fontSize="small" />
-                                        }
-                                        label={`HCP: ${player.handicap}`}
-                                        size="small"
-                                        sx={{ ml: 2 }}
-                                        variant="outlined"
-                                      />
-                                    )}
-                                  </Box>
-                                }
+                            <ListItemAvatar>
+                              <Avatar
+                                src={player.avatarUrl}
+                                alt={player.name}
                               />
-                            </ListItem>
-                          </Box>
-                        );
-                      })}
+                            </ListItemAvatar>
+
+                            <ListItemText
+                              primary={
+                                <Box
+                                  sx={
+                                    styles.tournamentRounds.ungrouped.playerName
+                                  }
+                                >
+                                  <Typography
+                                    variant="subtitle1"
+                                    fontWeight="medium"
+                                  >
+                                    {player.name}
+                                  </Typography>
+                                  {player.handicap !== undefined && (
+                                    <Chip
+                                      icon={<GolfCourseIcon fontSize="small" />}
+                                      label={`HCP: ${player.handicap}`}
+                                      size="small"
+                                      sx={{ ml: 2 }}
+                                      variant="outlined"
+                                    />
+                                  )}
+                                </Box>
+                              }
+                            />
+                          </ListItem>
+                        </Box>
+                      ))}
                     </Box>
                   </Box>
                 )}
               </Box>
-              {/* 
-              {selectedRound && editingPlayerId && (
-                <PlayerScoreEditor
-                  playerId={editingPlayerId}
-                  playerName={
-                    tournament.players.find((p) => p.id === editingPlayerId)
-                      ?.name || "Player"
-                  }
-                  round={selectedRound}
-                  open={!!editingPlayerId}
-                  onClose={() => setEditingPlayerId(null)}
-                  onSave={onUpdateScores}
-                />
-              )} */}
 
               {selectedRound && (
                 <PlayerGroupManager
@@ -483,8 +418,11 @@ const RoundsTab: React.FC<RoundsTabProps> = ({
               )}
             </Box>
           ) : (
-            <Box sx={styles.roundsTab.noSelection}>
-              <Typography variant="h6" sx={styles.roundsTab.noSelectionText}>
+            <Box sx={styles.tournamentRounds.roundsTab.noSelection}>
+              <Typography
+                variant="h6"
+                sx={styles.tournamentRounds.roundsTab.noSelectionText}
+              >
                 Select a round to view its scorecard
               </Typography>
             </Box>
@@ -494,5 +432,4 @@ const RoundsTab: React.FC<RoundsTabProps> = ({
     </Box>
   );
 };
-
 export default RoundsTab;

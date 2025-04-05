@@ -24,7 +24,7 @@ const TournamentsTab: React.FC<TournamentsTabProps> = ({
   const styles = useStyles();
 
   return (
-    <Box sx={styles.tabs.panel}>
+    <Box sx={styles.tabs.tourPanel}>
       <Box sx={styles.headers.tour.headerContainer}>
         <Typography variant="h6" sx={styles.headers.tour.sectionTitle}>
           Tournaments in this Tour

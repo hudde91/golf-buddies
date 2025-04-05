@@ -14,8 +14,8 @@ import { UserProfile, Achievement } from "../types";
 import ProfileHeader from "../components/profile/ProfileHeader";
 import BioSection from "../components/profile/BioSection";
 import QuestionsSection from "../components/profile/QuestionsSection";
-import { colors } from "../theme/theme";
 import AchievementsSection from "../components/profile/AchievementsSection";
+import { colors } from "../styles";
 
 const Profile: React.FC = () => {
   const { user } = useUser();
@@ -140,7 +140,7 @@ const Profile: React.FC = () => {
     return (
       <Box
         sx={{
-          background: colors.backgrounds.dark,
+          background: colors.background.main,
           minHeight: "calc(100vh - 64px)",
           pt: 4,
           pb: 6,
@@ -172,7 +172,7 @@ const Profile: React.FC = () => {
   return (
     <Box
       sx={{
-        background: colors.backgrounds.dark,
+        background: colors.background.main,
         minHeight: "calc(100vh - 64px)",
         pt: 4,
         pb: 6,

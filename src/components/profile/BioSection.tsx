@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Typography, TextField } from "@mui/material";
-import { useProfileStyles } from "../../theme/hooks";
+import { useStyles } from "../../styles/hooks/useStyles";
 
 interface BioSectionProps {
   bio: string;
@@ -13,7 +13,7 @@ const BioSection: React.FC<BioSectionProps> = ({
   editing,
   onBioChange,
 }) => {
-  const styles = useProfileStyles();
+  const styles = useStyles();
 
   if (editing) {
     return (
@@ -22,17 +22,35 @@ const BioSection: React.FC<BioSectionProps> = ({
         value={bio}
         onChange={onBioChange}
         placeholder="Write a short summary about yourself..."
-        {...styles.getProfileTextFieldProps(4)}
+        multiline
+        rows={4}
+        fullWidth
+        margin="normal"
+        InputLabelProps={{
+          style: styles.profileCard.formField.label,
+        }}
+        InputProps={{
+          style: styles.profileCard.formField.input,
+          sx: styles.profileCard.formField.border,
+        }}
       />
     );
   }
 
   return (
     <Box sx={{ mt: 2, mb: 5 }}>
-      <Typography variant="h5" gutterBottom sx={styles.profileSectionTitle}>
+      <Typography
+        variant="h5"
+        gutterBottom
+        sx={styles.profileCard.sectionTitle}
+      >
         About Me
       </Typography>
-      <Typography variant="body1" paragraph sx={styles.profileTypography.body}>
+      <Typography
+        variant="body1"
+        paragraph
+        sx={styles.profileCard.typography.body}
+      >
         {bio ||
           "No bio yet. Click the edit button to add information about yourself!"}
       </Typography>

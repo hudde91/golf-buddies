@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Typography, Button } from "@mui/material";
 import { Add as AddIcon, EmojiEvents as TrophyIcon } from "@mui/icons-material";
-import { useTournamentStyles } from "../../theme/hooks";
+import { useStyles } from "../../styles/hooks/useStyles";
 
 interface TournamentEmptyStateProps {
   onCreateTournament: () => void;
@@ -10,22 +10,22 @@ interface TournamentEmptyStateProps {
 const TournamentEmptyState: React.FC<TournamentEmptyStateProps> = ({
   onCreateTournament,
 }) => {
-  const styles = useTournamentStyles();
+  const styles = useStyles();
 
   return (
-    <Box sx={styles.emptyState}>
-      <TrophyIcon sx={styles.emptyStateIcon} />
+    <Box sx={styles.feedback.emptyState.container}>
+      <TrophyIcon sx={styles.feedback.emptyState.icon} />
       <Typography
         variant="h6"
         gutterBottom
-        sx={styles.tournamentTypography.title}
+        sx={styles.feedback.emptyState.title}
       >
         No Tournaments Yet
       </Typography>
       <Typography
         variant="body2"
         sx={{
-          ...styles.tournamentTypography.muted,
+          ...styles.feedback.emptyState.description,
           mb: 3,
           maxWidth: 500,
           mx: "auto",
@@ -38,6 +38,7 @@ const TournamentEmptyState: React.FC<TournamentEmptyStateProps> = ({
         color="primary"
         startIcon={<AddIcon />}
         onClick={onCreateTournament}
+        sx={styles.button.primary}
       >
         Create First Tournament
       </Button>

@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Typography, Avatar } from "@mui/material";
-import { useTournamentPlayerStyles } from "../../../theme/hooks";
+import { useStyles } from "../../../styles/hooks/useStyles";
 
 interface ProfileInfoItemProps {
   icon: React.ReactNode;
@@ -15,19 +15,24 @@ const ProfileInfoItem: React.FC<ProfileInfoItemProps> = ({
   value,
   color,
 }) => {
-  const styles = useTournamentPlayerStyles();
+  const styles = useStyles();
 
   return (
-    <Box sx={styles.profileInfoItem}>
-      <Avatar sx={styles.getInfoIconContainer(color)}>{icon}</Avatar>
+    <Box sx={styles.tournamentPlayers.profileInfoItem}>
+      <Avatar sx={styles.tournamentPlayers.getInfoIconContainer(color)}>
+        {icon}
+      </Avatar>
       <Box>
         <Typography
           variant="subtitle1"
-          sx={styles.playerTypography.getInfoItemTitle(color)}
+          sx={styles.tournamentPlayers.getInfoItemTitle(color)}
         >
           {title}
         </Typography>
-        <Typography variant="body1" sx={styles.playerTypography.infoItemValue}>
+        <Typography
+          variant="body1"
+          sx={styles.tournamentPlayers.playerTypography.infoItemValue}
+        >
           {value}
         </Typography>
       </Box>

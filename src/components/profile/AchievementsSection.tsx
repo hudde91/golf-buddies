@@ -1,8 +1,9 @@
 import React from "react";
-import { Box, Typography, useTheme, alpha, Divider } from "@mui/material";
+import { Box, Typography, Divider } from "@mui/material";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import { Achievement } from "../../types";
 import AchievementItem from "./AchievementItem";
+import { useStyles } from "../../styles/hooks/useStyles";
 
 interface AchievementsSectionProps {
   achievements: Achievement[];
@@ -11,7 +12,7 @@ interface AchievementsSectionProps {
 const AchievementsSection: React.FC<AchievementsSectionProps> = ({
   achievements,
 }) => {
-  const theme = useTheme();
+  const styles = useStyles();
 
   // Sort achievements by date (most recent first)
   const sortedAchievements = [...achievements].sort(
@@ -20,19 +21,19 @@ const AchievementsSection: React.FC<AchievementsSectionProps> = ({
 
   return (
     <Box sx={{ mt: 4 }}>
-      <Divider
-        sx={{
-          mb: 3,
-          borderColor: alpha(theme.palette.common.white, 0.2),
-        }}
-      />
+      <Divider sx={styles.divider.section} />
 
       <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
-        <EmojiEventsIcon sx={{ color: theme.palette.warning.main, mr: 1 }} />
+        <EmojiEventsIcon
+          sx={{
+            color: "warning.main",
+            mr: 1,
+          }}
+        />
         <Typography
           variant="h5"
           component="h2"
-          sx={{ color: theme.palette.common.white }}
+          sx={styles.text.heading.section}
         >
           Achievements
         </Typography>
@@ -43,16 +44,8 @@ const AchievementsSection: React.FC<AchievementsSectionProps> = ({
           <AchievementItem key={achievement.id} achievement={achievement} />
         ))
       ) : (
-        <Box
-          sx={{
-            p: 3,
-            textAlign: "center",
-            backgroundColor: alpha(theme.palette.common.white, 0.05),
-            borderRadius: 1,
-            border: `1px solid ${alpha(theme.palette.common.white, 0.08)}`,
-          }}
-        >
-          <Typography sx={{ color: alpha(theme.palette.common.white, 0.7) }}>
+        <Box sx={styles.feedback.emptyState.container}>
+          <Typography sx={styles.text.body.muted}>
             No achievements yet. Compete in tournaments to earn awards!
           </Typography>
         </Box>

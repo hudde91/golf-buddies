@@ -24,9 +24,8 @@ import PersonIcon from "@mui/icons-material/Person";
 import BackgroundService from "../services/backgroundService";
 import SplashConfig from "../components/splashScreen/SplashConfig";
 
-// Import the useStyles hook from your new design system
 import { useStyles } from "../styles/hooks/useStyles";
-import { tabs } from "../styles/components/tabs"; // Import tabs directly
+import { tabs } from "../styles/components/tabs";
 
 const Settings: React.FC = () => {
   const theme = useTheme();

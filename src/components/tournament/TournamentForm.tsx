@@ -16,11 +16,10 @@ import {
   Switch,
   Typography,
   Alert,
-  alpha,
   useMediaQuery,
 } from "@mui/material";
 import { TournamentFormData } from "../../types/event";
-import { useTournamentStyles } from "../../theme/hooks";
+import { useStyles } from "../../styles/hooks/useStyles";
 import { useTheme } from "@mui/material";
 
 interface TournamentFormProps {
@@ -40,7 +39,7 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
   onCancel,
   initialData = {},
 }) => {
-  const styles = useTournamentStyles();
+  const styles = useStyles();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const today = new Date().toISOString().split("T")[0];
@@ -124,10 +123,10 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
 
   return (
     <>
-      <DialogTitle sx={styles.dialogStyles.title}>
+      <DialogTitle sx={styles.dialogs.title}>
         {initialData.name ? "Edit Tournament" : "Create New Tournament"}
       </DialogTitle>
-      <DialogContent>
+      <DialogContent sx={styles.dialogs.content}>
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 2 }}>
           <Grid container spacing={3}>
             <Grid item xs={12}>
@@ -140,8 +139,10 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
                 error={!!errors.name}
                 helperText={errors.name}
                 required
-                InputLabelProps={styles.formStyles.labelProps}
-                InputProps={styles.formStyles.inputProps}
+                InputLabelProps={styles.tournamentCard.formStyles.labelProps(
+                  theme
+                )}
+                InputProps={styles.tournamentCard.formStyles.inputProps(theme)}
               />
             </Grid>
 
@@ -157,10 +158,10 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
                 helperText={errors.startDate}
                 required
                 InputLabelProps={{
-                  ...styles.formStyles.labelProps,
+                  ...styles.tournamentCard.formStyles.labelProps,
                   shrink: true,
                 }}
-                InputProps={styles.formStyles.inputProps}
+                InputProps={styles.tournamentCard.formStyles.inputProps(theme)}
               />
             </Grid>
 
@@ -179,11 +180,11 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
                 }
                 required
                 InputLabelProps={{
-                  ...styles.formStyles.labelProps,
+                  ...styles.tournamentCard.formStyles.labelProps,
                   shrink: true,
                 }}
                 InputProps={{
-                  ...styles.formStyles.inputProps,
+                  ...styles.tournamentCard.formStyles.inputProps,
                   inputProps: { min: formData.startDate },
                 }}
               />
@@ -199,25 +200,25 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
                 error={!!errors.location}
                 helperText={errors.location}
                 required
-                InputLabelProps={styles.formStyles.labelProps}
-                InputProps={styles.formStyles.inputProps}
+                InputLabelProps={styles.tournamentCard.formStyles.labelProps(
+                  theme
+                )}
+                InputProps={styles.tournamentCard.formStyles.inputProps(theme)}
               />
             </Grid>
 
             <Grid item xs={12}>
               <Box
                 sx={{
-                  border: `1px solid ${alpha(theme.palette.common.white, 0.2)}`,
-                  borderRadius: 1,
+                  ...styles.card.glass,
                   p: 2,
                   mb: 2,
-                  backgroundColor: alpha(theme.palette.common.black, 0.3),
                 }}
               >
                 <Typography
                   variant="subtitle1"
                   gutterBottom
-                  sx={{ color: "white" }}
+                  sx={styles.text.body.primary}
                 >
                   Team Settings
                 </Typography>
@@ -240,7 +241,7 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
                     <FormControl fullWidth>
                       <InputLabel
                         id="scoring-type-label"
-                        sx={{ color: alpha(theme.palette.common.white, 0.7) }}
+                        sx={{ color: "white" }}
                       >
                         Scoring Type
                       </InputLabel>
@@ -250,33 +251,10 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
                         value={formData.scoringType}
                         label="Scoring Type"
                         onChange={handleChange}
-                        sx={{
-                          color: "white",
-                          ".MuiOutlinedInput-notchedOutline": {
-                            borderColor: alpha(theme.palette.common.white, 0.3),
-                          },
-                          "&:hover .MuiOutlinedInput-notchedOutline": {
-                            borderColor: alpha(theme.palette.common.white, 0.5),
-                          },
-                          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                            borderColor: theme.palette.primary.main,
-                          },
-                          ".MuiSvgIcon-root": {
-                            color: alpha(theme.palette.common.white, 0.7),
-                          },
-                        }}
+                        sx={styles.inputs.select}
                         MenuProps={{
                           PaperProps: {
-                            sx: {
-                              bgcolor: alpha(theme.palette.common.black, 0.9),
-                              backgroundImage: "none",
-                              borderRadius: 1,
-                              boxShadow: 3,
-                              border: `1px solid ${alpha(
-                                theme.palette.common.white,
-                                0.1
-                              )}`,
-                            },
+                            sx: styles.inputs.menuPaper,
                           },
                         }}
                       >
@@ -284,27 +262,7 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
                           <MenuItem
                             key={type.value}
                             value={type.value}
-                            sx={{
-                              color: "white",
-                              "&:hover": {
-                                backgroundColor: alpha(
-                                  theme.palette.primary.main,
-                                  0.1
-                                ),
-                              },
-                              "&.Mui-selected": {
-                                backgroundColor: alpha(
-                                  theme.palette.primary.main,
-                                  0.2
-                                ),
-                                "&:hover": {
-                                  backgroundColor: alpha(
-                                    theme.palette.primary.main,
-                                    0.3
-                                  ),
-                                },
-                              },
-                            }}
+                            sx={styles.inputs.menuItem}
                           >
                             {type.label}
                           </MenuItem>
@@ -312,21 +270,7 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
                       </Select>
                     </FormControl>
 
-                    <Alert
-                      severity="info"
-                      sx={{
-                        mt: 2,
-                        backgroundColor: alpha(theme.palette.info.dark, 0.2),
-                        color: alpha(theme.palette.common.white, 0.9),
-                        border: `1px solid ${alpha(
-                          theme.palette.info.dark,
-                          0.3
-                        )}`,
-                        "& .MuiAlert-icon": {
-                          color: theme.palette.info.light,
-                        },
-                      }}
-                    >
+                    <Alert severity="info" sx={styles.feedback.alert.info}>
                       Team events allow you to group players into teams and
                       track both individual and team scores.
                     </Alert>
@@ -346,21 +290,17 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
                 onChange={handleChange}
                 error={!!errors.description}
                 helperText={errors.description}
-                InputLabelProps={styles.formStyles.labelProps}
-                InputProps={styles.formStyles.inputProps}
+                InputLabelProps={styles.tournamentCard.formStyles.labelProps(
+                  theme
+                )}
+                InputProps={styles.tournamentCard.formStyles.inputProps(theme)}
               />
             </Grid>
           </Grid>
         </Box>
       </DialogContent>
-      <DialogActions sx={styles.dialogStyles.actions}>
-        <Button
-          onClick={onCancel}
-          sx={{
-            color: alpha(theme.palette.common.white, 0.9),
-            order: { xs: 2, sm: 1 },
-          }}
-        >
+      <DialogActions sx={styles.dialogs.actions}>
+        <Button onClick={onCancel} sx={styles.button.cancel}>
           Cancel
         </Button>
         <Button
@@ -368,9 +308,7 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
           variant="contained"
           color="primary"
           fullWidth={isMobile}
-          sx={{
-            order: { xs: 1, sm: 2 },
-          }}
+          sx={styles.button.primary}
         >
           {initialData.name ? "Update Tournament" : "Create Tournament"}
         </Button>

@@ -22,7 +22,7 @@ import {
   Star as StarIcon,
 } from "@mui/icons-material";
 import { Team, Player } from "../../../types/event";
-import { useTournamentTeamStyles } from "../../../theme/hooks";
+import { useStyles } from "../../../styles/hooks/useStyles";
 
 interface TeamCardProps {
   team: Team;
@@ -43,24 +43,30 @@ const TeamCard: React.FC<TeamCardProps> = ({
   onDelete,
   onManagePlayers,
 }) => {
-  const styles = useTournamentTeamStyles();
+  const styles = useStyles();
 
   return (
-    <Card variant="outlined" sx={styles.getTeamCard(team.color)}>
+    <Card
+      variant="outlined"
+      sx={styles.tournamentTeams.getTeamCard(team.color)}
+    >
       <CardContent sx={{ flexGrow: 1 }}>
-        <Box sx={styles.teamHeader}>
-          <Avatar sx={styles.getTeamAvatar(team.color)}>
+        <Box sx={styles.tournamentTeams.teamHeader}>
+          <Avatar sx={styles.tournamentTeams.getTeamAvatar(team.color)}>
             {team.name[0].toUpperCase()}
           </Avatar>
-          <Typography variant="h6" sx={styles.teamName}>
+          <Typography variant="h6" sx={styles.tournamentTeams.teamName}>
             {team.name}
           </Typography>
         </Box>
 
-        <Divider sx={styles.teamDivider} />
+        <Divider sx={styles.tournamentTeams.teamDivider} />
 
-        <Box sx={styles.teamInfoHeader}>
-          <Typography variant="subtitle2" sx={styles.teamInfoText}>
+        <Box sx={styles.tournamentTeams.teamInfoHeader}>
+          <Typography
+            variant="subtitle2"
+            sx={styles.tournamentTeams.teamInfoText}
+          >
             Players: {players.length}
           </Typography>
 
@@ -69,15 +75,15 @@ const TeamCard: React.FC<TeamCardProps> = ({
               icon={<StarIcon sx={{ fontSize: "0.9rem" }} />}
               label={`Captain: ${captain.name}`}
               size="small"
-              sx={styles.getCaptainChip(team.color)}
+              sx={styles.tournamentTeams.getCaptainChip(team.color)}
             />
           )}
         </Box>
 
         {players.length > 0 ? (
-          <List dense sx={styles.playersList}>
+          <List dense sx={styles.tournamentTeams.playersList}>
             {players.map((player) => (
-              <ListItem key={player.id} sx={styles.playerItem}>
+              <ListItem key={player.id} sx={styles.tournamentTeams.playerItem}>
                 <ListItemAvatar>
                   <Badge
                     overlap="circular"
@@ -87,7 +93,11 @@ const TeamCard: React.FC<TeamCardProps> = ({
                     }}
                     badgeContent={
                       player.id === team.captain ? (
-                        <StarIcon sx={styles.getCaptainBadge(team.color)} />
+                        <StarIcon
+                          sx={styles.tournamentTeams.getCaptainBadge(
+                            team.color
+                          )}
+                        />
                       ) : null
                     }
                   >
@@ -100,13 +110,17 @@ const TeamCard: React.FC<TeamCardProps> = ({
                   primary={
                     <Typography
                       variant="body2"
-                      sx={styles.getPlayerName(player.id === team.captain)}
+                      sx={styles.tournamentTeams.getPlayerName(
+                        player.id === team.captain
+                      )}
                     >
                       {player.name}
                       {player.id === team.captain && (
                         <Typography
                           component="span"
-                          sx={styles.getCaptainLabel(team.color)}
+                          sx={styles.tournamentTeams.getCaptainLabel(
+                            team.color
+                          )}
                         >
                           (Captain)
                         </Typography>
@@ -118,18 +132,18 @@ const TeamCard: React.FC<TeamCardProps> = ({
             ))}
           </List>
         ) : (
-          <Typography variant="body2" sx={styles.noPlayersText}>
+          <Typography variant="body2" sx={styles.tournamentTeams.noPlayersText}>
             No players assigned yet
           </Typography>
         )}
       </CardContent>
       {isCreator && (
-        <CardActions sx={styles.cardActions}>
+        <CardActions sx={styles.tournamentTeams.cardActions}>
           <Button
             size="small"
             startIcon={<GroupAddIcon />}
             onClick={onManagePlayers}
-            sx={styles.managePlayersButton}
+            sx={styles.tournamentTeams.managePlayersButton}
             variant="outlined"
           >
             Manage Players
@@ -138,7 +152,7 @@ const TeamCard: React.FC<TeamCardProps> = ({
             size="small"
             startIcon={<EditIcon />}
             onClick={onEdit}
-            sx={styles.editButton}
+            sx={styles.tournamentTeams.editButton}
             variant="outlined"
           >
             Edit
@@ -148,7 +162,7 @@ const TeamCard: React.FC<TeamCardProps> = ({
             color="error"
             startIcon={<DeleteIcon />}
             onClick={onDelete}
-            sx={styles.deleteButton}
+            sx={styles.tournamentTeams.deleteButton}
             variant="outlined"
           >
             Delete

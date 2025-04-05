@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Typography, Button } from "@mui/material";
 import { Add as AddIcon } from "@mui/icons-material";
-import { useTournamentStyles } from "../../theme/hooks";
+import { useStyles } from "../../styles/hooks/useStyles";
 
 interface TournamentHeaderProps {
   onCreateTournament: () => void;
@@ -10,20 +10,11 @@ interface TournamentHeaderProps {
 const TournamentHeader: React.FC<TournamentHeaderProps> = ({
   onCreateTournament,
 }) => {
-  const styles = useTournamentStyles();
+  const styles = useStyles();
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: { xs: "column", sm: "row" },
-        justifyContent: "space-between",
-        alignItems: { xs: "flex-start", sm: "center" },
-        mb: 3,
-        gap: 2,
-      }}
-    >
-      <Typography variant="h4" sx={styles.tournamentTypography.header}>
+    <Box sx={styles.headers.dashboard.container}>
+      <Typography variant="h4" sx={styles.headers.dashboard.title}>
         Golf Tournaments
       </Typography>
 
@@ -33,8 +24,8 @@ const TournamentHeader: React.FC<TournamentHeaderProps> = ({
         startIcon={<AddIcon />}
         onClick={onCreateTournament}
         sx={{
-          alignSelf: { xs: "stretch", sm: "auto" },
-          boxShadow: 3,
+          ...styles.button.primary,
+          ...styles.button.create,
         }}
       >
         Create Tournament

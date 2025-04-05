@@ -1,6 +1,6 @@
 import React from "react";
 import { TextField } from "@mui/material";
-import { useProfileStyles } from "../../theme/hooks";
+import { useStyles } from "../../styles/hooks/useStyles";
 
 interface ProfileTextFieldProps {
   label: string;
@@ -15,15 +15,25 @@ const ProfileTextField: React.FC<ProfileTextFieldProps> = ({
   onChange,
   rows = 2,
 }) => {
-  const styles = useProfileStyles();
+  const styles = useStyles();
 
   return (
     <TextField
       label={label}
       value={value}
       onChange={onChange}
+      multiline={rows > 1}
+      rows={rows}
+      fullWidth
+      margin="normal"
       sx={{ mb: 3 }}
-      {...styles.getProfileTextFieldProps(rows)}
+      InputLabelProps={{
+        style: styles.profileCard.formField.label,
+      }}
+      InputProps={{
+        style: styles.profileCard.formField.input,
+        sx: styles.profileCard.formField.border,
+      }}
     />
   );
 };

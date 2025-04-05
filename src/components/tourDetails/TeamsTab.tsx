@@ -14,18 +14,18 @@ import {
 } from "@mui/material";
 import { Groups as TeamsIcon } from "@mui/icons-material";
 import { Tour } from "../../types/event";
-import { useTourStyles } from "../../theme/hooks";
+import { useStyles } from "../../styles/hooks/useStyles";
 
 interface TeamsTabProps {
   tour: Tour;
 }
 
 const TeamsTab: React.FC<TeamsTabProps> = ({ tour }) => {
-  const styles = useTourStyles();
+  const styles = useStyles();
 
   return (
-    <Box sx={styles.tourTabPanel}>
-      <Typography variant="h6" sx={styles.tourSectionTitle}>
+    <Box sx={styles.tabs.panel}>
+      <Typography variant="h6" sx={styles.headers.tour.sectionTitle}>
         Tour Teams
       </Typography>
 
@@ -36,13 +36,8 @@ const TeamsTab: React.FC<TeamsTabProps> = ({ tour }) => {
 
           return (
             <Grid item xs={12} sm={6} md={4} key={team.id}>
-              <Paper
-                sx={{
-                  ...styles.tourTeamCard,
-                  border: `1px solid ${alpha(team.color, 0.2)}`,
-                }}
-              >
-                <Box sx={styles.getTeamHeaderStyle(team.color)}>
+              <Paper sx={styles.tour.teamCard}>
+                <Box sx={styles.tour.getTeamHeader(team.color)}>
                   <Box
                     sx={{
                       display: "flex",
@@ -50,24 +45,24 @@ const TeamsTab: React.FC<TeamsTabProps> = ({ tour }) => {
                       alignItems: "center",
                     }}
                   >
-                    <Typography variant="h6" sx={styles.tourTypography.title}>
+                    <Typography variant="h6" sx={styles.tour.typography.title}>
                       {team.name}
                     </Typography>
                     <TeamsIcon sx={{ color: team.color }} />
                   </Box>
                 </Box>
 
-                <Box sx={{ p: 2 }}>
+                <Box sx={styles.tour.teamContent}>
                   <Box sx={{ mb: 2 }}>
                     <Typography
                       variant="body2"
-                      sx={styles.tourTypography.subtitle}
+                      sx={styles.tour.typography.subtitle}
                     >
                       Team Members
                     </Typography>
 
                     {teamPlayers.length === 0 ? (
-                      <Typography sx={styles.tourTypography.muted}>
+                      <Typography sx={styles.tour.typography.muted}>
                         No players assigned to this team
                       </Typography>
                     ) : (

@@ -29,7 +29,6 @@ import TourForm from "../components/tour/TourForm";
 import InvitationList from "../components/invitation/InvitationList";
 import LoadingState from "../components/tournament/LoadingState";
 
-// Import useStyles hook
 import { useStyles } from "../styles/hooks/useStyles";
 
 const Events: React.FC = () => {
@@ -133,7 +132,6 @@ const Events: React.FC = () => {
     );
 
     if (acceptedEvent) {
-      // Update state
       const updatedInvitations = invitations.filter(
         (t) => t.id !== tournamentId
       );
@@ -163,7 +161,6 @@ const Events: React.FC = () => {
     return <LoadingState />;
   }
 
-  // Render Event Header
   const renderEventHeader = () => {
     return (
       <Box sx={styles.headers.event.container}>
@@ -190,7 +187,6 @@ const Events: React.FC = () => {
     );
   };
 
-  // Render Event Card
   const renderEventCard = (event: Event) => {
     // Extract the common data based on event type
     const eventData = event.data;
@@ -218,7 +214,6 @@ const Events: React.FC = () => {
     return (
       <Box sx={styles.card.event}>
         <Box sx={styles.card.eventContent}>
-          {/* Chips */}
           <Box sx={styles.card.eventChipsContainer}>
             <Chip
               label={status}
@@ -237,7 +232,6 @@ const Events: React.FC = () => {
             />
           </Box>
 
-          {/* Title & Description */}
           <Typography variant="h6" sx={styles.text.eventTitle}>
             {name}
           </Typography>
@@ -246,13 +240,12 @@ const Events: React.FC = () => {
             {description}
           </Typography>
 
-          {/* Info Items */}
           <Divider sx={styles.divider.standard} />
 
           <Box sx={styles.infoItem.container}>
             {date && (
               <Box sx={styles.infoItem.base}>
-                <CalendarTodayIcon sx={styles.icon.info} />
+                <CalendarTodayIcon sx={styles.icon.infoIcon} />
                 <Typography sx={styles.text.body.muted}>
                   {new Date(date).toLocaleDateString()}
                 </Typography>
@@ -261,14 +254,14 @@ const Events: React.FC = () => {
 
             {location && (
               <Box sx={styles.infoItem.base}>
-                <LocationOnIcon sx={styles.icon.info} />
+                <LocationOnIcon sx={styles.icon.infoIcon} />
                 <Typography sx={styles.text.body.muted}>{location}</Typography>
               </Box>
             )}
 
             {players && players.length > 0 && (
               <Box sx={styles.infoItem.base}>
-                <PeopleIcon sx={styles.icon.info} />
+                <PeopleIcon sx={styles.icon.infoIcon} />
                 <Typography sx={styles.text.body.muted}>
                   {players.length} players
                 </Typography>

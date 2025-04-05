@@ -8,8 +8,6 @@ import {
   Box,
   Button,
   Chip,
-  alpha,
-  useTheme,
 } from "@mui/material";
 import {
   CalendarToday as CalendarIcon,
@@ -17,7 +15,7 @@ import {
   Group as GroupIcon,
 } from "@mui/icons-material";
 import { Tournament } from "../../types/event";
-import { useTournamentStyles } from "../../theme/hooks";
+import { useStyles } from "../../styles/hooks/useStyles";
 
 interface TournamentCardProps {
   tournament: Tournament;
@@ -30,30 +28,30 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
   userId,
   onViewDetails,
 }) => {
-  const styles = useTournamentStyles();
-  const theme = useTheme();
+  const styles = useStyles();
 
-  const getColorBasedOnStatus = (status: string) => {
+  // Get the appropriate color for status
+  const getColorForStatus = (status: string) => {
     switch (status.toLowerCase()) {
       case "upcoming":
-        return "info";
+        return styles.chips.status.upcoming;
       case "active":
-        return "success";
+        return styles.chips.status.active;
       case "completed":
-        return "primary";
+        return styles.chips.status.completed;
       case "cancelled":
-        return "error";
+        return styles.chips.status.cancelled;
       default:
-        return "default";
+        return styles.chips.status.draft;
     }
   };
 
   return (
     <Card
-      sx={styles.tournamentCard}
+      sx={styles.tournamentCard.container}
       onClick={() => onViewDetails(tournament.id)}
     >
-      <CardMedia sx={styles.tournamentCardMedia}>
+      <CardMedia sx={styles.tournamentCard.media}>
         <Box
           sx={{
             position: "absolute",
@@ -68,8 +66,7 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
               tournament.status.charAt(0).toUpperCase() +
               tournament.status.slice(1)
             }
-            color={getColorBasedOnStatus(tournament.status)}
-            sx={{ fontWeight: "medium" }}
+            sx={getColorForStatus(tournament.status)}
           />
         </Box>
         <Box
@@ -83,7 +80,7 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
           <Typography
             variant="h6"
             component="div"
-            sx={styles.tournamentTypography.cardTitle}
+            sx={styles.tournamentCard.typography.cardTitle}
             noWrap
           >
             {tournament.name}
@@ -91,7 +88,7 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
         </Box>
       </CardMedia>
       <CardContent sx={{ flexGrow: 1, py: 2 }}>
-        <Box sx={styles.infoItem}>
+        <Box sx={styles.tournamentCard.infoItem}>
           <CalendarIcon fontSize="small" />
           <Typography variant="body2">
             {new Date(tournament.startDate).toLocaleDateString()}
@@ -100,14 +97,14 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
           </Typography>
         </Box>
 
-        <Box sx={styles.infoItem}>
+        <Box sx={styles.tournamentCard.infoItem}>
           <LocationIcon fontSize="small" />
           <Typography variant="body2" noWrap>
             {tournament.location}
           </Typography>
         </Box>
 
-        <Box sx={styles.infoItem}>
+        <Box sx={styles.tournamentCard.infoItem}>
           <GroupIcon fontSize="small" />
           <Typography variant="body2">
             {tournament.players.length} players
@@ -119,10 +116,7 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
             size="small"
             label={`${tournament.rounds.length} rounds`}
             variant="outlined"
-            sx={{
-              color: theme.palette.secondary.light,
-              borderColor: alpha(theme.palette.secondary.light, 0.5),
-            }}
+            sx={styles.chips.eventType.custom("secondary.light")}
           />
 
           {tournament.format && (
@@ -130,10 +124,7 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
               size="small"
               label={tournament.format}
               variant="outlined"
-              sx={{
-                color: alpha(theme.palette.common.white, 0.9),
-                borderColor: alpha(theme.palette.common.white, 0.3),
-              }}
+              sx={styles.button.outlined}
             />
           )}
 
@@ -141,21 +132,17 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
             <Chip
               size="small"
               label="Creator"
-              sx={{
-                bgcolor: alpha(theme.palette.success.main, 0.2),
-                color: theme.palette.success.light,
-                borderColor: theme.palette.success.light,
-              }}
+              sx={styles.chips.status.custom("success.light")}
             />
           )}
         </Box>
       </CardContent>
-      <CardActions sx={{ p: 2, pt: 0 }}>
+      <CardActions sx={styles.card.actions.base}>
         <Button
           size="small"
           fullWidth
           variant="outlined"
-          sx={styles.outlinedButton}
+          sx={styles.button.outlined}
         >
           View Details
         </Button>

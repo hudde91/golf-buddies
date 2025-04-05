@@ -22,7 +22,7 @@ import {
 } from "@mui/icons-material";
 import { Team, Player, TeamFormData } from "../../../types/event";
 import { teamColors } from "../../../services/eventService";
-import { useTournamentTeamStyles } from "../../../theme/hooks";
+import { useStyles } from "../../../styles/hooks/useStyles";
 
 interface TeamFormDialogProps {
   open: boolean;
@@ -49,7 +49,7 @@ const TeamFormDialog: React.FC<TeamFormDialogProps> = ({
   onSubmit,
   isMobile,
 }) => {
-  const styles = useTournamentTeamStyles();
+  const styles = useStyles();
 
   const handleTeamFormChange = (
     e: React.ChangeEvent<HTMLInputElement> | SelectChangeEvent
@@ -68,10 +68,10 @@ const TeamFormDialog: React.FC<TeamFormDialogProps> = ({
       maxWidth="sm"
       fullWidth
       PaperProps={{
-        sx: styles.dialogPaper,
+        sx: styles.tournamentTeams.dialogPaper,
       }}
     >
-      <DialogTitle sx={styles.dialogTitle}>
+      <DialogTitle sx={styles.tournamentTeams.dialogTitle}>
         {team ? "Edit Team" : "Add New Team"}
       </DialogTitle>
       <DialogContent>
@@ -85,16 +85,20 @@ const TeamFormDialog: React.FC<TeamFormDialogProps> = ({
             required
             margin="normal"
             InputLabelProps={{
-              style: styles.formField.label,
+              style: styles.tournamentTeams.formField.label,
             }}
             InputProps={{
-              style: styles.formField.input,
-              sx: styles.formField.outline,
+              style: styles.tournamentTeams.formField.input,
+              sx: styles.tournamentTeams.formField.outline,
             }}
           />
 
           <Box sx={{ mt: 3 }}>
-            <Typography variant="subtitle1" gutterBottom sx={styles.teamName}>
+            <Typography
+              variant="subtitle1"
+              gutterBottom
+              sx={styles.tournamentTeams.teamName}
+            >
               Team Color
             </Typography>
             <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
@@ -102,7 +106,10 @@ const TeamFormDialog: React.FC<TeamFormDialogProps> = ({
                 <Box
                   key={color}
                   onClick={() => setTeamForm((prev) => ({ ...prev, color }))}
-                  sx={styles.getColorSwatch(color, teamForm.color === color)}
+                  sx={styles.tournamentTeams.getColorSwatch(
+                    color,
+                    teamForm.color === color
+                  )}
                 />
               ))}
             </Box>
@@ -110,10 +117,14 @@ const TeamFormDialog: React.FC<TeamFormDialogProps> = ({
 
           {team && teamPlayers.length > 0 && (
             <Box sx={{ mt: 3 }}>
-              <Typography variant="subtitle1" gutterBottom sx={styles.teamName}>
+              <Typography
+                variant="subtitle1"
+                gutterBottom
+                sx={styles.tournamentTeams.teamName}
+              >
                 Team Captain
               </Typography>
-              <List sx={styles.playersList}>
+              <List sx={styles.tournamentTeams.playersList}>
                 {teamPlayers.map((player) => (
                   <ListItem
                     key={player.id}
@@ -123,7 +134,7 @@ const TeamFormDialog: React.FC<TeamFormDialogProps> = ({
                         selectedCaptain === player.id ? null : player.id
                       )
                     }
-                    sx={styles.getPlayerListItem(
+                    sx={styles.tournamentTeams.getPlayerListItem(
                       selectedCaptain === player.id,
                       teamForm.color
                     )}
@@ -135,7 +146,7 @@ const TeamFormDialog: React.FC<TeamFormDialogProps> = ({
                     </ListItemAvatar>
                     <ListItemText
                       primary={
-                        <Typography sx={styles.teamName}>
+                        <Typography sx={styles.tournamentTeams.teamName}>
                           {player.name}
                         </Typography>
                       }
@@ -145,7 +156,7 @@ const TeamFormDialog: React.FC<TeamFormDialogProps> = ({
                       onChange={() => {}}
                       icon={<StarBorderIcon />}
                       checkedIcon={<StarIcon />}
-                      sx={styles.getCaptainIcon(
+                      sx={styles.tournamentTeams.getCaptainIcon(
                         selectedCaptain === player.id,
                         teamForm.color
                       )}
@@ -156,18 +167,18 @@ const TeamFormDialog: React.FC<TeamFormDialogProps> = ({
             </Box>
           )}
 
-          <Box sx={styles.previewBox}>
-            <Avatar sx={styles.getTeamAvatar(teamForm.color)}>
+          <Box sx={styles.tournamentTeams.previewBox}>
+            <Avatar sx={styles.tournamentTeams.getTeamAvatar(teamForm.color)}>
               {teamForm.name ? teamForm.name[0].toUpperCase() : "T"}
             </Avatar>
-            <Typography variant="h6" sx={styles.teamName}>
+            <Typography variant="h6" sx={styles.tournamentTeams.teamName}>
               {teamForm.name || "Team Name"}
             </Typography>
           </Box>
         </Box>
       </DialogContent>
-      <DialogActions sx={styles.dialogActions}>
-        <Button onClick={onClose} sx={styles.cancelButton}>
+      <DialogActions sx={styles.tournamentTeams.dialogActions}>
+        <Button onClick={onClose} sx={styles.tournamentTeams.cancelButton}>
           Cancel
         </Button>
         <Button
@@ -176,7 +187,7 @@ const TeamFormDialog: React.FC<TeamFormDialogProps> = ({
           color="primary"
           disabled={!teamForm.name.trim()}
           fullWidth={isMobile}
-          sx={styles.submitButton}
+          sx={styles.tournamentTeams.submitButton}
         >
           {team ? "Update Team" : "Add Team"}
         </Button>

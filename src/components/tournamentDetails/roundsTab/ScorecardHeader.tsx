@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Typography, Chip, useMediaQuery, useTheme } from "@mui/material";
 import { Round } from "../../../types/event";
-import { useTournamentScorecardStyles } from "../../../theme/hooks";
+import { useStyles } from "../../../styles/hooks/useStyles";
 
 interface ScorecardHeaderProps {
   round: Round;
@@ -10,12 +10,16 @@ interface ScorecardHeaderProps {
 const ScorecardHeader: React.FC<ScorecardHeaderProps> = ({ round }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  const styles = useTournamentScorecardStyles();
+  const styles = useStyles();
 
   return (
     <>
-      <Box sx={styles.header.container}>
-        <Typography variant="h6" component="h3" sx={styles.header.title}>
+      <Box sx={styles.tournamentRounds.header.container}>
+        <Typography
+          variant="h6"
+          component="h3"
+          sx={styles.tournamentRounds.header.title}
+        >
           {round.name} - {new Date(round.date).toLocaleDateString()}
         </Typography>
 
@@ -27,22 +31,22 @@ const ScorecardHeader: React.FC<ScorecardHeaderProps> = ({ round }) => {
             color="primary"
             variant="outlined"
             size={isMobile ? "small" : "medium"}
-            sx={styles.header.courseChip}
+            sx={styles.tournamentRounds.header.courseChip}
           />
         )}
       </Box>
 
-      <Box sx={styles.header.chipsContainer}>
+      <Box sx={styles.tournamentRounds.header.chipsContainer}>
         <Chip
           label={`Format: ${round.format}`}
           size="small"
-          sx={styles.header.formatChip}
+          sx={styles.tournamentRounds.header.formatChip}
         />
 
         <Chip
           label={`${round.courseDetails?.holes || 18} holes`}
           size="small"
-          sx={styles.header.holesChip}
+          sx={styles.tournamentRounds.header.holesChip}
         />
       </Box>
     </>

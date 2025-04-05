@@ -1,12 +1,17 @@
-import { alpha, Paper, Box, Typography, Chip, useTheme } from "@mui/material";
+import { Paper, Box, Typography, Chip } from "@mui/material";
 import { format } from "date-fns";
-import { getBadgeColor, getPositionText } from "../../pages/util";
+import { useStyles } from "../../styles/hooks/useStyles";
 import { Achievement } from "../../types";
+import { getPositionText } from "./utils";
 
 const AchievementItem: React.FC<{ achievement: Achievement }> = ({
   achievement,
 }) => {
-  const theme = useTheme();
+  const styles = useStyles();
+
+  const getBadgeStyle = (position: number) => {
+    return styles.getPositionStyle(position - 1);
+  };
 
   return (
     <Paper
@@ -14,11 +19,9 @@ const AchievementItem: React.FC<{ achievement: Achievement }> = ({
       sx={{
         p: 2,
         mb: 2,
-        backgroundColor: alpha(theme.palette.common.white, 0.08),
-        borderRadius: 1,
+        ...styles.card.glass,
         display: "flex",
         alignItems: "center",
-        border: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
       }}
     >
       <Box
@@ -26,7 +29,8 @@ const AchievementItem: React.FC<{ achievement: Achievement }> = ({
           width: 32,
           height: 32,
           borderRadius: "50%",
-          backgroundColor: getBadgeColor(achievement.position, theme),
+          backgroundColor: getBadgeStyle(achievement.position).bgcolor,
+          color: getBadgeStyle(achievement.position).color,
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
@@ -36,7 +40,6 @@ const AchievementItem: React.FC<{ achievement: Achievement }> = ({
         <Typography
           variant="body2"
           sx={{
-            color: achievement.position === 2 ? "black" : "white",
             fontWeight: "bold",
           }}
         >
@@ -44,29 +47,21 @@ const AchievementItem: React.FC<{ achievement: Achievement }> = ({
         </Typography>
       </Box>
       <Box sx={{ flexGrow: 1 }}>
-        <Typography variant="body1" sx={{ color: "white", fontWeight: 500 }}>
+        <Typography variant="body1" sx={styles.text.body.primary}>
           {achievement.displayText}
         </Typography>
-        <Typography
-          variant="caption"
-          sx={{ color: alpha(theme.palette.common.white, 0.7) }}
-        >
+        <Typography variant="caption" sx={styles.text.body.muted}>
           {format(new Date(achievement.date), "MMMM d, yyyy")}
         </Typography>
       </Box>
       <Chip
         size="small"
         label={achievement.type === "tournament" ? "Tournament" : "Tour"}
-        sx={{
-          backgroundColor:
-            achievement.type === "tournament"
-              ? alpha(theme.palette.primary.main, 0.2)
-              : alpha(theme.palette.secondary.main, 0.2),
-          color:
-            achievement.type === "tournament"
-              ? theme.palette.primary.light
-              : theme.palette.secondary.light,
-        }}
+        sx={
+          achievement.type === "tournament"
+            ? styles.chips.eventType.tournament
+            : styles.chips.eventType.tour
+        }
       />
     </Paper>
   );

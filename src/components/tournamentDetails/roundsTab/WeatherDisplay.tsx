@@ -18,7 +18,7 @@ import {
   Opacity,
 } from "@mui/icons-material";
 import { Weather } from "../../../services/weatherService";
-import { useTournamentScorecardStyles } from "../../../theme/hooks";
+import { useStyles } from "../../../styles/hooks/useStyles";
 
 interface WeatherDisplayProps {
   weather: Weather;
@@ -31,7 +31,7 @@ const WeatherDisplay: React.FC<WeatherDisplayProps> = ({
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  const styles = useTournamentScorecardStyles();
+  const styles = useStyles();
 
   const getWeatherIcon = () => {
     switch (weather.icon) {
@@ -53,35 +53,31 @@ const WeatherDisplay: React.FC<WeatherDisplayProps> = ({
   if (!courseName) return null;
 
   return (
-    <Box sx={styles.weather.container}>
-      <Typography variant="subtitle1" sx={styles.weather.title}>
+    <Box sx={styles.tournamentRounds.weather.container}>
+      <Typography
+        variant="subtitle1"
+        sx={styles.tournamentRounds.weather.title}
+      >
         Course Conditions:
       </Typography>
 
       {weather.loading ? (
-        <Box sx={styles.weather.loading}>
+        <Box sx={styles.tournamentRounds.weather.loading}>
           <CircularProgress size={20} color="inherit" />
           <Typography variant="body2">Loading weather data...</Typography>
         </Box>
       ) : weather.error ? (
-        <Typography variant="body2" sx={styles.weather.error}>
+        <Typography variant="body2" sx={styles.tournamentRounds.weather.error}>
           {weather.error}
         </Typography>
       ) : (
-        <Box sx={styles.weather.chipsContainer}>
+        <Box sx={styles.tournamentRounds.weather.chipsContainer}>
           <Tooltip title="Weather Condition">
             <Chip
               icon={getWeatherIcon()}
               label={weather.condition}
               size={isMobile ? "small" : "medium"}
-              sx={{
-                bgcolor: `rgba(${theme.palette.info.main}, 0.1)`,
-                color: theme.palette.info.light,
-                borderColor: `rgba(${theme.palette.info.light}, 0.3)`,
-                "& .MuiChip-icon": {
-                  color: "inherit",
-                },
-              }}
+              sx={styles.tournamentRounds.weather.chips.condition}
             />
           </Tooltip>
 
@@ -90,14 +86,7 @@ const WeatherDisplay: React.FC<WeatherDisplayProps> = ({
               icon={<TempIcon />}
               label={`${weather.temperature}°C`}
               size={isMobile ? "small" : "medium"}
-              sx={{
-                bgcolor: `rgba(${theme.palette.warning.main}, 0.1)`,
-                color: theme.palette.warning.light,
-                borderColor: `rgba(${theme.palette.warning.light}, 0.3)`,
-                "& .MuiChip-icon": {
-                  color: "inherit",
-                },
-              }}
+              sx={styles.tournamentRounds.weather.chips.temperature}
             />
           </Tooltip>
 
@@ -106,14 +95,7 @@ const WeatherDisplay: React.FC<WeatherDisplayProps> = ({
               icon={<WindIcon />}
               label={`${weather.windSpeed} km/h`}
               size={isMobile ? "small" : "medium"}
-              sx={{
-                bgcolor: `rgba(${theme.palette.success.main}, 0.1)`,
-                color: theme.palette.success.light,
-                borderColor: `rgba(${theme.palette.success.light}, 0.3)`,
-                "& .MuiChip-icon": {
-                  color: "inherit",
-                },
-              }}
+              sx={styles.tournamentRounds.weather.chips.wind}
             />
           </Tooltip>
 
@@ -122,14 +104,7 @@ const WeatherDisplay: React.FC<WeatherDisplayProps> = ({
               icon={<Opacity />}
               label={`${weather.humidity}%`}
               size={isMobile ? "small" : "medium"}
-              sx={{
-                bgcolor: `rgba(${theme.palette.primary.main}, 0.1)`,
-                color: theme.palette.primary.light,
-                borderColor: `rgba(${theme.palette.primary.light}, 0.3)`,
-                "& .MuiChip-icon": {
-                  color: "inherit",
-                },
-              }}
+              sx={styles.tournamentRounds.weather.chips.humidity}
             />
           </Tooltip>
         </Box>

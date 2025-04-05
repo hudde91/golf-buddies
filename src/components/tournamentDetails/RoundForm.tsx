@@ -24,7 +24,7 @@ import {
 import InfoIcon from "@mui/icons-material/Info";
 import { RoundFormData } from "../../types/event";
 import { roundFormats } from "../../services/eventService";
-import { useTournamentStyles } from "../../theme/hooks";
+import { useStyles } from "../../styles/hooks/useStyles";
 
 interface RoundFormProps {
   onSubmit: (data: RoundFormData) => void;
@@ -173,7 +173,7 @@ const RoundForm: React.FC<RoundFormProps> = ({
   tournamentEndDate,
   isTeamEvent = false,
 }) => {
-  const styles = useTournamentStyles();
+  const styles = useStyles();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -314,10 +314,10 @@ const RoundForm: React.FC<RoundFormProps> = ({
 
   return (
     <>
-      <DialogTitle sx={styles.dialogStyles.title}>
+      <DialogTitle sx={styles.dialogs.title}>
         {initialData.name ? "Edit Round" : "Add New Round"}
       </DialogTitle>
-      <DialogContent>
+      <DialogContent sx={styles.dialogs.content}>
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 2 }}>
           <Grid container spacing={3}>
             <Grid item xs={12}>
@@ -332,8 +332,10 @@ const RoundForm: React.FC<RoundFormProps> = ({
                   errors.name || 'e.g., "Round 1", "Morning Round", etc.'
                 }
                 required
-                InputLabelProps={styles.formStyles.labelProps}
-                InputProps={styles.formStyles.inputProps}
+                InputLabelProps={styles.tournamentCard.formStyles.labelProps(
+                  theme
+                )}
+                InputProps={styles.tournamentCard.formStyles.inputProps(theme)}
               />
             </Grid>
 
@@ -349,11 +351,11 @@ const RoundForm: React.FC<RoundFormProps> = ({
                 helperText={errors.date}
                 required
                 InputLabelProps={{
-                  ...styles.formStyles.labelProps,
+                  ...styles.tournamentCard.formStyles.labelProps,
                   shrink: true,
                 }}
                 InputProps={{
-                  ...styles.formStyles.inputProps,
+                  ...styles.tournamentCard.formStyles.inputProps,
                   inputProps: {
                     min: tournamentStartDate,
                     max: tournamentEndDate,
@@ -402,10 +404,12 @@ const RoundForm: React.FC<RoundFormProps> = ({
                     name="courseName"
                     label="Golf Course"
                     helperText="Select the golf course for this round"
-                    InputLabelProps={styles.formStyles.labelProps}
+                    InputLabelProps={styles.tournamentCard.formStyles.labelProps(
+                      theme
+                    )}
                     InputProps={{
                       ...params.InputProps,
-                      ...styles.formStyles.inputProps,
+                      ...styles.tournamentCard.formStyles.inputProps,
                       endAdornment: (
                         <React.Fragment>
                           {loading ? (
@@ -465,10 +469,7 @@ const RoundForm: React.FC<RoundFormProps> = ({
             <Grid item xs={12}>
               <Box sx={{ display: "flex", alignItems: "flex-start" }}>
                 <FormControl fullWidth error={!!errors.format}>
-                  <InputLabel
-                    id="format-label"
-                    sx={{ color: alpha(theme.palette.common.white, 0.7) }}
-                  >
+                  <InputLabel id="format-label" sx={{ color: "white" }}>
                     Round Format
                   </InputLabel>
                   <Select
@@ -478,33 +479,10 @@ const RoundForm: React.FC<RoundFormProps> = ({
                     label="Round Format"
                     onChange={handleChange}
                     required
-                    sx={{
-                      color: "white",
-                      ".MuiOutlinedInput-notchedOutline": {
-                        borderColor: alpha(theme.palette.common.white, 0.3),
-                      },
-                      "&:hover .MuiOutlinedInput-notchedOutline": {
-                        borderColor: alpha(theme.palette.common.white, 0.5),
-                      },
-                      "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                        borderColor: theme.palette.primary.main,
-                      },
-                      ".MuiSvgIcon-root": {
-                        color: alpha(theme.palette.common.white, 0.7),
-                      },
-                    }}
+                    sx={styles.inputs.select}
                     MenuProps={{
                       PaperProps: {
-                        sx: {
-                          bgcolor: alpha(theme.palette.common.black, 0.9),
-                          backgroundImage: "none",
-                          borderRadius: 1,
-                          boxShadow: 3,
-                          border: `1px solid ${alpha(
-                            theme.palette.common.white,
-                            0.1
-                          )}`,
-                        },
+                        sx: styles.inputs.menuPaper,
                       },
                     }}
                   >
@@ -512,27 +490,7 @@ const RoundForm: React.FC<RoundFormProps> = ({
                       <MenuItem
                         key={format}
                         value={format}
-                        sx={{
-                          color: "white",
-                          "&:hover": {
-                            backgroundColor: alpha(
-                              theme.palette.primary.main,
-                              0.1
-                            ),
-                          },
-                          "&.Mui-selected": {
-                            backgroundColor: alpha(
-                              theme.palette.primary.main,
-                              0.2
-                            ),
-                            "&:hover": {
-                              backgroundColor: alpha(
-                                theme.palette.primary.main,
-                                0.3
-                              ),
-                            },
-                          },
-                        }}
+                        sx={styles.inputs.menuItem}
                       >
                         {format}
                       </MenuItem>
@@ -557,7 +515,7 @@ const RoundForm: React.FC<RoundFormProps> = ({
                     sx={{
                       ml: 1,
                       mt: 1,
-                      color: theme.palette.info.light,
+                      color: "info.light",
                     }}
                   >
                     <InfoIcon />
@@ -568,10 +526,7 @@ const RoundForm: React.FC<RoundFormProps> = ({
 
             <Grid item xs={12} sm={6}>
               <FormControl fullWidth error={!!errors.holes}>
-                <InputLabel
-                  id="holes-label"
-                  sx={{ color: alpha(theme.palette.common.white, 0.7) }}
-                >
+                <InputLabel id="holes-label" sx={{ color: "white" }}>
                   Number of Holes
                 </InputLabel>
                 <Select
@@ -580,46 +535,23 @@ const RoundForm: React.FC<RoundFormProps> = ({
                   value={formData.holes.toString()}
                   label="Number of Holes"
                   onChange={handleChange}
-                  sx={{
-                    color: "white",
-                    ".MuiOutlinedInput-notchedOutline": {
-                      borderColor: alpha(theme.palette.common.white, 0.3),
-                    },
-                    "&:hover .MuiOutlinedInput-notchedOutline": {
-                      borderColor: alpha(theme.palette.common.white, 0.5),
-                    },
-                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                      borderColor: theme.palette.primary.main,
-                    },
-                    ".MuiSvgIcon-root": {
-                      color: alpha(theme.palette.common.white, 0.7),
-                    },
-                  }}
+                  sx={styles.inputs.select}
                   MenuProps={{
                     PaperProps: {
-                      sx: {
-                        bgcolor: alpha(theme.palette.common.black, 0.9),
-                        backgroundImage: "none",
-                        borderRadius: 1,
-                        boxShadow: 3,
-                        border: `1px solid ${alpha(
-                          theme.palette.common.white,
-                          0.1
-                        )}`,
-                      },
+                      sx: styles.inputs.menuPaper,
                     },
                   }}
                 >
-                  <MenuItem value="9" sx={{ color: "white" }}>
+                  <MenuItem value="9" sx={styles.inputs.menuItem}>
                     9 Holes
                   </MenuItem>
-                  <MenuItem value="18" sx={{ color: "white" }}>
+                  <MenuItem value="18" sx={styles.inputs.menuItem}>
                     18 Holes
                   </MenuItem>
-                  <MenuItem value="27" sx={{ color: "white" }}>
+                  <MenuItem value="27" sx={styles.inputs.menuItem}>
                     27 Holes
                   </MenuItem>
-                  <MenuItem value="36" sx={{ color: "white" }}>
+                  <MenuItem value="36" sx={styles.inputs.menuItem}>
                     36 Holes
                   </MenuItem>
                 </Select>
@@ -641,24 +573,20 @@ const RoundForm: React.FC<RoundFormProps> = ({
                 onChange={handleChange}
                 inputProps={{ min: 30, max: 80 }}
                 helperText="Standard par for the course"
-                InputLabelProps={styles.formStyles.labelProps}
+                InputLabelProps={styles.tournamentCard.formStyles.labelProps(
+                  theme
+                )}
                 InputProps={{
-                  ...styles.formStyles.inputProps,
-                  inputProps: { min: 30, max: 80, style: { color: "white" } },
+                  ...styles.tournamentCard.formStyles.inputProps,
+                  inputProps: { min: 30, max: 80 },
                 }}
               />
             </Grid>
           </Grid>
         </Box>
       </DialogContent>
-      <DialogActions sx={styles.dialogStyles.actions}>
-        <Button
-          onClick={onCancel}
-          sx={{
-            color: alpha(theme.palette.common.white, 0.9),
-            order: { xs: 2, sm: 1 },
-          }}
-        >
+      <DialogActions sx={styles.dialogs.actions}>
+        <Button onClick={onCancel} sx={styles.button.cancel}>
           Cancel
         </Button>
         <Button
@@ -666,9 +594,7 @@ const RoundForm: React.FC<RoundFormProps> = ({
           variant="contained"
           color="primary"
           fullWidth={isMobile}
-          sx={{
-            order: { xs: 1, sm: 2 },
-          }}
+          sx={styles.button.primary}
         >
           {initialData.name ? "Update Round" : "Add Round"}
         </Button>

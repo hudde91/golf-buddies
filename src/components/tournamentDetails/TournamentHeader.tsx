@@ -6,7 +6,6 @@ import {
   Button,
   Chip,
   useMediaQuery,
-  alpha,
   useTheme,
 } from "@mui/material";
 import {
@@ -15,7 +14,7 @@ import {
   Delete as DeleteIcon,
 } from "@mui/icons-material";
 import { Tournament } from "../../types/event";
-import { useTournamentStyles } from "../../theme/hooks";
+import { useStyles } from "../../styles/hooks/useStyles";
 import { getColorBasedOnStatus } from "../util";
 
 interface TournamentHeaderProps {
@@ -33,31 +32,17 @@ const TournamentHeader: React.FC<TournamentHeaderProps> = ({
   onDeleteTournament,
   onEditTournament,
 }) => {
-  const styles = useTournamentStyles();
+  const styles = useStyles();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        alignItems: { xs: "flex-start", sm: "center" },
-        mb: 3,
-        flexDirection: { xs: "column", sm: "row" },
-        gap: { xs: 2, sm: 0 },
-      }}
-    >
+    <Box sx={styles.headers.event.container}>
       <IconButton
         onClick={onBackClick}
-        sx={{
-          mr: 2,
-          color: "white",
-          bgcolor: alpha(theme.palette.common.white, 0.1),
-          "&:hover": {
-            bgcolor: alpha(theme.palette.common.white, 0.2),
-          },
-        }}
+        sx={styles.navigation.backButton}
+        aria-label="back"
       >
         <ArrowBackIcon />
       </IconButton>
@@ -71,11 +56,7 @@ const TournamentHeader: React.FC<TournamentHeaderProps> = ({
           gap: 1,
         }}
       >
-        <Typography
-          variant="h4"
-          component="h1"
-          sx={styles.tournamentTypography.header}
-        >
+        <Typography variant="h4" component="h1" sx={styles.headers.event.title}>
           {tournament.name}
         </Typography>
 
@@ -106,14 +87,7 @@ const TournamentHeader: React.FC<TournamentHeaderProps> = ({
             fullWidth={isSmall}
             size={isMobile ? "small" : "medium"}
             variant="outlined"
-            sx={{
-              color: theme.palette.error.light,
-              borderColor: alpha(theme.palette.error.light, 0.5),
-              "&:hover": {
-                borderColor: theme.palette.error.light,
-                backgroundColor: alpha(theme.palette.error.light, 0.1),
-              },
-            }}
+            sx={styles.button.danger}
           >
             Delete
           </Button>
@@ -123,6 +97,7 @@ const TournamentHeader: React.FC<TournamentHeaderProps> = ({
             onClick={onEditTournament}
             fullWidth={isSmall}
             size={isMobile ? "small" : "medium"}
+            sx={styles.button.primary}
           >
             Edit
           </Button>

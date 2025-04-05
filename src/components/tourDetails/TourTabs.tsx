@@ -6,7 +6,6 @@ import LeaderboardTab from "./LeaderboardTab";
 import PlayersTab from "./PlayersTab";
 import TeamsTab from "./TeamsTab";
 import { useStyles } from "../../styles/hooks/useStyles";
-import { useTheme } from "@mui/material/styles";
 
 interface TourTabsProps {
   tour: Tour;
@@ -28,7 +27,6 @@ const TourTabs: React.FC<TourTabsProps> = ({
   navigateToTournament,
 }) => {
   const styles = useStyles();
-  const theme = useTheme();
 
   return (
     <Box sx={styles.card.glass}>
