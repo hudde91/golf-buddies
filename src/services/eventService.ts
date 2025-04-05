@@ -181,12 +181,13 @@ const eventService = {
   getTournamentById: (id: string): Tournament | null => {
     const events = eventService.getAllEvents();
     const result = findTournamentInEvents(events, id);
-    // debugger;
     return result ? result.tournament : null;
   },
 
-  // Create new tournament event
-  createTournament: (data: TournamentFormData, currentUser: Player): Event => {
+  createTournament: (
+    data: TournamentFormData & { inviteFriends?: string[] },
+    currentUser: Player
+  ): Event => {
     const events = eventService.getAllEvents();
 
     // Create tournament
@@ -205,7 +206,7 @@ const eventService = {
       players: [currentUser],
       teams: [],
       rounds: [],
-      invitations: [],
+      invitations: data.inviteFriends || [], // Add selected friends to invitations
       isTeamEvent: data.isTeamEvent,
       scoringType: data.scoringType,
       status,
@@ -224,8 +225,12 @@ const eventService = {
     return newEvent;
   },
 
-  // Create new tour event
-  createTour: (data: TourFormData, userId: string, userName: string): Event => {
+  // Update the createTour method
+  createTour: (
+    data: TourFormData & { inviteFriends?: string[] },
+    userId: string,
+    userName: string
+  ): Event => {
     const events = eventService.getAllEvents();
 
     // Determine status
@@ -256,6 +261,7 @@ const eventService = {
       createdAt: new Date().toISOString(),
       tournaments: [],
       players: [currentUser], // Add the creator as the first player
+      invitations: data.inviteFriends || [], // Add selected friends to invitations
       status: status,
       pointsSystem: {
         win: 100,
@@ -277,10 +283,10 @@ const eventService = {
     return newEvent;
   },
 
-  // Add tournament to tour
+  // Update the addTournamentToTour method to include friend invitations
   addTournamentToTour: (
     tourId: string,
-    tournamentData: TournamentFormData,
+    tournamentData: TournamentFormData & { inviteFriends?: string[] },
     currentUser: Player
   ): Event | null => {
     const event = eventService.getEventById(tourId);
@@ -302,7 +308,7 @@ const eventService = {
       players: tour.players || [currentUser],
       teams: tour.teams || [],
       rounds: [],
-      invitations: [],
+      invitations: tournamentData.inviteFriends || [], // Add selected friends to invitations
       isTeamEvent: tournamentData.isTeamEvent,
       scoringType: tournamentData.scoringType,
       status: getEventStatus(tournamentData.startDate, tournamentData.endDate),

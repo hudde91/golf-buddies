@@ -1,4 +1,5 @@
 // src/styles/patterns/layouts.ts
+// TODO: Remove
 import { Theme } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import { spacing } from "../tokens/spacing";

@@ -35,7 +35,7 @@ const Settings: React.FC = () => {
   const [splashImage, setSplashImage] = useState<string>(
     "/splash-background.jpg"
   );
-  const [splashText, setSplashText] = useState<string>("GolfTracks");
+  const [splashText, setSplashText] = useState<string>("GolfBuddies");
   const [tabValue, setTabValue] = useState(0);
 
   const [backgroundImage, setBackgroundImage] = useState<string>("");

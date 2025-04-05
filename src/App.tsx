@@ -14,7 +14,7 @@ import {
   SignedIn,
   SignedOut,
 } from "@clerk/clerk-react";
-import { Fade } from "@mui/material";
+import { Box, Fade } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { AppThemeProvider } from "./theme/ThemeProvider";
@@ -32,6 +32,7 @@ import SplashScreen from "./components/splashScreen/SplashScreen";
 import BackgroundService from "./services/backgroundService";
 import { initializeEventUpdater } from "./services/utils/eventsUpdater";
 import GroupDetailPageContainer from "./components/tournamentDetails/roundsTab/GroupPage/GroupDetailPageContainer";
+import Friends from "./pages/Friends";
 
 const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || "";
 
@@ -46,7 +47,14 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <>
       <Header />
-      {children}
+      <Box
+        sx={{
+          width: "100%",
+          pb: { xs: 6, sm: 4 },
+        }}
+      >
+        {children}
+      </Box>
     </>
   );
 };
@@ -173,6 +181,17 @@ const App: React.FC = () => {
                           <ProtectedRoute>
                             <GroupDetailPageContainer />
                           </ProtectedRoute>
+                        }
+                      />
+
+                      <Route
+                        path="/friends"
+                        element={
+                          <>
+                            <ProtectedRoute>
+                              <Friends />
+                            </ProtectedRoute>
+                          </>
                         }
                       />
 

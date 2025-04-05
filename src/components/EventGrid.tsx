@@ -17,7 +17,7 @@ import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import AddIcon from "@mui/icons-material/Add";
 import { format } from "date-fns";
 import { Event, Tournament, Tour } from "../types/event";
-import { useEventStyles } from "../styles/modules/event";
+import { useStyles } from "../styles";
 
 interface EventCardProps {
   event: Event;
@@ -31,7 +31,7 @@ const EventCard: React.FC<EventCardProps> = ({
   userId,
   onViewDetails,
 }) => {
-  const styles = useEventStyles();
+  const styles = useStyles();
 
   let name = "";
   let description = "";
@@ -71,7 +71,12 @@ const EventCard: React.FC<EventCardProps> = ({
   }
 
   return (
-    <Card sx={styles.eventCard}>
+    <Card
+      sx={{
+        ...styles.eventCard,
+        ...styles.mobile.card.touchFeedback, // Apply mobile touch feedback
+      }}
+    >
       <CardContent sx={styles.eventCardContent}>
         <Box sx={styles.eventChipsContainer}>
           <Chip
@@ -148,7 +153,10 @@ const EventCard: React.FC<EventCardProps> = ({
           color="primary"
           fullWidth
           onClick={() => onViewDetails(event.id)}
-          sx={styles.viewDetailsButton}
+          sx={{
+            ...styles.viewDetailsButton,
+            ...styles.mobile.button.touchable, // Apply mobile button styles
+          }}
         >
           View Details
         </Button>
@@ -170,16 +178,16 @@ const EventGrid: React.FC<EventGridProps> = ({
   onViewDetails,
   onCreateEvent,
 }) => {
-  const styles = useEventStyles();
+  const styles = useStyles();
 
   if (events.length === 0) {
     return (
-      <Box sx={styles.emptyStateContainer}>
-        <GolfCourseIcon sx={styles.emptyStateIcon} />
+      <Box sx={styles.feedback.emptyState.container}>
+        <GolfCourseIcon sx={styles.feedback.emptyState.icon} />
         <Typography variant="h6" sx={styles.emptyStateTitle}>
           No Events Yet
         </Typography>
-        <Typography sx={styles.emptyStateDescription}>
+        <Typography sx={styles.feedback.emptyState.description}>
           Create your first tournament or tour series to start organizing your
           competitions.
         </Typography>
@@ -188,7 +196,10 @@ const EventGrid: React.FC<EventGridProps> = ({
           color="primary"
           startIcon={<AddIcon />}
           onClick={onCreateEvent}
-          sx={styles.createEventButton}
+          sx={{
+            ...styles.button.primary,
+            ...styles.mobile.button.touchable, // Apply mobile button styles
+          }}
         >
           Create Event
         </Button>
@@ -197,7 +208,10 @@ const EventGrid: React.FC<EventGridProps> = ({
   }
 
   return (
-    <Grid container spacing={3}>
+    <Grid
+      container
+      spacing={styles.mobile.grid.responsive.spacing} // Apply responsive grid spacing
+    >
       {events.map((event) => (
         <Grid item xs={12} sm={6} md={4} key={event.id}>
           <EventCard

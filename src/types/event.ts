@@ -120,6 +120,7 @@ export interface TournamentFormData {
   description: string;
   isTeamEvent: boolean;
   scoringType: "individual" | "team" | "both";
+  inviteFriends?: string[];
 }
 
 export interface RoundFormData {
@@ -143,6 +144,7 @@ export interface TourFormData {
   startDate: string;
   endDate: string;
   description: string;
+  inviteFriends?: string[];
 }
 
 export interface ShoutOut {

@@ -56,9 +56,9 @@ const RoundsTab: React.FC<RoundsTabProps> = ({
   onUpdatePlayerGroups,
   onAddRound,
 }) => {
+  const styles = useStyles();
   const theme = useTheme();
   const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
-  const styles = useStyles();
   const navigate = useNavigate();
 
   const [groupManagementOpen, setGroupManagementOpen] = useState(false);
@@ -153,7 +153,12 @@ const RoundsTab: React.FC<RoundsTabProps> = ({
     <Box>
       {selectedRound && <ScorecardHeader round={selectedRound} />}
 
-      <Box sx={styles.tournamentRounds.roundsTab.header}>
+      <Box
+        sx={{
+          ...styles.tournamentRounds.roundsTab.header,
+          ...styles.mobile.layout.stackedOnMobile,
+        }}
+      >
         <Typography variant="h6" sx={styles.headers.section.title}>
           Tournament Rounds
         </Typography>
@@ -165,19 +170,25 @@ const RoundsTab: React.FC<RoundsTabProps> = ({
             startIcon={<AddCircleIcon />}
             onClick={onAddRound}
             fullWidth={isSmall}
-            sx={styles.button.primary}
+            sx={{
+              ...styles.button.primary,
+              ...styles.mobile.button.touchable,
+            }}
           >
             Add Round
           </Button>
         )}
       </Box>
 
-      <Grid container spacing={3}>
+      <Grid container spacing={styles.mobile.grid.responsive.spacing}>
         <Grid item xs={12} md={3}>
           <List
             component={Paper}
             variant="outlined"
-            sx={styles.tournamentRounds.roundsTab.roundsList}
+            sx={{
+              ...styles.tournamentRounds.roundsTab.roundsList,
+              ...styles.mobile.list.horizontal,
+            }}
           >
             {[...tournament.rounds]
               .sort(

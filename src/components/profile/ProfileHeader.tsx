@@ -10,6 +10,7 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
 import { useStyles } from "../../styles/hooks/useStyles";
+import { baseColors, colors } from "../../styles";
 
 interface ProfileHeaderProps {
   fullName: string;
@@ -55,11 +56,11 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                 position: "absolute",
                 bottom: 0,
                 right: 0,
-                bgcolor: alpha("black", 0.6),
+                bgcolor: alpha(baseColors.black, 0.6),
                 border: `2px solid ${"primary.main"}`,
                 padding: "12px",
                 "&:hover": {
-                  bgcolor: alpha("black", 0.8),
+                  bgcolor: alpha(baseColors.black, 0.8),
                 },
               }}
             >

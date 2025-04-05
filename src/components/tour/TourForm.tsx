@@ -1,13 +1,30 @@
-import React, { useState } from "react";
-import { Box, Typography, TextField, Button, Grid, Paper } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Grid,
+  Paper,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  useTheme,
+  alpha,
+} from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import PeopleIcon from "@mui/icons-material/People";
 import { TourFormData } from "../../types/event";
 import { useStyles } from "../../styles/hooks/useStyles";
+import { useUser } from "@clerk/clerk-react";
+import friendsService from "../../services/friendsService";
+import FriendInviteList from "../FriendInviteList";
 
 interface TourFormProps {
-  onSubmit: (data: TourFormData) => void;
+  onSubmit: (data: TourFormData & { inviteFriends: string[] }) => void;
   onCancel: () => void;
   initialData?: Partial<TourFormData>;
 }
@@ -18,6 +35,8 @@ const TourForm: React.FC<TourFormProps> = ({
   initialData,
 }) => {
   const styles = useStyles();
+  const theme = useTheme();
+  const { user } = useUser();
   const today = new Date();
 
   const [formData, setFormData] = useState<TourFormData>({
@@ -32,6 +51,18 @@ const TourForm: React.FC<TourFormProps> = ({
   });
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [friends, setFriends] = useState([]);
+  const [loadingFriends, setLoadingFriends] = useState(true);
+  const [selectedFriends, setSelectedFriends] = useState<string[]>([]);
+  const [expandFriends, setExpandFriends] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      const userFriends = friendsService.getAcceptedFriends(user.id);
+      setFriends(userFriends);
+      setLoadingFriends(false);
+    }
+  }, [user]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -67,6 +98,10 @@ const TourForm: React.FC<TourFormProps> = ({
     }
   };
 
+  const handleFriendsChange = (emails: string[]) => {
+    setSelectedFriends(emails);
+  };
+
   const validateForm = (): boolean => {
     const newErrors: { [key: string]: string } = {};
 
@@ -91,7 +126,10 @@ const TourForm: React.FC<TourFormProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
-      onSubmit(formData);
+      onSubmit({
+        ...formData,
+        inviteFriends: selectedFriends,
+      });
     }
   };
 
@@ -154,6 +192,43 @@ const TourForm: React.FC<TourFormProps> = ({
                 }}
               />
             </LocalizationProvider>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Accordion
+              expanded={expandFriends}
+              onChange={() => setExpandFriends(!expandFriends)}
+              sx={{
+                backgroundColor:
+                  theme.palette.mode === "dark"
+                    ? alpha(theme.palette.background.paper, 0.8)
+                    : theme.palette.background.paper,
+                borderRadius: 1,
+                "&:before": { display: "none" },
+                boxShadow: theme.shadows[2],
+              }}
+            >
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="invite-friends-content"
+                id="invite-friends-header"
+              >
+                <Box sx={{ display: "flex", alignItems: "center" }}>
+                  <PeopleIcon sx={{ mr: 1 }} />
+                  <Typography>
+                    Invite Friends ({selectedFriends.length})
+                  </Typography>
+                </Box>
+              </AccordionSummary>
+              <AccordionDetails>
+                <FriendInviteList
+                  friends={friends}
+                  loading={loadingFriends}
+                  selectedFriends={selectedFriends}
+                  onSelectedFriendsChange={handleFriendsChange}
+                />
+              </AccordionDetails>
+            </Accordion>
           </Grid>
 
           <Grid item xs={12}>

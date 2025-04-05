@@ -6,26 +6,35 @@ export const dialogs = {
     backgroundColor: alpha(theme.palette.common.black, 0.8),
     backdropFilter: "blur(20px)",
     border: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
-    borderRadius: 2,
+    borderRadius: { xs: "16px 16px 0 0", sm: 2 }, // Bottom sheet style on mobile
+    position: { xs: "absolute", sm: "relative" }, // Position at bottom on mobile
+    bottom: { xs: 0, sm: "auto" }, // Anchor to bottom on mobile
+    margin: { xs: 0, sm: undefined }, // Remove margin on mobile
+    maxHeight: { xs: "85vh", sm: undefined }, // Limit height on mobile
+    width: { xs: "100%", sm: undefined }, // Full width on mobile
   }),
 
   title: (theme: Theme) => ({
     color: "white",
     borderBottom: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
+    px: { xs: 3, sm: 3 }, // Consistent padding
+    py: { xs: 2, sm: 2 }, // Consistent padding
   }),
 
   content: {
-    py: 1,
+    py: { xs: 2, sm: 1 }, // More padding on mobile
+    px: { xs: 2, sm: 3 }, // Less side padding on mobile
   },
 
   actions: (theme: Theme) => ({
     borderTop: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
-    px: 3,
-    py: 2,
-    flexDirection: { xs: "column", sm: "row" },
-    alignItems: "stretch",
+    px: { xs: 2, sm: 3 },
+    py: { xs: 3, sm: 2 }, // More padding on mobile
+    flexDirection: { xs: "column", sm: "row" }, // Stack buttons on mobile
+    alignItems: { xs: "stretch", sm: "center" }, // Full width buttons on mobile
     "& > button": {
       m: { xs: 0.5, sm: 0 },
+      flex: { xs: 1, sm: "none" }, // Grow buttons on mobile
     },
   }),
 

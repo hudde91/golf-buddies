@@ -16,11 +16,13 @@ import {
   Container,
   useTheme,
   alpha,
+  useMediaQuery,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import SettingsIcon from "@mui/icons-material/Settings";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import PersonIcon from "@mui/icons-material/Person";
+import PeopleIcon from "@mui/icons-material/People";
 import HomeIcon from "@mui/icons-material/Home";
 import {
   SignedIn,
@@ -30,6 +32,8 @@ import {
   useAuth,
 } from "@clerk/clerk-react";
 import tournamentService from "../services/eventService";
+import friendsService from "../services/friendsService";
+import { useStyles } from "../styles";
 
 interface ElevationScrollProps {
   children: React.ReactElement;
@@ -62,12 +66,16 @@ const Header: React.FC = () => {
   const { user, isLoaded } = useUser();
   const { signOut } = useAuth();
   const theme = useTheme();
+  const styles = useStyles();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isXsScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const location = useLocation();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [userMenuAnchorEl, setUserMenuAnchorEl] = useState<null | HTMLElement>(
     null
   );
   const [pendingInvitations, setPendingInvitations] = useState<number>(0);
+  const [pendingFriendRequests, setPendingFriendRequests] = useState<number>(0);
   const open = Boolean(anchorEl);
   const userMenuOpen = Boolean(userMenuAnchorEl);
 
@@ -77,6 +85,10 @@ const Header: React.FC = () => {
       const userEmail = user.primaryEmailAddress?.emailAddress || "";
       const invitations = tournamentService.getUserInvitations(userEmail);
       setPendingInvitations(invitations.length);
+
+      // Check for pending friend requests
+      const pendingFriends = friendsService.getPendingFriends(user.id);
+      setPendingFriendRequests(pendingFriends.length);
     }
   }, [user, isLoaded, location]);
 
@@ -108,8 +120,13 @@ const Header: React.FC = () => {
   return (
     <ElevationScroll>
       <AppBar position="sticky">
-        <Container maxWidth="lg">
-          <Toolbar disableGutters sx={{ py: 1 }}>
+        <Container maxWidth="lg" disableGutters={isXsScreen}>
+          <Toolbar
+            disableGutters
+            sx={{
+              py: styles.mobile.spacing.touch.py,
+            }}
+          >
             <Typography
               variant="h5"
               component={RouterLink}
@@ -123,10 +140,11 @@ const Header: React.FC = () => {
                 textDecoration: "none",
                 display: "flex",
                 alignItems: "center",
+                ...styles.mobile.typography.adaptive.h5,
               }}
             >
               <EmojiEventsIcon sx={{ mr: 1, fontSize: 28 }} />
-              GolfTracks
+              GolfBuddies
             </Typography>
 
             <Box sx={{ display: { xs: "none", md: "flex" }, flexGrow: 1 }}>
@@ -204,6 +222,36 @@ const Header: React.FC = () => {
                   }}
                 >
                   Events
+                </Button>
+
+                <Button
+                  color="inherit"
+                  component={RouterLink}
+                  to="/friends"
+                  startIcon={
+                    <Badge
+                      badgeContent={pendingFriendRequests}
+                      color="error"
+                      max={99}
+                    >
+                      <PeopleIcon />
+                    </Badge>
+                  }
+                  sx={{
+                    mx: 1,
+                    borderRadius: 2,
+                    "&:hover": {
+                      backgroundColor: alpha(theme.palette.common.white, 0.1),
+                    },
+                    ...(isActive("/friends") && {
+                      backgroundColor: alpha(theme.palette.common.white, 0.15),
+                      "&:hover": {
+                        backgroundColor: alpha(theme.palette.common.white, 0.2),
+                      },
+                    }),
+                  }}
+                >
+                  Friends
                 </Button>
               </SignedIn>
             </Box>
@@ -379,6 +427,36 @@ const Header: React.FC = () => {
                         <EmojiEventsIcon fontSize="small" sx={{ mr: 2 }} />
                       </Badge>
                       Events
+                    </MenuItem>
+
+                    <MenuItem
+                      onClick={handleClose}
+                      component={RouterLink}
+                      to="/friends"
+                      selected={isActive("/friends")}
+                      sx={{
+                        "&.Mui-selected": {
+                          backgroundColor: alpha(
+                            theme.palette.common.white,
+                            0.15
+                          ),
+                        },
+                        "&:hover": {
+                          backgroundColor: alpha(
+                            theme.palette.common.white,
+                            0.1
+                          ),
+                        },
+                      }}
+                    >
+                      <Badge
+                        badgeContent={pendingFriendRequests}
+                        color="error"
+                        max={99}
+                      >
+                        <PeopleIcon fontSize="small" sx={{ mr: 2 }} />
+                      </Badge>
+                      Friends
                     </MenuItem>
 
                     <MenuItem

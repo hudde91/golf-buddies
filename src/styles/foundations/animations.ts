@@ -1,3 +1,4 @@
+// TODO: Remove
 export const animations = {
   transitions: {
     default: "all 0.2s ease",

@@ -16,6 +16,15 @@ export interface UserProfile {
   question2: string;
   question3: string;
   achievements?: Achievement[];
+  friends?: string[];
+}
+
+export interface FriendRequest {
+  id: string;
+  from: string;
+  to: string;
+  status: "pending" | "accepted" | "rejected";
+  createdAt: string;
 }
 
 export interface StoredUserData {

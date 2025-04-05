@@ -17,6 +17,7 @@ export const card = {
     backdropFilter: "blur(10px)",
     border: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
     p: { xs: 2, md: 4 },
+    borderRadius: { xs: 0, sm: 2 },
   }),
 
   // Interactive card with hover effects
@@ -25,8 +26,13 @@ export const card = {
     transition: "transform 0.3s ease, box-shadow 0.3s ease",
     "&:hover": {
       backgroundColor: alpha(theme.palette.common.black, 0.4),
-      transform: "translateY(-4px)",
-      boxShadow: `0 12px 20px ${alpha(theme.palette.common.black, 0.3)}`,
+      transform: { sm: "translateY(-4px)" }, // Only apply hover effect on desktop
+      boxShadow: {
+        sm: `0 12px 20px ${alpha(theme.palette.common.black, 0.3)}`,
+      },
+    },
+    "&:active": {
+      transform: { xs: "scale(0.98)", sm: "translateY(-4px)" },
     },
     cursor: "pointer",
   }),
@@ -37,7 +43,8 @@ export const card = {
     height: "100%",
     display: "flex",
     flexDirection: "column",
-    p: { xs: 2, md: 3 },
+    p: { xs: 0, md: 3 },
+    borderRadius: { xs: 3, sm: 2 },
   }),
 
   // Event card content

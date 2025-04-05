@@ -53,7 +53,12 @@ const TournamentDialogs: React.FC<TournamentDialogsProps> = ({
         onClose={handlers.closeInvite}
         maxWidth="sm"
         fullWidth
-        PaperProps={{ sx: styles.dialogs.paper }}
+        PaperProps={{
+          sx: {
+            ...styles.dialogs.paper,
+            ...styles.mobile.dialog.bottomSheet,
+          },
+        }}
       >
         <DialogTitle sx={styles.dialogs.title}>Invite Players</DialogTitle>
         <DialogContent sx={styles.dialogs.content}>

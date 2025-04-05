@@ -33,6 +33,8 @@ import { tournamentTeams } from "../patterns/tournamentTeams";
 import { tournamentPlayers } from "../patterns/tournamentPlayers";
 import { tournamentHighlights } from "../patterns/tournamentHighlights";
 import { tour } from "../patterns/tour";
+import { mobilePatterns } from "../patterns/mobile";
+import { friends } from "../patterns/friends";
 
 export const useStyles = () => {
   const theme = useTheme();
@@ -61,7 +63,46 @@ export const useStyles = () => {
       media: card.media,
     },
 
-    // Button styles
+    mobile: {
+      container: {
+        fullWidth: mobilePatterns.container.fullWidth(theme),
+        edgeToEdge: mobilePatterns.container.edgeToEdge,
+      },
+      card: {
+        edgeToEdge: mobilePatterns.card.edgeToEdge(theme),
+        bottomAnchored: mobilePatterns.card.bottomAnchored(theme),
+        touchFeedback: mobilePatterns.card.touchFeedback,
+      },
+      button: {
+        touchable: mobilePatterns.button.touchable(theme),
+        fullWidthMobile: mobilePatterns.button.fullWidthMobile,
+        touchFeedback: mobilePatterns.button.touchFeedback,
+      },
+      tabs: {
+        scrollable: mobilePatterns.tabs.scrollable,
+      },
+      list: {
+        touchable: mobilePatterns.list.touchable(theme),
+        horizontal: mobilePatterns.list.horizontal,
+      },
+      dialog: {
+        bottomSheet: mobilePatterns.dialog.bottomSheet(theme),
+      },
+      grid: {
+        responsive: mobilePatterns.grid.responsive,
+      },
+      typography: {
+        responsive: mobilePatterns.typography.responsive,
+        adaptive: mobilePatterns.typography.adaptive,
+      },
+      spacing: {
+        touch: mobilePatterns.spacing.touch,
+      },
+      layout: {
+        stackedOnMobile: mobilePatterns.layout.stackedOnMobile,
+      },
+    },
+
     button: {
       primary: button.primary(theme),
       secondary: button.secondary(theme),
@@ -118,7 +159,6 @@ export const useStyles = () => {
       flex: layout.flex,
     },
 
-    // Typography components
     text: {
       heading: {
         page: text.heading.page,
@@ -160,7 +200,6 @@ export const useStyles = () => {
       infoItem: text.infoItem(theme),
     },
 
-    // Icon components
     icon: {
       base: icon.base(theme),
       size: icon.size,
@@ -175,7 +214,6 @@ export const useStyles = () => {
       header: icon.header(theme),
     },
 
-    // UI Patterns
     infoItem: {
       base: infoItem.base(theme),
       event: infoItem.event,
@@ -183,19 +221,18 @@ export const useStyles = () => {
       container: infoItem.container,
     },
 
-    // Helper functions for dynamic styling
     getStatusChip: (status: string) => {
       const color = getStatusColor(status, theme);
       return statusIndicator.chip(color, theme);
     },
 
     getTeamChip: (teamColor: string) => statusIndicator.team(teamColor, theme),
-
     divider: {
       standard: divider.standard(theme),
       section: divider.section(theme),
       vertical: divider.vertical(theme),
     },
+
     avatars: {
       standard: (teamColor?: string) => avatars.standard(theme, teamColor),
       profile: (teamColor?: string) => avatars.profile(theme, teamColor),
@@ -206,6 +243,7 @@ export const useStyles = () => {
       iconContainer: avatars.iconContainer(theme),
       badge: (color: string) => avatars.badge(theme, color),
     },
+
     chips: {
       status: {
         active: chips.status.active(theme),
@@ -225,11 +263,13 @@ export const useStyles = () => {
       badge: chips.badge(theme),
       team: (teamColor: string) => chips.team(theme, teamColor),
     },
+
     tabs: {
       container: tabs.container(theme),
       panel: tabs.panel,
       tourPanel: tabs.tourPanel,
     },
+
     tables: {
       container: tables.container(theme),
       headerCell: tables.headerCell(theme),
@@ -248,6 +288,7 @@ export const useStyles = () => {
         },
       },
     },
+
     headers: {
       page: {
         container: headers.page.container,
@@ -286,6 +327,7 @@ export const useStyles = () => {
         headerContainer: headers.tour.headerContainer,
       },
     },
+
     dialogs: {
       paper: dialogs.paper(theme),
       title: dialogs.title(theme),
@@ -293,6 +335,7 @@ export const useStyles = () => {
       actions: dialogs.actions(theme),
       closeButton: dialogs.closeButton(theme),
     },
+
     inputs: {
       formField: inputs.formField(theme),
       select: inputs.select(theme),
@@ -300,18 +343,21 @@ export const useStyles = () => {
       menuPaper: inputs.menuPaper(theme),
       menuItem: inputs.menuItem(theme),
     },
+
     navigation: {
       backButton: navigation.backButton(theme),
       backButtonContainer: navigation.backButtonContainer,
       link: navigation.link(theme),
       breadcrumbs: navigation.breadcrumbs(theme),
     },
+
     getPositionStyle: (position: number) => {
       if (position === 0) return tables.leaderboard.position.first(theme);
       if (position === 1) return tables.leaderboard.position.second(theme);
       if (position === 2) return tables.leaderboard.position.third(theme);
       return tables.leaderboard.position.default(theme);
     },
+
     playerCard: {
       container: playerCard.container(theme),
       avatar: (teamColor?: string) => playerCard.avatar(theme, teamColor),
@@ -319,6 +365,7 @@ export const useStyles = () => {
       name: playerCard.name(theme),
       teamChip: (teamColor: string) => playerCard.teamChip(theme, teamColor),
     },
+
     profileCard: {
       container: profileCard.container(theme),
       sectionTitle: profileCard.sectionTitle(theme),
@@ -337,6 +384,7 @@ export const useStyles = () => {
       slider: profileCard.slider,
       achievements: profileCard.achievements,
     },
+
     tournamentCard: {
       container: tournamentCard.container(theme),
       media: tournamentCard.media,
@@ -353,6 +401,7 @@ export const useStyles = () => {
       typography: tournamentCard.typography,
       loadingState: tournamentCard.loadingState,
     },
+
     tournamentScorecard: {
       scorecardHeader: tournamentScorecard.scorecardHeader,
       weatherDisplay: tournamentScorecard.weatherDisplay,
@@ -364,6 +413,7 @@ export const useStyles = () => {
       roundsTab: tournamentScorecard.roundsTab,
       actionButtons: tournamentScorecard.actionButtons,
     },
+
     highlightsFeed: {
       container: highlightsFeed.container,
       header: highlightsFeed.header,
@@ -401,6 +451,7 @@ export const useStyles = () => {
       getItemTypeColor: (type: string, mediaType?: string) =>
         highlightsFeed.getItemTypeColor(type, mediaType, theme),
     },
+
     tournamentRounds: {
       roundsTab: {
         header: tournamentRounds.roundsTab.header,
@@ -463,6 +514,7 @@ export const useStyles = () => {
         },
       },
     },
+
     tournamentTeams: {
       emptyState: tournamentTeams.emptyState,
       emptyStateIcon: tournamentTeams.emptyStateIcon(theme),
@@ -527,6 +579,7 @@ export const useStyles = () => {
       getCaptainIcon: (isSelected: boolean, color: string) =>
         tournamentTeams.captainIcon(isSelected, color),
     },
+
     tournamentHighlights: {
       container: tournamentHighlights.container,
       header: tournamentHighlights.header,
@@ -580,6 +633,7 @@ export const useStyles = () => {
       getAvatarStyle: (type: string, color: string) =>
         tournamentHighlights.avatarStyle(type, color),
     },
+
     tournamentPlayers: {
       layouts: tournamentPlayers.layouts,
 
@@ -621,6 +675,7 @@ export const useStyles = () => {
           tournamentPlayers.chips.getCaptainChip(color)(theme),
       },
     },
+
     tournamentLeaderboard: {
       leaderboardEmptyState: tournamentLeaderboard.leaderboardEmptyState,
       leaderboardEmptyStateIcon:
@@ -664,6 +719,7 @@ export const useStyles = () => {
         leaderboard: any[]
       ) => tournamentLeaderboard.getScoreDisplay(score, position, leaderboard),
     },
+
     tour: {
       form: {
         container: tour.form.container,
@@ -704,6 +760,45 @@ export const useStyles = () => {
       getStatusChip: (status: string) => tour.header.statusChip(status)(theme),
       getTourChip: tour.header.tourChip(theme),
       getTeamHeader: (color: string) => tour.teamHeader(color)(theme),
+    },
+    friends: {
+      dialog: {
+        paper: friends.dialog.paper(theme),
+        title: friends.dialog.title(theme),
+        content: friends.dialog.content,
+      },
+      tabs: {
+        container: friends.tabs.container(theme),
+      },
+      list: {
+        container: friends.list.container(theme),
+        item: friends.list.item(theme),
+        avatar: friends.list.avatar(theme),
+        name: friends.list.name,
+        email: friends.list.email(theme),
+      },
+      search: {
+        container: friends.search.container(theme),
+        field: friends.search.field(theme),
+      },
+      empty: {
+        container: friends.empty.container(theme),
+        icon: friends.empty.icon(theme),
+        title: friends.empty.title(theme),
+        description: friends.empty.description(theme),
+      },
+      actions: {
+        container: friends.actions.container(theme),
+        accept: friends.actions.accept(theme),
+        reject: friends.actions.reject(theme),
+        remove: friends.actions.remove(theme),
+      },
+      buttons: {
+        add: friends.buttons.add(theme),
+      },
+      badge: {
+        container: friends.badge.container(theme),
+      },
     },
   };
 };

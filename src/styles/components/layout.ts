@@ -3,19 +3,18 @@ import { Theme } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 
 export const layout = {
-  // Page containers
   page: {
     base: {
-      minHeight: "calc(100vh - 64px)", // 64px is the header height
-      pt: { xs: 2, md: 4 },
-      pb: 6,
+      minHeight: "calc(100vh - 64px)",
+      pt: { xs: 0, md: 4 },
+      pb: { xs: 6, md: 6 },
     },
 
     withBackground: {
       background:
         "linear-gradient(135deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.2) 100%)",
       minHeight: "calc(100vh - 64px)",
-      py: { xs: 3, md: 4 },
+      py: { xs: 0, md: 4 },
     },
   },
 
@@ -23,11 +22,17 @@ export const layout = {
   container: {
     responsive: {
       width: "100%",
-      px: { xs: 2, sm: 3, md: 4 },
+      px: { xs: 0, sm: 2, md: 4 },
+    },
+
+    fullWidth: {
+      width: "100%",
+      maxWidth: "100%",
+      px: 0,
     },
 
     withGutter: {
-      py: { xs: 2, md: 3 },
+      py: { xs: 0, sm: 2, md: 3 },
     },
   },
 

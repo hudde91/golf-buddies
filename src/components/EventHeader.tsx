@@ -14,6 +14,7 @@ interface EventHeaderProps {
   onCreateEvent: () => void;
 }
 
+// To be removed, not used
 const EventHeader: React.FC<EventHeaderProps> = ({ onCreateEvent }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));

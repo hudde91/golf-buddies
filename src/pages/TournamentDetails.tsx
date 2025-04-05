@@ -441,8 +441,13 @@ const TournamentDetail: React.FC = () => {
 
   return (
     <Box sx={styles.layout.page.withBackground}>
-      <Container maxWidth="lg" sx={styles.layout.container.responsive}>
-        <Box sx={styles.card.glass}>
+      <Box sx={styles.mobile.container.fullWidth}>
+        <Box
+          sx={{
+            ...styles.card.glass,
+            ...styles.mobile.card.edgeToEdge,
+          }}
+        >
           <TournamentHeader
             tournament={tournament}
             isCreator={isCreator}
@@ -450,8 +455,10 @@ const TournamentDetail: React.FC = () => {
             onDeleteTournament={handleDeleteTournament}
             onEditTournament={dialogHandlers.editTournament.open}
           />
-
-          <EnhancedTournamentInfo />
+          {/*
+           <EnhancedTournamentInfo />
+ */}
+          <TournamentInfo tournament={tournament} />
 
           <Box sx={styles.tabs.container}>
             <Tabs
@@ -462,6 +469,7 @@ const TournamentDetail: React.FC = () => {
               scrollButtons={isSmall ? "auto" : false}
               allowScrollButtonsMobile
               textColor="inherit"
+              sx={styles.mobile.tabs.scrollable}
             >
               <Tab
                 label="Leaderboard"
@@ -594,7 +602,7 @@ const TournamentDetail: React.FC = () => {
             )}
           </div>
         </Box>
-      </Container>
+      </Box>
 
       <TournamentDialogs
         tournament={tournament}

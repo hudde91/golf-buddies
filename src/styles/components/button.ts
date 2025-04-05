@@ -6,7 +6,8 @@ export const button = {
   // Base button style (shared properties)
   base: {
     textTransform: "none",
-    borderRadius: 1.5,
+    borderRadius: { xs: 24, sm: 8 },
+    minHeight: { xs: "44px", sm: "36px" },
   },
 
   // Primary button
@@ -15,7 +16,11 @@ export const button = {
     color: "white",
     bgcolor: theme.palette.primary.main,
     "&:hover": {
+      bgcolor: { sm: theme.palette.primary.dark },
+    },
+    "&:active": {
       bgcolor: theme.palette.primary.dark,
+      transform: { xs: "scale(0.98)", sm: "none" },
     },
   }),
 

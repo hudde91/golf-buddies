@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   DialogTitle,
   DialogContent,
@@ -17,13 +17,23 @@ import {
   Typography,
   Alert,
   useMediaQuery,
+  Divider,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  alpha,
 } from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import PeopleIcon from "@mui/icons-material/People";
 import { TournamentFormData } from "../../types/event";
 import { useStyles } from "../../styles/hooks/useStyles";
 import { useTheme } from "@mui/material";
+import { useUser } from "@clerk/clerk-react";
+import friendsService from "../../services/friendsService";
+import FriendInviteList from "../FriendInviteList";
 
 interface TournamentFormProps {
-  onSubmit: (data: TournamentFormData) => void;
+  onSubmit: (data: TournamentFormData & { inviteFriends: string[] }) => void;
   onCancel: () => void;
   initialData?: Partial<TournamentFormData>;
 }
@@ -43,6 +53,7 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const today = new Date().toISOString().split("T")[0];
+  const { user } = useUser();
 
   const [formData, setFormData] = useState<TournamentFormData>({
     name: initialData.name || "",
@@ -56,6 +67,18 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [friends, setFriends] = useState([]);
+  const [loadingFriends, setLoadingFriends] = useState(true);
+  const [selectedFriends, setSelectedFriends] = useState<string[]>([]);
+  const [expandFriends, setExpandFriends] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      const userFriends = friendsService.getAcceptedFriends(user.id);
+      setFriends(userFriends);
+      setLoadingFriends(false);
+    }
+  }, [user]);
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -113,11 +136,18 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
     }));
   };
 
+  const handleFriendsChange = (emails: string[]) => {
+    setSelectedFriends(emails);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (validateForm()) {
-      onSubmit(formData);
+      onSubmit({
+        ...formData,
+        inviteFriends: selectedFriends,
+      });
     }
   };
 
@@ -145,7 +175,6 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
                 InputProps={styles.tournamentCard.formStyles.inputProps(theme)}
               />
             </Grid>
-
             <Grid item xs={12} sm={6}>
               <TextField
                 name="startDate"
@@ -164,7 +193,6 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
                 InputProps={styles.tournamentCard.formStyles.inputProps(theme)}
               />
             </Grid>
-
             <Grid item xs={12} sm={6}>
               <TextField
                 name="endDate"
@@ -189,7 +217,6 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
                 }}
               />
             </Grid>
-
             <Grid item xs={12}>
               <TextField
                 name="location"
@@ -206,7 +233,6 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
                 InputProps={styles.tournamentCard.formStyles.inputProps(theme)}
               />
             </Grid>
-
             <Grid item xs={12}>
               <Box
                 sx={{
@@ -279,6 +305,42 @@ const TournamentForm: React.FC<TournamentFormProps> = ({
               </Box>
             </Grid>
 
+            <Grid item xs={12}>
+              <Accordion
+                expanded={expandFriends}
+                onChange={() => setExpandFriends(!expandFriends)}
+                sx={{
+                  backgroundColor:
+                    theme.palette.mode === "dark"
+                      ? alpha(theme.palette.background.paper, 0.8)
+                      : theme.palette.background.paper,
+                  borderRadius: 1,
+                  "&:before": { display: "none" },
+                  boxShadow: theme.shadows[2],
+                }}
+              >
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  aria-controls="invite-friends-content"
+                  id="invite-friends-header"
+                >
+                  <Box sx={{ display: "flex", alignItems: "center" }}>
+                    <PeopleIcon sx={{ mr: 1 }} />
+                    <Typography>
+                      Invite Friends ({selectedFriends.length})
+                    </Typography>
+                  </Box>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <FriendInviteList
+                    friends={friends}
+                    loading={loadingFriends}
+                    selectedFriends={selectedFriends}
+                    onSelectedFriendsChange={handleFriendsChange}
+                  />
+                </AccordionDetails>
+              </Accordion>
+            </Grid>
             <Grid item xs={12}>
               <TextField
                 name="description"
