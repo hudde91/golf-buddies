@@ -1887,6 +1887,358 @@ const eventService = {
 
     return false;
   },
+  createRound: (
+    data: RoundFormData & { inviteFriends?: string[] },
+    currentUser: Player
+  ): Event => {
+    const events = eventService.getAllEvents();
+
+    // Determine status based on the date
+    const today = new Date().toISOString().split("T")[0];
+    const status =
+      data.date === today
+        ? "active"
+        : data.date < today
+        ? "completed"
+        : "upcoming";
+
+    // Initialize empty scores for the current user
+    const scores: { [playerId: string]: HoleScore[] } = {};
+    const holeScores: HoleScore[] = [];
+
+    for (let i = 1; i <= data.holes; i++) {
+      holeScores.push({
+        hole: i,
+        par: data.par ? Math.floor(data.par / data.holes) : undefined,
+      });
+    }
+
+    scores[currentUser.id] = holeScores;
+
+    // Create the new round
+    const newRound: Round = {
+      id: uuidv4(),
+      name: data.name,
+      date: data.date,
+      courseDetails: {
+        name: data.courseName,
+        holes: data.holes,
+        par: data.par,
+      },
+      format: data.format,
+      scores,
+      createdBy: currentUser.id,
+      createdAt: new Date().toISOString(),
+      players: [currentUser],
+      location: data.location || "Not specified",
+      description: data.description || "",
+      status,
+      invitations: data.inviteFriends || [],
+      playerGroups: [],
+    };
+
+    // Create event wrapper
+    const newEvent: Event = {
+      id: newRound.id, // Same ID for simplicity
+      type: "round",
+      data: newRound,
+    };
+
+    events.push(newEvent);
+    localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
+
+    return newEvent;
+  },
+
+  // Get a round by ID
+  getRoundById: (id: string): Round | null => {
+    const events = eventService.getAllEvents();
+
+    // First, try to find as a standalone round event
+    const roundEvent = events.find((e) => e.type === "round" && e.id === id);
+    if (roundEvent) {
+      return roundEvent.data as Round;
+    }
+
+    // Next, try to find it as a round within a tournament
+    for (const event of events) {
+      if (event.type === "tournament") {
+        const tournament = event.data as Tournament;
+        const round = tournament.rounds.find((r) => r.id === id);
+        if (round) {
+          return round;
+        }
+      } else if (event.type === "tour") {
+        const tour = event.data as Tour;
+        for (const tournament of tour.tournaments) {
+          const round = tournament.rounds.find((r) => r.id === id);
+          if (round) {
+            return round;
+          }
+        }
+      }
+    }
+
+    return null;
+  },
+
+  // Update a standalone round event
+  updateRoundEvent: (id: string, data: Partial<Round>): Round | null => {
+    const events = eventService.getAllEvents();
+    const index = events.findIndex((e) => e.type === "round" && e.id === id);
+
+    if (index === -1) return null;
+
+    const round = events[index].data as Round;
+    const updatedRound = { ...round, ...data };
+
+    // Update status if date changed
+    if (data.date) {
+      const today = new Date().toISOString().split("T")[0];
+      updatedRound.status =
+        data.date === today
+          ? "active"
+          : data.date < today
+          ? "completed"
+          : "upcoming";
+    }
+
+    events[index] = {
+      ...events[index],
+      data: updatedRound,
+    };
+
+    localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
+    return updatedRound;
+  },
+
+  // Delete a standalone round event
+  deleteRoundEvent: (id: string): boolean => {
+    const events = eventService.getAllEvents();
+    const filteredEvents = events.filter(
+      (e) => !(e.type === "round" && e.id === id)
+    );
+
+    if (filteredEvents.length === events.length) return false;
+
+    localStorage.setItem(EVENTS_KEY, JSON.stringify(filteredEvents));
+    return true;
+  },
+
+  // Handle invitations to a standalone round
+  invitePlayersToRound: (roundId: string, emails: string[]): Round | null => {
+    const events = eventService.getAllEvents();
+    const event = events.find((e) => e.type === "round" && e.id === roundId);
+
+    if (!event) return null;
+
+    const round = event.data as Round;
+
+    // Filter out duplicates and existing players
+    const existingEmails = round.players?.map((p) => p.email) || [];
+    const newInvitations = emails.filter(
+      (email) =>
+        !existingEmails.includes(email) &&
+        !(round.invitations || []).includes(email)
+    );
+
+    // Update the round with new invitations
+    const updatedRound = {
+      ...round,
+      invitations: [...(round.invitations || []), ...newInvitations],
+    };
+
+    const updatedEvent = {
+      ...event,
+      data: updatedRound,
+    };
+
+    events[events.findIndex((e) => e.id === roundId)] = updatedEvent;
+    localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
+
+    return updatedRound;
+  },
+
+  // Accept an invitation to a round
+  acceptRoundInvitation: (roundId: string, player: Player): Event | null => {
+    const events = eventService.getAllEvents();
+    const event = events.find((e) => e.type === "round" && e.id === roundId);
+
+    if (!event) return null;
+
+    const round = event.data as Round;
+
+    // Check if user is in the invitations list
+    if (!(round.invitations || []).includes(player.email)) return null;
+
+    // Add player to the round
+    const updatedPlayers = [...(round.players || []), player];
+
+    // Add empty scores for the player
+    const scores = { ...round.scores };
+    const holeScores: HoleScore[] = [];
+
+    for (let i = 1; i <= (round.courseDetails?.holes || 18); i++) {
+      holeScores.push({
+        hole: i,
+        par: round.courseDetails?.par
+          ? Math.floor(
+              round.courseDetails.par / (round.courseDetails.holes || 18)
+            )
+          : undefined,
+      });
+    }
+
+    scores[player.id] = holeScores;
+
+    // Remove from invitations
+    const updatedInvitations = (round.invitations || []).filter(
+      (email) => email !== player.email
+    );
+
+    const updatedRound = {
+      ...round,
+      players: updatedPlayers,
+      scores,
+      invitations: updatedInvitations,
+    };
+
+    const updatedEvent = {
+      ...event,
+      data: updatedRound,
+    };
+
+    events[events.findIndex((e) => e.id === roundId)] = updatedEvent;
+    localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
+
+    return updatedEvent;
+  },
+
+  // Decline an invitation to a round
+  declineRoundInvitation: (roundId: string, userEmail: string): boolean => {
+    const events = eventService.getAllEvents();
+    const event = events.find((e) => e.type === "round" && e.id === roundId);
+
+    if (!event) return false;
+
+    const round = event.data as Round;
+
+    // Check if the invitation exists
+    if (!(round.invitations || []).includes(userEmail)) return false;
+
+    // Remove from invitations
+    const updatedInvitations = (round.invitations || []).filter(
+      (email) => email !== userEmail
+    );
+
+    const updatedRound = {
+      ...round,
+      invitations: updatedInvitations,
+    };
+
+    const updatedEvent = {
+      ...event,
+      data: updatedRound,
+    };
+
+    events[events.findIndex((e) => e.id === roundId)] = updatedEvent;
+    localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
+
+    return true;
+  },
+
+  // Get user invitations for rounds, tournaments, and tours
+  getUserInvitations: (
+    userEmail: string
+  ): {
+    tournaments: Tournament[];
+    rounds: Round[];
+    tours: Tour[];
+  } => {
+    const events = eventService.getAllEvents();
+    const invitations = {
+      tournaments: [] as Tournament[],
+      rounds: [] as Round[],
+      tours: [] as Tour[],
+    };
+
+    events.forEach((event) => {
+      if (event.type === "tournament") {
+        const tournament = event.data as Tournament;
+        if (tournament.invitations.includes(userEmail)) {
+          invitations.tournaments.push(tournament);
+        }
+      } else if (event.type === "tour") {
+        const tour = event.data as Tour;
+        if (tour.invitations && tour.invitations.includes(userEmail)) {
+          invitations.tours.push(tour);
+        }
+
+        // Also check tournaments within the tour
+        tour.tournaments.forEach((tournament) => {
+          if (tournament.invitations?.includes(userEmail)) {
+            invitations.tournaments.push(tournament);
+          }
+        });
+      } else if (event.type === "round") {
+        const round = event.data as Round;
+        if (round.invitations && round.invitations.includes(userEmail)) {
+          invitations.rounds.push(round);
+        }
+      }
+    });
+
+    return invitations;
+  },
+
+  // Get round leaderboard
+  getRoundLeaderboard: (
+    roundId: string
+  ): {
+    playerId: string;
+    playerName: string;
+    teamId?: string;
+    teamName?: string;
+    score: number;
+  }[] => {
+    const round = eventService.getRoundById(roundId);
+    if (!round) return [];
+
+    // Get player details
+    const playerDetails: {
+      [playerId: string]: { name: string; teamId?: string; teamName?: string };
+    } = {};
+    (round.players || []).forEach((player) => {
+      const team = player.teamId ? { id: player.teamId, name: "" } : undefined;
+      playerDetails[player.id] = {
+        name: player.name,
+        teamId: player.teamId,
+        teamName: team?.name,
+      };
+    });
+
+    // Calculate scores for each player
+    return Object.entries(round.scores)
+      .map(([playerId, holeScores]) => {
+        const totalScore = holeScores.reduce(
+          (sum, hole) => sum + (hole.score || 0),
+          0
+        );
+
+        const playerDetail = playerDetails[playerId] || {
+          name: "Unknown Player",
+        };
+
+        return {
+          playerId,
+          playerName: playerDetail.name,
+          teamId: playerDetail.teamId,
+          teamName: playerDetail.teamName,
+          score: totalScore,
+        };
+      })
+      .sort((a, b) => a.score - b.score); // Sort by score (lower is better)
+  },
 };
 
 export default eventService;

@@ -1,4 +1,4 @@
-// import { User } from "@clerk/clerk-react";
+// src/types/event.ts
 import { Achievement } from ".";
 
 export interface Player {
@@ -52,8 +52,14 @@ export interface Round {
   scores: {
     [playerId: string]: HoleScore[];
   };
-
-  playerGroups?: PlayerGroup[]; // New field for player groups
+  createdBy?: string; // Added to support being a standalone event
+  createdAt?: string; // Added to support being a standalone event
+  players?: Player[]; // Made optional with a default value when part of a tournament
+  location?: string; // Added to support being a standalone event
+  description?: string; // Added to support being a standalone event
+  status?: "upcoming" | "active" | "completed"; // Added to support being a standalone event
+  invitations?: string[]; // Added to support being a standalone event
+  playerGroups?: PlayerGroup[]; // Player groups
   // For match play formats
   matchResults?: {
     [playerId: string]: {
@@ -108,8 +114,8 @@ export interface Tour {
 
 export interface Event {
   id: string;
-  type: "tournament" | "tour";
-  data: Tournament | Tour;
+  type: "tournament" | "tour" | "round"; // Added "round" type
+  data: Tournament | Tour | Round; // Added Round as possible data type
 }
 
 export interface TournamentFormData {
@@ -127,9 +133,12 @@ export interface RoundFormData {
   name: string;
   date: string;
   courseName?: string;
+  location?: string; // Added to support being a standalone event
+  description?: string; // Added to support being a standalone event
   holes: number;
   par?: number;
   format: string;
+  inviteFriends?: string[]; // Added to support being a standalone event
 }
 
 export interface TeamFormData {
