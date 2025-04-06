@@ -90,7 +90,7 @@ const RoundInvitationCard: React.FC<RoundInvitationCardProps> = ({
               label={`${round.courseDetails?.holes} holes`}
               size="small"
               variant="outlined"
-              sx={styles.chips.eventType.custom("secondary.light")}
+              sx={styles.chips.eventType.custom(theme.palette.secondary.light)}
             />
             {round.courseDetails?.par && (
               <Chip
