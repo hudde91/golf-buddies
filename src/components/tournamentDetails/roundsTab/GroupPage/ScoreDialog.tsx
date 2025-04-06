@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -8,12 +8,15 @@ import {
   DialogActions,
   Button,
   Chip,
-  IconButton,
   Avatar,
+  IconButton,
+  Divider,
 } from "@mui/material";
 import {
-  NavigateBefore as NavigateBeforeIcon,
+  Add as AddIcon,
+  Remove as RemoveIcon,
   NavigateNext as NavigateNextIcon,
+  Close as CloseIcon,
 } from "@mui/icons-material";
 import { Player } from "../../../../types/event";
 import { useStyles } from "../../../../styles/hooks/useStyles";
@@ -21,37 +24,49 @@ import { useStyles } from "../../../../styles/hooks/useStyles";
 interface ScoreDialogProps {
   open: boolean;
   onClose: () => void;
-  playerId: string;
-  playerName: string;
   hole: number;
   holePar: number | null;
-  currentScore: number | undefined;
-  onSave: (score: number) => void;
   players: Player[];
-  onNextPlayer: () => void;
-  onSelectPlayer: (playerId: string) => void;
   playerScores: Record<string, { score?: number }[]>;
+  onSave: (playerId: string, score: number) => void;
 }
 
 const ScoreDialog: React.FC<ScoreDialogProps> = ({
   open,
   onClose,
-  playerId,
-  playerName,
   hole,
   holePar,
-  currentScore,
-  onSave,
   players,
-  onNextPlayer,
-  onSelectPlayer,
   playerScores,
+  onSave,
 }) => {
   const styles = useStyles();
-  const [selectedScore, setSelectedScore] = useState<number | undefined>(
-    currentScore
-  );
-  const scoreOptions = Array.from({ length: 12 }, (_, i) => i + 1);
+  const [scores, setScores] = useState<Record<string, number>>({});
+  const [currentHole, setCurrentHole] = useState<number>(hole);
+  const totalHoles = 18; // Should be obtained from tournament data
+
+  // Reset current hole when the hole prop changes
+  useEffect(() => {
+    setCurrentHole(hole);
+  }, [hole]);
+
+  // Initialize scores whenever open changes or the hole changes
+  useEffect(() => {
+    if (open) {
+      // Initialize scores from existing player scores
+      const initialScores: Record<string, number> = {};
+      players.forEach((player) => {
+        const playerScore = playerScores[player.id]?.[currentHole - 1]?.score;
+        if (playerScore !== undefined) {
+          initialScores[player.id] = playerScore;
+        } else {
+          // Default to par if available
+          initialScores[player.id] = holePar || 4; // Default to 4 if no par available
+        }
+      });
+      setScores(initialScores);
+    }
+  }, [open, players, playerScores, currentHole, holePar]);
 
   const getScoreStatus = (score: number) => {
     if (!holePar) return { label: "", color: "" };
@@ -61,39 +76,106 @@ const ScoreDialog: React.FC<ScoreDialogProps> = ({
     if (relation === -1) return { label: "Birdie", color: "#f44336" };
     if (relation === 0) return { label: "Par", color: "#2e7d32" };
     if (relation === 1) return { label: "Bogey", color: "#0288d1" };
-    if (relation === 2) return { label: "Double", color: "#9e9e9e" };
+    if (relation === 2) return { label: "Double Bogey", color: "#9e9e9e" };
     if (relation > 2) return { label: `+${relation}`, color: "#9e9e9e" };
     return { label: "", color: "" };
   };
 
-  const handleSave = () => {
-    if (selectedScore !== undefined) {
-      onSave(selectedScore);
+  const handleIncrement = (playerId: string) => {
+    setScores((prev) => ({
+      ...prev,
+      [playerId]: (prev[playerId] || 0) + 1,
+    }));
+  };
+
+  const handleDecrement = (playerId: string) => {
+    setScores((prev) => ({
+      ...prev,
+      [playerId]: Math.max(1, (prev[playerId] || 0) - 1),
+    }));
+  };
+
+  const handleSaveAndNext = () => {
+    // Save all player scores
+    Object.entries(scores).forEach(([playerId, score]) => {
+      onSave(playerId, score);
+    });
+
+    // Move to next hole or close if last hole
+    if (currentHole < totalHoles) {
+      setCurrentHole((prev) => prev + 1);
+
+      // Reset scores for the next hole
+      const nextHoleScores: Record<string, number> = {};
+      players.forEach((player) => {
+        const playerScore = playerScores[player.id]?.[currentHole]?.score;
+        if (playerScore !== undefined) {
+          nextHoleScores[player.id] = playerScore;
+        } else {
+          // Default to par if available
+          nextHoleScores[player.id] = holePar || 4;
+        }
+      });
+      setScores(nextHoleScores);
+    } else {
+      // Close dialog if we're on the last hole
       onClose();
     }
   };
 
-  const handleSaveAndNext = () => {
-    if (selectedScore !== undefined) {
-      onSave(selectedScore);
-      onNextPlayer();
+  // Get total strokes for a player
+  const getPlayerTotal = (playerId: string): number => {
+    const playerScoresList = playerScores[playerId] || [];
+    return playerScoresList.reduce((total, hole) => {
+      return total + (hole.score !== undefined ? hole.score : 0);
+    }, 0);
+  };
+
+  // Get relative to par for a player
+  const getPlayerRelativeToPar = (playerId: string): string => {
+    const total = getPlayerTotal(playerId);
+
+    // Calculate total par for all holes with scores
+    let totalPar = 0;
+    let holesWithScores = 0;
+
+    playerScores[playerId]?.forEach((hole) => {
+      if (hole.score !== undefined) {
+        totalPar += hole.par || holePar || 4;
+        holesWithScores++;
+      }
+    });
+
+    if (holesWithScores === 0) return "E";
+
+    const diff = total - totalPar;
+    if (diff === 0) return "E";
+    return diff > 0 ? `+${diff}` : `${diff}`;
+  };
+
+  // Get color for score to par
+  const getScoreToParColor = (relativeToPar: string): string => {
+    if (relativeToPar === "E") return "#2e7d32"; // Green for even par
+    if (relativeToPar.startsWith("-")) return "#d32f2f"; // Red for under par
+    return "#0288d1"; // Blue for over par
+  };
+
+  // Get the hole par value, which might vary depending on the hole
+  const getHolePar = (): number => {
+    // Try to get hole-specific par if available
+    const anyPlayerWithPar = Object.values(playerScores).find(
+      (scores) => scores && scores[currentHole - 1]?.par !== undefined
+    );
+
+    if (anyPlayerWithPar && anyPlayerWithPar[currentHole - 1]?.par) {
+      return anyPlayerWithPar[currentHole - 1].par;
     }
+
+    // Fallback to the provided general hole par
+    return holePar || 4;
   };
 
-  const handleScoreSelect = (score: number) => {
-    setSelectedScore(score);
-  };
-
-  const handlePlayerSelect = (playerId: string) => {
-    if (selectedScore !== undefined) {
-      onSave(selectedScore);
-    }
-    onSelectPlayer(playerId);
-
-    // Update selected score for new player
-    const playerHoleScore = playerScores[playerId]?.[hole - 1]?.score;
-    setSelectedScore(playerHoleScore);
-  };
+  const currentHolePar = getHolePar();
 
   return (
     <Dialog
@@ -101,253 +183,227 @@ const ScoreDialog: React.FC<ScoreDialogProps> = ({
       onClose={onClose}
       fullWidth
       maxWidth="sm"
-      PaperProps={{ sx: styles.dialogs.paper }}
+      PaperProps={{
+        sx: {
+          backgroundColor: "#ffffff",
+          color: "#000000",
+          borderRadius: { xs: 0, sm: 2 },
+          position: { xs: "fixed", sm: "relative" },
+          top: { xs: 0, sm: "auto" },
+          left: { xs: 0, sm: "auto" },
+          right: { xs: 0, sm: "auto" },
+          bottom: { xs: 0, sm: "auto" },
+          margin: { xs: 0, sm: undefined },
+          maxHeight: { xs: "100vh", sm: "90vh" },
+          width: { xs: "100%", sm: undefined },
+          height: { xs: "100vh", sm: "auto" },
+          display: "flex",
+          flexDirection: "column",
+        },
+      }}
     >
-      <DialogTitle sx={styles.dialogs.title}>
-        <Box
+      <DialogTitle
+        sx={{
+          borderBottom: "1px solid #eaeaea",
+          px: 3,
+          py: 2,
+          textAlign: "center",
+          color: "#000000",
+          position: "relative",
+        }}
+      >
+        <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+          Hole {currentHole}
+        </Typography>
+        {currentHolePar && (
+          <Chip
+            label={`Par ${currentHolePar}`}
+            size="small"
+            color="primary"
+            variant="outlined"
+            sx={{ ml: 1 }}
+          />
+        )}
+        <IconButton
+          aria-label="close"
+          onClick={onClose}
           sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "flex-start",
+            position: "absolute",
+            right: 8,
+            top: 8,
+            color: "#000000",
           }}
         >
-          <Box>
-            <Typography variant="h6">{playerName}</Typography>
-            <Box sx={{ display: "flex", gap: 1, mt: 0.5 }}>
-              <Chip label={`Hole ${hole}`} size="small" color="primary" />
-              {holePar && (
-                <Chip
-                  label={`Par ${holePar}`}
-                  size="small"
-                  variant="outlined"
-                />
-              )}
-            </Box>
-          </Box>
-
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            {players.map((player) => (
-              <Avatar
-                key={player.id}
-                src={player.avatarUrl}
-                alt={player.name}
-                sx={{
-                  width: 40,
-                  height: 40,
-                  opacity: player.id === playerId ? 1 : 0.6,
-                  border:
-                    player.id === playerId
-                      ? `2px solid ${"primary.main"}`
-                      : "none",
-                  cursor: "pointer",
-                }}
-                onClick={() => {
-                  if (player.id !== playerId) {
-                    handlePlayerSelect(player.id);
-                  }
-                }}
-              />
-            ))}
-          </Box>
-        </Box>
+          <CloseIcon />
+        </IconButton>
       </DialogTitle>
-      <DialogContent sx={styles.dialogs.content}>
-        <Box sx={{ mb: 1 }}>
-          {/* Make selectedScore with this text displayed center and bigger */}
-          <Typography variant="subtitle2" gutterBottom>
-            Select Score:
-          </Typography>
+      <DialogContent
+        sx={{
+          px: 3,
+          py: 3,
+          flex: 1,
+          overflowY: "auto",
+        }}
+      >
+        <Box sx={{ mb: 2, mt: 1 }}>
+          {players.map((player, index) => {
+            const playerScore = scores[player.id] || currentHolePar || 4;
+            const scoreStatus = getScoreStatus(playerScore);
+            const relativeToPar = getPlayerRelativeToPar(player.id);
+            const scoreToParColor = getScoreToParColor(relativeToPar);
 
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              mb: 2,
-            }}
-          >
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
-            >
-              <Typography variant="h3" sx={{ fontWeight: "bold" }}>
-                {selectedScore || "-"}
-              </Typography>
-              {selectedScore && holePar && (
-                <Typography
-                  variant="body2"
-                  sx={{
-                    color: getScoreStatus(selectedScore).color,
-                    fontWeight: "medium",
-                  }}
-                >
-                  {getScoreStatus(selectedScore).label}
-                </Typography>
-              )}
-            </Box>
+            return (
+              <React.Fragment key={player.id}>
+                {index > 0 && <Divider sx={{ my: 3 }} />}
 
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
-            >
-              {/* <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  border: `1px solid ${"divider"}`,
-                  borderRadius: 2,
-                  px: 1,
-                }}
-              >
-                <IconButton
-                  disabled={!selectedScore || selectedScore <= 1}
-                  onClick={() =>
-                    selectedScore && setSelectedScore(selectedScore - 1)
-                  }
-                  sx={styles.button.icon}
-                >
-                  <NavigateBeforeIcon />
-                </IconButton>
-                <Box sx={{ width: 80, textAlign: "center" }}>
-                  <Typography variant="h5">{selectedScore || "-"}</Typography>
-                </Box>
-                <IconButton
-                  disabled={!selectedScore || selectedScore >= 12}
-                  onClick={() =>
-                    selectedScore && setSelectedScore(selectedScore + 1)
-                  }
-                  sx={styles.button.icon}
-                >
-                  <NavigateNextIcon />
-                </IconButton>
-              </Box> */}
-            </Box>
-          </Box>
-
-          <Box
-            sx={{
-              // TODO: Display the scores in a grid with 3 columns
-              // or come up with a better way to display the scores in order to not make it scrollable
-              display: "flex",
-              overflowX: "auto",
-              py: 1,
-              gap: 1,
-              scrollbarWidth: "none", // Firefox
-              "&::-webkit-scrollbar": {
-                display: "none", // Chrome, Safari, Edge
-              },
-              px: 1,
-              mx: -1,
-            }}
-          >
-            {scoreOptions.map((score) => {
-              const scoreStatus = holePar
-                ? getScoreStatus(score)
-                : { label: "", color: "" };
-              return (
-                <Box
-                  key={score}
-                  onClick={() => handleScoreSelect(score)}
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    minWidth: 60,
-                    height: 60,
-                    borderRadius: 1,
-                    border: `1px solid ${
-                      score === selectedScore ? "primary.main" : "divider"
-                    }`,
-                    bgcolor:
-                      score === selectedScore
-                        ? `${"primary.main"}10`
-                        : scoreStatus.label
-                        ? `${scoreStatus.color}10`
-                        : "transparent",
-                    cursor: "pointer",
-                    transition: "all 0.2s",
-                    "&:hover": {
-                      bgcolor:
-                        score === selectedScore
-                          ? `${"primary.main"}20`
-                          : `${"action.hover"}`,
-                    },
-                    flexShrink: 0,
-                  }}
-                >
-                  <Typography
-                    variant="h5"
-                    fontWeight={score === selectedScore ? "bold" : "normal"}
-                    color={score === selectedScore ? "primary.main" : "inherit"}
+                <Box sx={{ mb: 2, mt: index === 0 ? 1 : 0 }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
                   >
-                    {score}
-                  </Typography>
-                  {scoreStatus.label && (
-                    <Typography
-                      variant="caption"
+                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                      <Avatar
+                        src={player.avatarUrl}
+                        alt={player.name}
+                        sx={{ width: 40, height: 40, mr: 2 }}
+                      />
+                      <Box>
+                        <Typography
+                          variant="subtitle1"
+                          sx={{
+                            fontWeight: "bold",
+                            lineHeight: 1.2,
+                            fontSize: "1.1rem",
+                          }}
+                        >
+                          {player.name}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: scoreToParColor,
+                            fontWeight: "medium",
+                            fontSize: "0.9rem",
+                            mt: 0.5,
+                          }}
+                        >
+                          {relativeToPar} to par
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </Box>
+
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      mt: 3,
+                      px: 2,
+                    }}
+                  >
+                    <IconButton
+                      onClick={() => handleDecrement(player.id)}
+                      disabled={playerScore <= 1}
                       sx={{
-                        color: scoreStatus.color,
-                        fontWeight: score === selectedScore ? "bold" : "medium",
-                        mt: -0.5,
+                        bgcolor: "#f5f5f5",
+                        color: "#000000",
+                        borderRadius: 2,
+                        width: 52,
+                        height: 52,
+                        "&:hover": {
+                          bgcolor: "#e0e0e0",
+                        },
+                        border: "1px solid #e0e0e0",
                       }}
                     >
-                      {scoreStatus.label}
-                    </Typography>
-                  )}
+                      <RemoveIcon sx={{ fontSize: "1.7rem" }} />
+                    </IconButton>
+
+                    <Box
+                      sx={{
+                        textAlign: "center",
+                        minWidth: "120px",
+                      }}
+                    >
+                      <Typography
+                        variant="h3"
+                        sx={{
+                          fontWeight: "bold",
+                          fontSize: "2.5rem",
+                        }}
+                      >
+                        {playerScore}
+                      </Typography>
+                      {scoreStatus.label && (
+                        <Chip
+                          label={scoreStatus.label}
+                          size="small"
+                          sx={{
+                            color: "white",
+                            bgcolor: scoreStatus.color,
+                            fontWeight: "medium",
+                            mt: 1,
+                            fontSize: "0.85rem",
+                            height: 24,
+                          }}
+                        />
+                      )}
+                    </Box>
+
+                    <IconButton
+                      onClick={() => handleIncrement(player.id)}
+                      sx={{
+                        bgcolor: "#f5f5f5",
+                        color: "#000000",
+                        borderRadius: 2,
+                        width: 52,
+                        height: 52,
+                        "&:hover": {
+                          bgcolor: "#e0e0e0",
+                        },
+                        border: "1px solid #e0e0e0",
+                      }}
+                    >
+                      <AddIcon sx={{ fontSize: "1.7rem" }} />
+                    </IconButton>
+                  </Box>
                 </Box>
-              );
-            })}
-          </Box>
+              </React.Fragment>
+            );
+          })}
         </Box>
       </DialogContent>
       <DialogActions
         sx={{
-          ...styles.dialogs.actions,
-          display: "flex",
-          justifyContent: "space-between",
+          borderTop: "1px solid #eaeaea",
+          px: 3,
+          py: 3,
         }}
       >
-        {/* TODO: Should now save the selectedScore and also move on focus to select the score for the next person in the group.
-          When it is the last person in the group, it should save the selectedScore and close the dialog.
-        */}
         <Button
           onClick={handleSaveAndNext}
           variant="contained"
           color="primary"
-          disabled={selectedScore === undefined || players.length <= 1}
+          fullWidth
+          size="large"
           endIcon={<NavigateNextIcon />}
-          sx={styles.button.primary}
+          sx={{
+            py: 1.5,
+            borderRadius: 2,
+            fontWeight: "bold",
+            textTransform: "none",
+            fontSize: "1rem",
+          }}
         >
-          Next
+          {currentHole < totalHoles ? "Save & Next Hole" : "Save & Finish"}
         </Button>
-        <Button
-          onClick={onClose}
-          variant="outlined"
-          sx={styles.button.outlined}
-        >
-          Cancel
-        </Button>
-        {/* TODO: Remove Save button and instead add functionality to Next button so save selectedScore */}
-        <Box sx={{ display: "flex", gap: 1 }}>
-          <Button
-            onClick={handleSave}
-            variant="contained"
-            color="primary"
-            disabled={selectedScore === undefined}
-            sx={styles.button.primary}
-          >
-            Save
-          </Button>
-        </Box>
       </DialogActions>
     </Dialog>
   );
 };
+
 export default ScoreDialog;

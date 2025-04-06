@@ -10,7 +10,16 @@ import {
   Grid,
   TextField,
   Paper,
+  IconButton,
+  Tabs,
+  Tab,
 } from "@mui/material";
+import {
+  Add as AddIcon,
+  Remove as RemoveIcon,
+  ArrowForward as ArrowForwardIcon,
+  ArrowBack as ArrowBackIcon,
+} from "@mui/icons-material";
 import { HoleScore, Round } from "../../../../types/event";
 import { useStyles } from "../../../../styles/hooks/useStyles";
 import theme from "../../../../theme/theme";
@@ -24,7 +33,6 @@ interface PlayerScoreEditorProps {
   onSave: (roundId: string, playerId: string, scores: HoleScore[]) => void;
 }
 
-// Is not used today!!
 const PlayerScoreEditor: React.FC<PlayerScoreEditorProps> = ({
   playerId,
   playerName,
@@ -35,6 +43,7 @@ const PlayerScoreEditor: React.FC<PlayerScoreEditorProps> = ({
 }) => {
   const styles = useStyles();
   const [scores, setScores] = useState<HoleScore[]>([]);
+  const [currentTab, setCurrentTab] = useState(0);
 
   const getHoleSections = () => {
     const totalHoles = round.courseDetails?.holes || 18;
@@ -42,7 +51,7 @@ const PlayerScoreEditor: React.FC<PlayerScoreEditorProps> = ({
     if (totalHoles <= 9) {
       return [
         {
-          label: "Holes",
+          label: "All Holes",
           holes: Array.from({ length: totalHoles }, (_, i) => i + 1),
         },
       ];
@@ -86,6 +95,7 @@ const PlayerScoreEditor: React.FC<PlayerScoreEditorProps> = ({
           newScores[i] = {
             score: undefined,
             par: Math.floor((round.courseDetails?.par || 72) / 18),
+            hole: i + 1,
           };
         }
         setScores(newScores);
@@ -106,9 +116,44 @@ const PlayerScoreEditor: React.FC<PlayerScoreEditorProps> = ({
     });
   };
 
+  const handleIncrementScore = (holeIndex: number) => {
+    setScores((prev) => {
+      const newScores = [...prev];
+      const currentScore = newScores[holeIndex]?.score;
+      const newScore = currentScore === undefined ? 1 : currentScore + 1;
+
+      newScores[holeIndex] = {
+        ...newScores[holeIndex],
+        score: newScore,
+      };
+      return newScores;
+    });
+  };
+
+  const handleDecrementScore = (holeIndex: number) => {
+    setScores((prev) => {
+      const newScores = [...prev];
+      const currentScore = newScores[holeIndex]?.score;
+
+      if (currentScore === undefined || currentScore <= 1) {
+        return prev;
+      }
+
+      newScores[holeIndex] = {
+        ...newScores[holeIndex],
+        score: currentScore - 1,
+      };
+      return newScores;
+    });
+  };
+
   const handleSave = () => {
     onSave(round.id, playerId, scores);
     onClose();
+  };
+
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setCurrentTab(newValue);
   };
 
   const sections = getHoleSections();
@@ -126,43 +171,111 @@ const PlayerScoreEditor: React.FC<PlayerScoreEditorProps> = ({
       </DialogTitle>
 
       <DialogContent sx={styles.dialogs.content}>
-        {sections.map((section, sectionIndex) => (
-          <Box key={`section-${sectionIndex}`} sx={{ mb: 3 }}>
-            <Typography variant="subtitle1" fontWeight="medium" sx={{ mb: 1 }}>
-              {section.label}
-            </Typography>
+        {sections.length > 1 && (
+          <Tabs
+            value={currentTab}
+            onChange={handleTabChange}
+            variant="fullWidth"
+            sx={{ mb: 2 }}
+          >
+            {sections.map((section, index) => (
+              <Tab key={`tab-${index}`} label={section.label} />
+            ))}
+          </Tabs>
+        )}
 
+        {sections.map((section, sectionIndex) => (
+          <Box
+            key={`section-${sectionIndex}`}
+            sx={{
+              mb: 3,
+              display: currentTab === sectionIndex ? "block" : "none",
+            }}
+          >
             <Paper variant="outlined" sx={{ p: 2 }}>
               <Grid container spacing={2}>
                 {section.holes.map((holeNum) => {
                   const holeIndex = holeNum - 1;
                   return (
-                    <Grid item xs={4} sm={3} md={2} key={`hole-${holeNum}`}>
-                      <Box sx={{ textAlign: "center" }}>
-                        <Typography variant="body2" gutterBottom>
+                    <Grid item xs={6} sm={4} md={3} key={`hole-${holeNum}`}>
+                      <Box
+                        sx={{
+                          textAlign: "center",
+                          border: "1px solid",
+                          borderColor: "divider",
+                          borderRadius: "8px",
+                          p: 1,
+                        }}
+                      >
+                        <Typography
+                          variant="body1"
+                          fontWeight="medium"
+                          gutterBottom
+                        >
                           Hole {holeNum}
                         </Typography>
-                        <TextField
-                          type="number"
-                          value={
-                            scores[holeIndex]?.score === undefined
-                              ? ""
-                              : scores[holeIndex]?.score
-                          }
-                          onChange={(e) =>
-                            handleScoreChange(holeIndex, e.target.value)
-                          }
-                          variant="outlined"
-                          size="small"
-                          inputProps={{ min: 1, max: 15 }}
-                          fullWidth
-                          InputLabelProps={styles.tournamentCard.formStyles.labelProps(
-                            theme
-                          )}
-                          InputProps={styles.tournamentCard.formStyles.inputProps(
-                            theme
-                          )}
-                        />
+
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            gap: 1,
+                          }}
+                        >
+                          <IconButton
+                            size="small"
+                            onClick={() => handleDecrementScore(holeIndex)}
+                            disabled={
+                              !scores[holeIndex]?.score ||
+                              scores[holeIndex]?.score <= 1
+                            }
+                          >
+                            <RemoveIcon fontSize="small" />
+                          </IconButton>
+
+                          <TextField
+                            type="number"
+                            value={
+                              scores[holeIndex]?.score === undefined
+                                ? ""
+                                : scores[holeIndex]?.score
+                            }
+                            onChange={(e) =>
+                              handleScoreChange(holeIndex, e.target.value)
+                            }
+                            variant="outlined"
+                            size="small"
+                            inputProps={{
+                              min: 1,
+                              max: 15,
+                              style: { textAlign: "center" },
+                            }}
+                            sx={{ width: "60px" }}
+                            InputLabelProps={styles.tournamentCard.formStyles.labelProps(
+                              theme
+                            )}
+                            InputProps={styles.tournamentCard.formStyles.inputProps(
+                              theme
+                            )}
+                          />
+
+                          <IconButton
+                            size="small"
+                            onClick={() => handleIncrementScore(holeIndex)}
+                          >
+                            <AddIcon fontSize="small" />
+                          </IconButton>
+                        </Box>
+
+                        {round.courseDetails?.par && (
+                          <Typography
+                            variant="caption"
+                            sx={{ display: "block", mt: 1 }}
+                          >
+                            Par: {Math.floor(round.courseDetails.par / 18)}
+                          </Typography>
+                        )}
                       </Box>
                     </Grid>
                   );
@@ -171,6 +284,34 @@ const PlayerScoreEditor: React.FC<PlayerScoreEditorProps> = ({
             </Paper>
           </Box>
         ))}
+
+        {sections.length > 1 && (
+          <Box
+            sx={{ display: "flex", justifyContent: "center", mt: 2, gap: 2 }}
+          >
+            <Button
+              variant="outlined"
+              size="small"
+              startIcon={<ArrowBackIcon />}
+              onClick={() => setCurrentTab(Math.max(0, currentTab - 1))}
+              disabled={currentTab === 0}
+            >
+              Previous Section
+            </Button>
+
+            <Button
+              variant="outlined"
+              size="small"
+              endIcon={<ArrowForwardIcon />}
+              onClick={() =>
+                setCurrentTab(Math.min(sections.length - 1, currentTab + 1))
+              }
+              disabled={currentTab === sections.length - 1}
+            >
+              Next Section
+            </Button>
+          </Box>
+        )}
       </DialogContent>
 
       <DialogActions sx={styles.dialogs.actions}>
