@@ -13,6 +13,7 @@ interface TournamentInfoProps {
   tournament: Tournament;
 }
 
+// TODO: Make this into a Collapse and make it collapsed by default on mobile size
 const TournamentInfo: React.FC<TournamentInfoProps> = ({ tournament }) => {
   const styles = useStyles();
 

@@ -8,7 +8,6 @@ import {
   Badge,
   Typography,
   Button,
-  ButtonGroup,
   Chip,
   Dialog,
   DialogContent,
@@ -272,6 +271,7 @@ const Events: React.FC = () => {
   };
 
   const renderEventCard = (event: Event) => {
+    // debugger;
     // Extract the common data based on event type
     const eventData = event.data;
     const name = eventData.name;
@@ -311,7 +311,9 @@ const Events: React.FC = () => {
               <Chip
                 label={round.format}
                 size="small"
-                sx={styles.chips.eventType.custom("secondary.light")}
+                sx={styles.chips.eventType.custom(
+                  theme.palette.secondary.light
+                )}
               />
             )}
             {round.courseDetails?.holes && (
@@ -360,7 +362,7 @@ const Events: React.FC = () => {
                   ? styles.chips.eventType.tournament
                   : event.type === "tour"
                   ? styles.chips.eventType.tour
-                  : styles.chips.eventType.custom("success.main")
+                  : styles.chips.eventType.custom(theme.palette.success.main)
               }
             />
           </Box>

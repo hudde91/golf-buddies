@@ -8,11 +8,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import {
-  ArrowBack as ArrowBackIcon,
-  Edit as EditIcon,
-  Delete as DeleteIcon,
-} from "@mui/icons-material";
+import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import { Tournament } from "../../types/event";
 import { useStyles } from "../../styles/hooks/useStyles";
 import { getColorBasedOnStatus } from "../util";
@@ -20,7 +16,6 @@ import { getColorBasedOnStatus } from "../util";
 interface TournamentHeaderProps {
   tournament: Tournament;
   isCreator: boolean;
-  onBackClick: () => void;
   onDeleteTournament: () => void;
   onEditTournament: () => void;
 }
@@ -28,7 +23,6 @@ interface TournamentHeaderProps {
 const TournamentHeader: React.FC<TournamentHeaderProps> = ({
   tournament,
   isCreator,
-  onBackClick,
   onDeleteTournament,
   onEditTournament,
 }) => {
@@ -39,14 +33,6 @@ const TournamentHeader: React.FC<TournamentHeaderProps> = ({
 
   return (
     <Box sx={styles.headers.event.container}>
-      <IconButton
-        onClick={onBackClick}
-        sx={styles.navigation.backButton}
-        aria-label="back"
-      >
-        <ArrowBackIcon />
-      </IconButton>
-
       <Box
         sx={{
           flexGrow: 1,

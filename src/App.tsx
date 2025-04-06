@@ -34,7 +34,6 @@ import { initializeEventUpdater } from "./services/utils/eventsUpdater";
 import GroupDetailPageContainer from "./components/tournamentDetails/roundsTab/GroupPage/GroupDetailPageContainer";
 import Friends from "./pages/Friends";
 import RoundDetails from "./pages/RoundDetails";
-import Rounds from "./pages/Rounds";
 
 const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || "";
 
@@ -115,7 +114,7 @@ const App: React.FC = () => {
           {showSplash && (
             <SplashScreen
               onFinish={handleSplashFinish}
-              duration={3000}
+              // duration={3000}
               backgroundImage={splashImage}
               logoText={splashText}
             />
@@ -186,14 +185,6 @@ const App: React.FC = () => {
                         }
                       />
 
-                      <Route
-                        path="/rounds"
-                        element={
-                          <ProtectedRoute>
-                            <Rounds />
-                          </ProtectedRoute>
-                        }
-                      />
                       <Route
                         path="/rounds/:id"
                         element={

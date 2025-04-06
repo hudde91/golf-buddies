@@ -165,6 +165,13 @@ const eventService = {
             tournament.players.some((player) => player.id === userId)
           )
         );
+      } else if (event.type === "round") {
+        const round = event.data as Round;
+        return (
+          round.createdBy === userId ||
+          (round.players &&
+            round.players.some((player) => player.id === userId))
+        );
       }
       return false;
     });

@@ -11,10 +11,12 @@ import {
   useMediaQuery,
   Chip,
   Tooltip,
+  Button,
 } from "@mui/material";
 import {
   Star as StarIcon,
   MilitaryTech as AchievementIcon,
+  ArrowBack as ArrowBackIcon,
 } from "@mui/icons-material";
 import tournamentService from "../services/eventService";
 import { Tournament, RoundFormData, Player, PlayerGroup } from "../types/event";
@@ -179,7 +181,7 @@ const TournamentDetail: React.FC = () => {
   };
 
   const handleBackClick = () => {
-    navigate(-1);
+    navigate("/events");
   };
 
   const handleAddRound = (data: RoundFormData) => {
@@ -448,10 +450,18 @@ const TournamentDetail: React.FC = () => {
             ...styles.mobile.card.edgeToEdge,
           }}
         >
+          <Box sx={styles.navigation.backButtonContainer}>
+            <Button
+              startIcon={<ArrowBackIcon />}
+              onClick={handleBackClick}
+              sx={styles.navigation.backButton}
+            >
+              Back to Events
+            </Button>
+          </Box>
           <TournamentHeader
             tournament={tournament}
             isCreator={isCreator}
-            onBackClick={handleBackClick}
             onDeleteTournament={handleDeleteTournament}
             onEditTournament={dialogHandlers.editTournament.open}
           />

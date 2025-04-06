@@ -18,14 +18,14 @@ import TourForm from "../components/tour/TourForm";
 import LoadingState from "../components/tournament/LoadingState";
 import TourHeader from "../components/tour/TourHeader";
 import TourTabs from "../components/tourDetails/TourTabs";
-import { BackButton } from "../components/common/index";
-import { colors } from "../styles";
+import { colors, useStyles } from "../styles";
 
 const TourDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { user, isLoaded } = useUser();
   const navigate = useNavigate();
   const theme = useTheme();
+  const styles = useStyles();
 
   const [event, setEvent] = useState<Event | null>(null);
   const [tour, setTour] = useState<Tour | null>(null);
@@ -174,7 +174,15 @@ const TourDetails: React.FC = () => {
       }}
     >
       <Container maxWidth="lg">
-        <BackButton onClick={handleBackToEvents} label="Back to Events" />
+        <Box sx={styles.navigation.backButtonContainer}>
+          <Button
+            startIcon={<ArrowBackIcon />}
+            onClick={handleBackToEvents}
+            sx={styles.navigation.backButton}
+          >
+            Back to Events
+          </Button>
+        </Box>
 
         <TourHeader
           tour={tour}

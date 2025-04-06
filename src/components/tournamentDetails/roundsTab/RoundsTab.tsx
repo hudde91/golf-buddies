@@ -63,7 +63,6 @@ const RoundsTab: React.FC<RoundsTabProps> = ({
   const styles = useStyles();
   const theme = useTheme();
   const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
-  const isMedium = useMediaQuery(theme.breakpoints.down("md"));
   const navigate = useNavigate();
 
   const [groupManagementOpen, setGroupManagementOpen] = useState(false);

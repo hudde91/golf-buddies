@@ -131,7 +131,7 @@ const RoundDetails: React.FC = () => {
     if (!id) return;
 
     eventService.deleteRoundEvent(id);
-    navigate("/rounds");
+    navigate("/events");
   };
 
   const handleCancelDelete = () => {
@@ -139,7 +139,7 @@ const RoundDetails: React.FC = () => {
   };
 
   const handleBackClick = () => {
-    navigate("/rounds");
+    navigate("/events");
   };
 
   const handleInvitePlayers = () => {
@@ -219,16 +219,16 @@ const RoundDetails: React.FC = () => {
   return (
     <Box sx={styles.layout.page.withBackground}>
       <Container maxWidth="lg">
-        {/* Header with back button, title and actions */}
-        <Box sx={styles.headers.event.container}>
-          <IconButton
+        <Box sx={styles.navigation.backButtonContainer}>
+          <Button
+            startIcon={<ArrowBackIcon />}
             onClick={handleBackClick}
             sx={styles.navigation.backButton}
-            aria-label="back"
           >
-            <ArrowBackIcon />
-          </IconButton>
-
+            Back to Events
+          </Button>
+        </Box>
+        <Box sx={styles.headers.event.container}>
           <Box
             sx={{
               flexGrow: 1,
@@ -539,7 +539,11 @@ const RoundDetails: React.FC = () => {
         />
       </Dialog>
 
-      {/* Invite Players Dialog */}
+      {/* TODO: Replace this Dialog with instead something that shows your friends that you can add to this event.
+      No invitation is needed, they should instead be directly added to a playerGroups for this round on this event. 
+      Then it should display like GroupDetailPage.tsx does but for a single round instead of a tournament.
+      Create a new component for this for now and then later we will try to create one that can handle both tournament and single round.
+      */}
       <Dialog
         open={openInviteDialog}
         onClose={handleCloseInviteDialog}

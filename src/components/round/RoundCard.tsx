@@ -7,6 +7,7 @@ import {
   Box,
   Button,
   Chip,
+  useTheme,
 } from "@mui/material";
 import {
   CalendarToday as CalendarIcon,
@@ -27,6 +28,7 @@ const RoundCard: React.FC<RoundCardProps> = ({
   userId,
   onViewDetails,
 }) => {
+  const theme = useTheme();
   const styles = useStyles();
 
   // Get the appropriate color for status
@@ -122,7 +124,7 @@ const RoundCard: React.FC<RoundCardProps> = ({
             size="small"
             label={`${round.courseDetails?.holes} holes`}
             variant="outlined"
-            sx={styles.chips.eventType.custom("secondary.light")}
+            sx={styles.chips.eventType.custom(theme.palette.secondary.light)}
           />
 
           {round.format && (
@@ -138,7 +140,7 @@ const RoundCard: React.FC<RoundCardProps> = ({
             <Chip
               size="small"
               label="Creator"
-              sx={styles.chips.status.custom("success.light")}
+              sx={styles.chips.status.custom(theme.palette.success.light)}
             />
           )}
         </Box>
