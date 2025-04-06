@@ -14,7 +14,6 @@ import {
   ListItemText,
   ListItemSecondaryAction,
   IconButton,
-  Divider,
   FormControl,
   InputLabel,
   Select,
@@ -22,21 +21,24 @@ import {
   SelectChangeEvent,
   Avatar,
   Chip,
+  useTheme,
+  useMediaQuery,
+  Divider,
   Grid,
-  Tooltip,
+  alpha,
 } from "@mui/material";
 import {
   Add as AddIcon,
   Delete as DeleteIcon,
-  Edit as EditIcon,
-  Group as GroupIcon,
   Flag as FlagIcon,
   Schedule as ScheduleIcon,
   PersonAdd as PersonAddIcon,
   PersonRemove as PersonRemoveIcon,
+  Group as GroupIcon,
 } from "@mui/icons-material";
 import { v4 as uuidv4 } from "uuid";
 import { Round, Player, PlayerGroup } from "../../../../types/event";
+import { useStyles } from "../../../../styles/hooks/useStyles";
 
 interface PlayerGroupManagerProps {
   round: Round;
@@ -53,6 +55,11 @@ const PlayerGroupManager: React.FC<PlayerGroupManagerProps> = ({
   onClose,
   onSave,
 }) => {
+  const styles = useStyles();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMedium = useMediaQuery(theme.breakpoints.down("md"));
+
   const [groups, setGroups] = useState<PlayerGroup[]>([]);
   const [editingGroupId, setEditingGroupId] = useState<string | null>(null);
   const [newGroupName, setNewGroupName] = useState("");
@@ -204,44 +211,75 @@ const PlayerGroupManager: React.FC<PlayerGroupManagerProps> = ({
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="md"
+      fullWidth
+      PaperProps={{ sx: styles.dialogs.paper }}
+    >
+      <DialogTitle sx={styles.dialogs.title}>
         <Box display="flex" alignItems="center">
           <GroupIcon sx={{ mr: 1 }} />
-          Manage Player Groups for {round.name}
+          Manage Player Groups
         </Box>
       </DialogTitle>
 
-      <DialogContent>
+      <DialogContent sx={styles.dialogs.content}>
         <Grid container spacing={2}>
-          {/* Left side - Group List */}
-          <Grid item xs={12} md={5}>
+          <Grid
+            item
+            xs={12}
+            md={isMedium ? 12 : 5}
+            sx={{ mb: isMedium ? 3 : 0 }}
+          >
             <Box
               sx={{
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
                 mb: 2,
+                mt: 1,
               }}
             >
-              <Typography variant="subtitle1">Player Groups</Typography>
+              <Typography variant="subtitle1" sx={styles.text.body.primary}>
+                Player Groups
+              </Typography>
               <Button
                 variant="outlined"
                 startIcon={<AddIcon />}
                 size="small"
                 onClick={handleAddGroup}
+                sx={styles.button.outlined}
               >
                 Add Group
               </Button>
             </Box>
 
-            <Paper variant="outlined" sx={{ maxHeight: 400, overflow: "auto" }}>
+            <Paper
+              variant="outlined"
+              sx={{
+                maxHeight: isMobile ? 250 : 400,
+                overflow: "auto",
+                bgcolor: "transparent",
+                border: (theme) =>
+                  `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
+              }}
+            >
               <List>
                 {groups.length === 0 ? (
                   <ListItem>
                     <ListItemText
-                      primary="No groups created yet"
-                      secondary="Click 'Add Group' to create a new group"
+                      primary={
+                        <Typography sx={styles.text.body.primary}>
+                          No groups created yet
+                        </Typography>
+                      }
+                      secondary={
+                        <Typography sx={styles.text.body.muted}>
+                          Click 'Add Group' to create a new group
+                        </Typography>
+                      }
                     />
                   </ListItem>
                 ) : (
@@ -251,54 +289,82 @@ const PlayerGroupManager: React.FC<PlayerGroupManagerProps> = ({
                       button
                       selected={editingGroupId === group.id}
                       onClick={() => handleEditGroup(group)}
+                      sx={{
+                        borderBottom: (theme) =>
+                          `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
+                        "&.Mui-selected": {
+                          bgcolor: (theme) =>
+                            alpha(theme.palette.primary.main, 0.2),
+                        },
+                        "&:hover": {
+                          bgcolor: (theme) =>
+                            alpha(theme.palette.common.white, 0.05),
+                        },
+                      }}
                     >
                       <ListItemText
                         primary={
                           <Typography
-                            fontWeight={
-                              editingGroupId === group.id ? "bold" : "normal"
-                            }
+                            sx={{
+                              fontWeight:
+                                editingGroupId === group.id ? "bold" : "normal",
+                              color: "white",
+                            }}
                           >
                             {group.name}
                           </Typography>
                         }
                         secondary={
                           <>
-                            <Box component="span" sx={{ display: "block" }}>
+                            <Box
+                              component="span"
+                              sx={{
+                                display: "block",
+                                color: (theme) =>
+                                  alpha(theme.palette.common.white, 0.7),
+                              }}
+                            >
                               {group.playerIds.length} player
                               {group.playerIds.length !== 1 ? "s" : ""}
                             </Box>
-                            {group.teeTime && (
-                              <Box
-                                component="span"
-                                sx={{
-                                  display: "inline-flex",
-                                  alignItems: "center",
-                                }}
-                              >
-                                <ScheduleIcon
-                                  fontSize="small"
-                                  sx={{ mr: 0.5, fontSize: "0.875rem" }}
+                            <Box
+                              sx={{
+                                display: "flex",
+                                flexWrap: "wrap",
+                                gap: 1,
+                                mt: 0.5,
+                              }}
+                            >
+                              {group.teeTime && (
+                                <Chip
+                                  icon={<ScheduleIcon fontSize="small" />}
+                                  label={group.teeTime}
+                                  size="small"
+                                  sx={{
+                                    bgcolor: (theme) =>
+                                      alpha(theme.palette.info.main, 0.1),
+                                    color: (theme) => theme.palette.info.light,
+                                    borderRadius: "4px",
+                                    height: "24px",
+                                  }}
                                 />
-                                {group.teeTime}
-                              </Box>
-                            )}
-                            {group.startingHole && (
-                              <Box
-                                component="span"
-                                sx={{
-                                  display: "inline-flex",
-                                  alignItems: "center",
-                                  ml: 1,
-                                }}
-                              >
-                                <FlagIcon
-                                  fontSize="small"
-                                  sx={{ mr: 0.5, fontSize: "0.875rem" }}
+                              )}
+                              {group.startingHole && (
+                                <Chip
+                                  icon={<FlagIcon fontSize="small" />}
+                                  label={`Hole ${group.startingHole}`}
+                                  size="small"
+                                  sx={{
+                                    bgcolor: (theme) =>
+                                      alpha(theme.palette.success.main, 0.1),
+                                    color: (theme) =>
+                                      theme.palette.success.light,
+                                    borderRadius: "4px",
+                                    height: "24px",
+                                  }}
                                 />
-                                Hole {group.startingHole}
-                              </Box>
-                            )}
+                              )}
+                            </Box>
                           </>
                         }
                       />
@@ -309,6 +375,15 @@ const PlayerGroupManager: React.FC<PlayerGroupManagerProps> = ({
                           onClick={(e) => {
                             e.stopPropagation();
                             handleDeleteGroup(group.id);
+                          }}
+                          sx={{
+                            color: (theme) =>
+                              alpha(theme.palette.error.light, 0.8),
+                            "&:hover": {
+                              color: (theme) => theme.palette.error.light,
+                              bgcolor: (theme) =>
+                                alpha(theme.palette.error.main, 0.1),
+                            },
                           }}
                         >
                           <DeleteIcon />
@@ -322,14 +397,27 @@ const PlayerGroupManager: React.FC<PlayerGroupManagerProps> = ({
           </Grid>
 
           {/* Right side - Edit Group */}
-          <Grid item xs={12} md={7}>
+          <Grid item xs={12} md={isMedium ? 12 : 7}>
             {editingGroupId ? (
               <Box>
-                <Typography variant="subtitle1" gutterBottom>
+                <Typography
+                  variant="subtitle1"
+                  gutterBottom
+                  sx={styles.text.body.primary}
+                >
                   Edit Group
                 </Typography>
 
-                <Paper variant="outlined" sx={{ p: 2, mb: 3 }}>
+                <Paper
+                  variant="outlined"
+                  sx={{
+                    p: 2,
+                    mb: 3,
+                    bgcolor: "transparent",
+                    border: (theme) =>
+                      `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
+                  }}
+                >
                   <TextField
                     label="Group Name"
                     value={newGroupName}
@@ -339,15 +427,32 @@ const PlayerGroupManager: React.FC<PlayerGroupManagerProps> = ({
                     margin="normal"
                     variant="outlined"
                     size="small"
+                    InputLabelProps={styles.tournamentCard.formStyles.labelProps(
+                      theme
+                    )}
+                    InputProps={styles.tournamentCard.formStyles.inputProps(
+                      theme
+                    )}
                   />
 
-                  <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      gap: 2,
+                      mt: 2,
+                      flexDirection: isMobile ? "column" : "row",
+                    }}
+                  >
                     <FormControl
                       variant="outlined"
                       size="small"
+                      fullWidth={isMobile}
                       sx={{ minWidth: 120 }}
                     >
-                      <InputLabel id="starting-hole-label">
+                      <InputLabel
+                        id="starting-hole-label"
+                        sx={{ color: "white" }}
+                      >
                         Starting Hole
                       </InputLabel>
                       <Select
@@ -355,12 +460,22 @@ const PlayerGroupManager: React.FC<PlayerGroupManagerProps> = ({
                         value={selectedStartingHole}
                         onChange={handleStartingHoleChange}
                         label="Starting Hole"
+                        sx={styles.inputs.select}
+                        MenuProps={{
+                          PaperProps: {
+                            sx: styles.inputs.menuPaper,
+                          },
+                        }}
                       >
-                        <MenuItem value="">
+                        <MenuItem value="" sx={styles.inputs.menuItem}>
                           <em>None</em>
                         </MenuItem>
                         {generateStartingHoles().map((hole) => (
-                          <MenuItem key={hole} value={hole}>
+                          <MenuItem
+                            key={hole}
+                            value={hole}
+                            sx={styles.inputs.menuItem}
+                          >
                             Hole {hole}
                           </MenuItem>
                         ))}
@@ -372,59 +487,176 @@ const PlayerGroupManager: React.FC<PlayerGroupManagerProps> = ({
                       type="time"
                       value={selectedTeeTime}
                       onChange={handleTeeTimeChange}
+                      fullWidth={isMobile}
                       InputLabelProps={{
                         shrink: true,
+                        style: {
+                          color: alpha(theme.palette.common.white, 0.7),
+                        },
                       }}
                       inputProps={{
                         step: 300, // 5 min
                       }}
                       variant="outlined"
                       size="small"
+                      InputProps={styles.tournamentCard.formStyles.inputProps(
+                        theme
+                      )}
                     />
                   </Box>
                 </Paper>
 
-                <Typography variant="subtitle2" gutterBottom>
-                  Players in Group
-                </Typography>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    mb: 1,
+                  }}
+                >
+                  <Typography variant="subtitle2" sx={styles.text.body.primary}>
+                    Players in Group
+                  </Typography>
+                  <Chip
+                    label={`${getGroupPlayers(editingGroupId).length} player${
+                      getGroupPlayers(editingGroupId).length !== 1 ? "s" : ""
+                    }`}
+                    size="small"
+                    sx={{
+                      bgcolor: (theme) =>
+                        alpha(theme.palette.primary.main, 0.1),
+                      color: (theme) => theme.palette.primary.light,
+                    }}
+                  />
+                </Box>
 
                 <Paper
                   variant="outlined"
-                  sx={{ p: 2, mb: 3, maxHeight: 200, overflow: "auto" }}
+                  sx={{
+                    p: 1,
+                    mb: 3,
+                    maxHeight: isMobile ? 170 : 200,
+                    overflow: "auto",
+                    bgcolor: "transparent",
+                    border: (theme) =>
+                      `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
+                  }}
                 >
                   {getGroupPlayers(editingGroupId).length === 0 ? (
-                    <Typography variant="body2" color="text.secondary">
-                      No players in this group. Add players from the list below.
-                    </Typography>
+                    <Box sx={{ p: 2, textAlign: "center" }}>
+                      <Typography variant="body2" sx={styles.text.body.muted}>
+                        No players in this group. Add players from the list
+                        below.
+                      </Typography>
+                    </Box>
                   ) : (
-                    getGroupPlayers(editingGroupId).map((player) => (
-                      <Chip
-                        key={player.id}
-                        avatar={
-                          <Avatar src={player.avatarUrl} alt={player.name} />
-                        }
-                        label={player.name}
-                        onDelete={() =>
-                          handleRemovePlayerFromGroup(editingGroupId, player.id)
-                        }
-                        sx={{ m: 0.5 }}
-                      />
-                    ))
+                    <List>
+                      {getGroupPlayers(editingGroupId).map((player) => (
+                        <ListItem
+                          key={player.id}
+                          sx={{
+                            borderBottom: (theme) =>
+                              `1px solid ${alpha(
+                                theme.palette.common.white,
+                                0.05
+                              )}`,
+                            "&:last-child": {
+                              borderBottom: "none",
+                            },
+                            py: 0.5,
+                          }}
+                        >
+                          <Avatar
+                            src={player.avatarUrl}
+                            alt={player.name}
+                            sx={{
+                              width: 36,
+                              height: 36,
+                              mr: 2,
+                              border: (theme) =>
+                                `1px solid ${alpha(
+                                  theme.palette.common.white,
+                                  0.2
+                                )}`,
+                            }}
+                          />
+                          <ListItemText
+                            primary={
+                              <Typography sx={styles.text.body.primary}>
+                                {player.name}
+                              </Typography>
+                            }
+                          />
+                          <IconButton
+                            edge="end"
+                            aria-label="remove player"
+                            onClick={() =>
+                              handleRemovePlayerFromGroup(
+                                editingGroupId,
+                                player.id
+                              )
+                            }
+                            sx={{
+                              color: (theme) =>
+                                alpha(theme.palette.error.light, 0.8),
+                              "&:hover": {
+                                color: (theme) => theme.palette.error.light,
+                                bgcolor: (theme) =>
+                                  alpha(theme.palette.error.main, 0.1),
+                              },
+                            }}
+                          >
+                            <PersonRemoveIcon />
+                          </IconButton>
+                        </ListItem>
+                      ))}
+                    </List>
                   )}
                 </Paper>
 
-                <Typography variant="subtitle2" gutterBottom>
-                  Available Players
-                </Typography>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    mb: 1,
+                  }}
+                >
+                  <Typography variant="subtitle2" sx={styles.text.body.primary}>
+                    Available Players
+                  </Typography>
+                  <Chip
+                    label={`${getAvailablePlayers().length} player${
+                      getAvailablePlayers().length !== 1 ? "s" : ""
+                    }`}
+                    size="small"
+                    sx={{
+                      bgcolor: (theme) => alpha(theme.palette.info.main, 0.1),
+                      color: (theme) => theme.palette.info.light,
+                    }}
+                  />
+                </Box>
 
                 <Paper
                   variant="outlined"
-                  sx={{ maxHeight: 200, overflow: "auto" }}
+                  sx={{
+                    maxHeight: isMobile ? 170 : 200,
+                    overflow: "auto",
+                    bgcolor: "transparent",
+                    border: (theme) =>
+                      `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
+                  }}
                 >
-                  <List dense>
+                  <List>
                     {getAvailablePlayers().length === 0 ? (
                       <ListItem>
-                        <ListItemText primary="All players have been assigned to groups" />
+                        <ListItemText
+                          primary={
+                            <Typography sx={styles.text.body.muted}>
+                              All players have been assigned to groups
+                            </Typography>
+                          }
+                        />
                       </ListItem>
                     ) : (
                       getAvailablePlayers().map((player) => (
@@ -434,18 +666,56 @@ const PlayerGroupManager: React.FC<PlayerGroupManagerProps> = ({
                           onClick={() =>
                             handleAddPlayerToGroup(editingGroupId, player.id)
                           }
+                          sx={{
+                            borderBottom: (theme) =>
+                              `1px solid ${alpha(
+                                theme.palette.common.white,
+                                0.05
+                              )}`,
+                            "&:last-child": {
+                              borderBottom: "none",
+                            },
+                            "&:hover": {
+                              bgcolor: (theme) =>
+                                alpha(theme.palette.primary.main, 0.1),
+                            },
+                            py: 0.5,
+                          }}
                         >
                           <Avatar
                             src={player.avatarUrl}
                             alt={player.name}
-                            sx={{ mr: 2, width: 32, height: 32 }}
+                            sx={{
+                              width: 36,
+                              height: 36,
+                              mr: 2,
+                              border: (theme) =>
+                                `1px solid ${alpha(
+                                  theme.palette.common.white,
+                                  0.2
+                                )}`,
+                            }}
                           />
-                          <ListItemText primary={player.name} />
-                          <Tooltip title="Add to group">
-                            <IconButton edge="end" aria-label="add">
-                              <PersonAddIcon />
-                            </IconButton>
-                          </Tooltip>
+                          <ListItemText
+                            primary={
+                              <Typography sx={styles.text.body.primary}>
+                                {player.name}
+                              </Typography>
+                            }
+                          />
+                          <IconButton
+                            edge="end"
+                            aria-label="add player"
+                            sx={{
+                              color: (theme) => theme.palette.primary.light,
+                              "&:hover": {
+                                bgcolor: (theme) =>
+                                  alpha(theme.palette.primary.main, 0.1),
+                              },
+                            }}
+                          >
+                            <PersonAddIcon />
+                          </IconButton>
                         </ListItem>
                       ))
                     )}
@@ -461,24 +731,34 @@ const PlayerGroupManager: React.FC<PlayerGroupManagerProps> = ({
                   justifyContent: "center",
                   alignItems: "center",
                   p: 3,
-                  bgcolor: "rgba(0, 0, 0, 0.02)",
+                  bgcolor: (theme) => alpha(theme.palette.common.black, 0.2),
                   borderRadius: 1,
+                  border: (theme) =>
+                    `1px dashed ${alpha(theme.palette.common.white, 0.2)}`,
                 }}
               >
                 <GroupIcon
-                  sx={{ fontSize: 60, color: "text.secondary", mb: 2 }}
+                  sx={{
+                    fontSize: 60,
+                    color: (theme) => alpha(theme.palette.common.white, 0.3),
+                    mb: 2,
+                  }}
                 />
-                <Typography variant="subtitle1" gutterBottom>
+                <Typography
+                  variant="subtitle1"
+                  gutterBottom
+                  sx={styles.text.body.primary}
+                >
                   Select a group to edit
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" sx={styles.text.body.muted}>
                   Or create a new group to organize players
                 </Typography>
                 <Button
                   variant="outlined"
                   startIcon={<AddIcon />}
                   onClick={handleAddGroup}
-                  sx={{ mt: 2 }}
+                  sx={{ mt: 2, ...styles.button.outlined }}
                 >
                   Add Group
                 </Button>
@@ -488,11 +768,16 @@ const PlayerGroupManager: React.FC<PlayerGroupManagerProps> = ({
         </Grid>
       </DialogContent>
 
-      <DialogActions>
-        <Button onClick={onClose} color="inherit">
+      <DialogActions sx={styles.dialogs.actions}>
+        <Button onClick={onClose} sx={styles.button.cancel}>
           Cancel
         </Button>
-        <Button onClick={handleSave} color="primary" variant="contained">
+        <Button
+          onClick={handleSave}
+          color="primary"
+          variant="contained"
+          sx={styles.button.primary}
+        >
           Save Groups
         </Button>
       </DialogActions>

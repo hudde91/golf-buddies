@@ -94,7 +94,7 @@ export const mobilePatterns = {
     }),
     horizontal: {
       display: { xs: "flex", md: "block" },
-      flexDirection: { xs: "row", md: "column" },
+      flexDirection: "column",
       overflowX: { xs: "auto", md: "hidden" },
       whiteSpace: { xs: "nowrap", md: "normal" },
       py: { xs: 1, md: 0 },

@@ -15,6 +15,10 @@ import {
   useMediaQuery,
   useTheme,
   Chip,
+  Card,
+  CardContent,
+  Divider,
+  alpha,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import {
@@ -25,9 +29,9 @@ import {
   Schedule as ScheduleIcon,
   Flag as FlagIcon,
   GolfCourse as GolfCourseIcon,
+  ChevronRight as ChevronRightIcon,
 } from "@mui/icons-material";
 import { Tournament, PlayerGroup } from "../../../types/event";
-import PlayerScoreEditor from "./GroupPage/PlayerScoreEditor";
 import PlayerGroupManager from "./GroupPage/PlayerGroupManager";
 import { useStyles } from "../../../styles/hooks/useStyles";
 import WeatherDisplay from "./WeatherDisplay";
@@ -59,6 +63,7 @@ const RoundsTab: React.FC<RoundsTabProps> = ({
   const styles = useStyles();
   const theme = useTheme();
   const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMedium = useMediaQuery(theme.breakpoints.down("md"));
   const navigate = useNavigate();
 
   const [groupManagementOpen, setGroupManagementOpen] = useState(false);
@@ -103,6 +108,12 @@ const RoundsTab: React.FC<RoundsTabProps> = ({
       onUpdatePlayerGroups(selectedRoundId, playerGroups);
       setGroupManagementOpen(false);
     }
+  };
+
+  const navigateToGroupDetail = (roundId: string, groupId: string) => {
+    navigate(
+      `/tournaments/${tournament.id}/rounds/${roundId}/groups/${groupId}`
+    );
   };
 
   if (tournament.rounds.length === 0) {
@@ -180,7 +191,7 @@ const RoundsTab: React.FC<RoundsTabProps> = ({
         )}
       </Box>
 
-      <Grid container spacing={styles.mobile.grid.responsive.spacing}>
+      <Grid container spacing={isSmall ? 2 : 3}>
         <Grid item xs={12} md={3}>
           <List
             component={Paper}
@@ -232,7 +243,10 @@ const RoundsTab: React.FC<RoundsTabProps> = ({
                       <IconButton
                         edge="end"
                         aria-label="delete"
-                        onClick={() => onDeleteRound(round.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onDeleteRound(round.id);
+                        }}
                         sx={styles.tournamentRounds.roundsTab.deleteButton}
                       >
                         <DeleteIcon />
@@ -251,172 +265,343 @@ const RoundsTab: React.FC<RoundsTabProps> = ({
                 weather={weather}
                 courseName={selectedRound.courseDetails?.name}
               />
-              <Box sx={styles.layout.flex.spaceBetween} mb={3}>
-                {isCreator && (
-                  <Button
-                    variant="outlined"
-                    startIcon={<GroupsIcon />}
-                    onClick={() => setGroupManagementOpen(true)}
-                    sx={styles.button.outlined}
-                  >
-                    Manage Groups
-                  </Button>
-                )}
-              </Box>
 
-              <Box sx={{ mb: 4 }}>
-                {playerGroups.map((group) => (
-                  <Box
-                    key={group.id}
-                    sx={styles.tournamentRounds.group.container}
-                  >
-                    <Paper
-                      variant="outlined"
-                      sx={styles.tournamentRounds.group.header}
-                      onClick={() =>
-                        navigate(
-                          `/tournaments/${tournament.id}/rounds/${selectedRoundId}/groups/${group.id}`
-                        )
+              {/* Groups section with improved styling */}
+              <Box sx={{ mb: 3, mt: 2 }}>
+                <Box
+                  sx={{
+                    mb: 2,
+                  }}
+                >
+                  {isCreator && (
+                    <Button
+                      variant={isSmall ? "contained" : "outlined"}
+                      startIcon={<GroupsIcon />}
+                      onClick={() => setGroupManagementOpen(true)}
+                      fullWidth={isSmall}
+                      sx={
+                        isSmall
+                          ? {
+                              ...styles.button.primary,
+                              ...styles.mobile.button.touchable,
+                            }
+                          : styles.button.outlined
                       }
                     >
-                      <Box sx={styles.tournamentRounds.group.headerContent}>
-                        <Box>
-                          <Typography
-                            variant="h6"
-                            sx={styles.tournamentRounds.group.title}
-                          >
-                            {group.name}
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={styles.tournamentRounds.group.playerCount}
-                          >
-                            {group.playerIds.length} players
-                          </Typography>
-                        </Box>
-                        <Box sx={styles.tournamentRounds.group.chips}>
-                          {group.teeTime && (
-                            <Chip
-                              icon={<ScheduleIcon />}
-                              label={`${group.teeTime}`}
-                              variant="filled"
-                              size="small"
-                              sx={styles.tournamentRounds.group.timeChip}
-                            />
-                          )}
-                          {group.startingHole && (
-                            <Chip
-                              icon={<FlagIcon />}
-                              label={`Hole ${group.startingHole}`}
-                              variant="filled"
-                              size="small"
-                              sx={styles.tournamentRounds.group.holeChip}
-                            />
-                          )}
-                        </Box>
-                      </Box>
+                      Manage Groups
+                    </Button>
+                  )}
+                </Box>
 
-                      <Box sx={styles.tournamentRounds.group.playerChips}>
-                        {group.playerIds.slice(0, 3).map((playerId) => {
-                          const player = tournament.players.find(
-                            (p) => p.id === playerId
-                          );
-                          if (!player) return null;
-
-                          return (
-                            <Chip
-                              key={player.id}
-                              avatar={
-                                <Avatar
-                                  src={player.avatarUrl}
-                                  alt={player.name}
-                                />
-                              }
-                              label={player.name}
-                              variant="filled"
-                              size="small"
-                              sx={styles.tournamentRounds.group.playerChip}
-                            />
-                          );
-                        })}
-                        {group.playerIds.length > 3 && (
-                          <Chip
-                            label={`+${group.playerIds.length - 3} more`}
-                            variant="filled"
-                            size="small"
-                            sx={styles.tournamentRounds.group.playerChip}
-                          />
-                        )}
-                      </Box>
-                    </Paper>
-                  </Box>
-                ))}
-
-                {ungroupedPlayers.length > 0 && (
-                  <Box sx={styles.tournamentRounds.ungrouped.container}>
-                    <Paper
-                      variant="outlined"
-                      sx={styles.tournamentRounds.ungrouped.header}
+                {playerGroups.length === 0 ? (
+                  <Paper
+                    variant="outlined"
+                    sx={{
+                      p: 3,
+                      textAlign: "center",
+                      bgcolor: (theme) =>
+                        alpha(theme.palette.common.black, 0.2),
+                      border: (theme) =>
+                        `1px dashed ${alpha(theme.palette.common.white, 0.2)}`,
+                      borderRadius: 2,
+                    }}
+                  >
+                    <GroupsIcon
+                      sx={{
+                        fontSize: 48,
+                        color: (theme) =>
+                          alpha(theme.palette.common.white, 0.3),
+                        mb: 1,
+                      }}
+                    />
+                    <Typography
+                      variant="subtitle1"
+                      sx={{ mb: 1, color: "white" }}
                     >
-                      <Typography variant="h6">Ungrouped Players</Typography>
-                    </Paper>
-
-                    <Box sx={styles.tournamentRounds.ungrouped.playerList}>
-                      {ungroupedPlayers.map((player, playerIndex) => (
-                        <Box
-                          key={player.id}
+                      No Groups Created Yet
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        mb: 2,
+                        color: (theme) =>
+                          alpha(theme.palette.common.white, 0.7),
+                      }}
+                    >
+                      Create groups to organize players for this round.
+                    </Typography>
+                    {isCreator && (
+                      <Button
+                        variant="outlined"
+                        startIcon={<GroupsIcon />}
+                        onClick={() => setGroupManagementOpen(true)}
+                        sx={styles.button.outlined}
+                      >
+                        Create First Group
+                      </Button>
+                    )}
+                  </Paper>
+                ) : (
+                  <Grid container spacing={2}>
+                    {playerGroups.map((group) => (
+                      <Grid item xs={12} sm={6} md={6} lg={4} key={group.id}>
+                        <Card
+                          variant="outlined"
                           sx={{
-                            ...styles.tournamentRounds.ungrouped.playerItem,
-                            borderBottom:
-                              playerIndex < ungroupedPlayers.length - 1
-                                ? `1px solid ${theme.palette.divider}`
-                                : "none",
+                            bgcolor: (theme) =>
+                              alpha(theme.palette.common.black, 0.3),
+                            backdropFilter: "blur(10px)",
+                            border: (theme) =>
+                              `1px solid ${alpha(
+                                theme.palette.common.white,
+                                0.1
+                              )}`,
+                            borderRadius: 2,
+                            transition: "all 0.2s ease",
+                            "&:hover": {
+                              transform: { sm: "translateY(-4px)" },
+                              boxShadow: {
+                                sm: (theme) =>
+                                  `0 8px 16px ${alpha(
+                                    theme.palette.common.black,
+                                    0.3
+                                  )}`,
+                              },
+                              bgcolor: (theme) =>
+                                alpha(theme.palette.common.black, 0.4),
+                            },
+                            cursor: "pointer",
+                            height: "100%",
+                            display: "flex",
+                            flexDirection: "column",
                           }}
+                          onClick={() =>
+                            navigateToGroupDetail(selectedRound.id, group.id)
+                          }
                         >
-                          <ListItem
-                            sx={{
-                              bgcolor: theme.palette.background.paper,
-                            }}
-                          >
-                            <ListItemAvatar>
-                              <Avatar
-                                src={player.avatarUrl}
-                                alt={player.name}
-                              />
-                            </ListItemAvatar>
-
-                            <ListItemText
-                              primary={
-                                <Box
-                                  sx={
-                                    styles.tournamentRounds.ungrouped.playerName
-                                  }
+                          <CardContent sx={{ p: 2 }}>
+                            <Box
+                              sx={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "flex-start",
+                                mb: 1.5,
+                              }}
+                            >
+                              <Box>
+                                <Typography
+                                  variant="h6"
+                                  sx={{
+                                    color: "white",
+                                    fontWeight: 600,
+                                    display: "flex",
+                                    alignItems: "center",
+                                  }}
                                 >
-                                  <Typography
-                                    variant="subtitle1"
-                                    fontWeight="medium"
-                                  >
-                                    {player.name}
-                                  </Typography>
-                                  {player.handicap !== undefined && (
-                                    <Chip
-                                      icon={<GolfCourseIcon fontSize="small" />}
-                                      label={`HCP: ${player.handicap}`}
-                                      size="small"
-                                      sx={{ ml: 2 }}
-                                      variant="outlined"
-                                    />
-                                  )}
-                                </Box>
-                              }
+                                  {group.name}
+                                  <ChevronRightIcon
+                                    sx={{
+                                      ml: 0.5,
+                                      opacity: 0.7,
+                                      fontSize: "1.2rem",
+                                    }}
+                                  />
+                                </Typography>
+                                <Typography
+                                  variant="body2"
+                                  sx={{
+                                    color: (theme) =>
+                                      alpha(theme.palette.common.white, 0.7),
+                                  }}
+                                >
+                                  {group.playerIds.length} player
+                                  {group.playerIds.length !== 1 ? "s" : ""}
+                                </Typography>
+                              </Box>
+
+                              <Box sx={{ display: "flex", gap: 1 }}>
+                                {group.teeTime && (
+                                  <Chip
+                                    icon={<ScheduleIcon fontSize="small" />}
+                                    label={group.teeTime}
+                                    size="small"
+                                    sx={{
+                                      bgcolor: (theme) =>
+                                        alpha(theme.palette.info.main, 0.1),
+                                      color: (theme) =>
+                                        theme.palette.info.light,
+                                      borderRadius: "4px",
+                                      height: "24px",
+                                    }}
+                                  />
+                                )}
+                                {group.startingHole && (
+                                  <Chip
+                                    icon={<FlagIcon fontSize="small" />}
+                                    label={`Hole ${group.startingHole}`}
+                                    size="small"
+                                    sx={{
+                                      bgcolor: (theme) =>
+                                        alpha(theme.palette.success.main, 0.1),
+                                      color: (theme) =>
+                                        theme.palette.success.light,
+                                      borderRadius: "4px",
+                                      height: "24px",
+                                    }}
+                                  />
+                                )}
+                              </Box>
+                            </Box>
+
+                            <Divider
+                              sx={{
+                                my: 1.5,
+                                borderColor: (theme) =>
+                                  alpha(theme.palette.common.white, 0.1),
+                              }}
                             />
-                          </ListItem>
-                        </Box>
-                      ))}
-                    </Box>
-                  </Box>
+
+                            <Box
+                              sx={{
+                                display: "flex",
+                                flexWrap: "wrap",
+                                gap: 0.5,
+                                mt: 1,
+                              }}
+                            >
+                              {group.playerIds.map((playerId) => {
+                                const player = tournament.players.find(
+                                  (p) => p.id === playerId
+                                );
+                                if (!player) return null;
+
+                                return (
+                                  <Chip
+                                    key={player.id}
+                                    avatar={
+                                      <Avatar
+                                        src={player.avatarUrl}
+                                        alt={player.name}
+                                      />
+                                    }
+                                    label={player.name}
+                                    size="small"
+                                    sx={{
+                                      bgcolor: (theme) =>
+                                        alpha(theme.palette.common.white, 0.1),
+                                      color: "white",
+                                      "& .MuiChip-avatar": {
+                                        width: 24,
+                                        height: 24,
+                                      },
+                                    }}
+                                  />
+                                );
+                              })}
+                            </Box>
+                          </CardContent>
+                        </Card>
+                      </Grid>
+                    ))}
+                  </Grid>
                 )}
               </Box>
+
+              {/* Ungrouped players section with improved styling */}
+              {ungroupedPlayers.length > 0 && (
+                <Box sx={{ mb: 4 }}>
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      mb: 2,
+                      display: "flex",
+                      alignItems: "center",
+                      color: "white",
+                    }}
+                  >
+                    Ungrouped Players ({ungroupedPlayers.length})
+                  </Typography>
+
+                  <Paper
+                    variant="outlined"
+                    sx={{
+                      borderRadius: 2,
+                      bgcolor: (theme) =>
+                        alpha(theme.palette.common.black, 0.2),
+                      border: (theme) =>
+                        `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
+                      overflow: "hidden",
+                    }}
+                  >
+                    <Grid container spacing={0}>
+                      {ungroupedPlayers.map((player) => (
+                        <Grid item xs={12} sm={6} md={4} key={player.id}>
+                          <Box
+                            sx={{
+                              p: 1.5,
+                              borderBottom: (theme) =>
+                                `1px solid ${alpha(
+                                  theme.palette.common.white,
+                                  0.05
+                                )}`,
+                              borderRight: (theme) =>
+                                `1px solid ${alpha(
+                                  theme.palette.common.white,
+                                  0.05
+                                )}`,
+                              display: "flex",
+                              alignItems: "center",
+                            }}
+                          >
+                            <Avatar
+                              src={player.avatarUrl}
+                              alt={player.name}
+                              sx={{
+                                width: 36,
+                                height: 36,
+                                mr: 1.5,
+                                border: (theme) =>
+                                  `1px solid ${alpha(
+                                    theme.palette.common.white,
+                                    0.2
+                                  )}`,
+                              }}
+                            />
+                            <Box>
+                              <Typography
+                                variant="body1"
+                                sx={{
+                                  fontWeight: "medium",
+                                  color: "white",
+                                }}
+                              >
+                                {player.name}
+                              </Typography>
+
+                              {player.handicap !== undefined && (
+                                <Typography
+                                  variant="caption"
+                                  sx={{
+                                    color: (theme) =>
+                                      alpha(theme.palette.common.white, 0.7),
+                                    display: "flex",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  <GolfCourseIcon
+                                    sx={{ fontSize: 14, mr: 0.5 }}
+                                  />
+                                  Handicap: {player.handicap}
+                                </Typography>
+                              )}
+                            </Box>
+                          </Box>
+                        </Grid>
+                      ))}
+                    </Grid>
+                  </Paper>
+                </Box>
+              )}
 
               {selectedRound && (
                 <PlayerGroupManager
@@ -443,4 +628,5 @@ const RoundsTab: React.FC<RoundsTabProps> = ({
     </Box>
   );
 };
+
 export default RoundsTab;

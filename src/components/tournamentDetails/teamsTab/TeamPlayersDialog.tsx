@@ -58,7 +58,7 @@ const TeamPlayersDialog: React.FC<TeamPlayersDialogProps> = ({
       maxWidth="md"
       fullWidth
       PaperProps={{
-        sx: styles.tournamentTeams.dialogPaper,
+        sx: styles.dialogs.paper,
       }}
     >
       <DialogTitle sx={styles.tournamentTeams.dialogTitle}>

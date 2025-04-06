@@ -455,10 +455,10 @@ const TournamentDetail: React.FC = () => {
             onDeleteTournament={handleDeleteTournament}
             onEditTournament={dialogHandlers.editTournament.open}
           />
-          {/*
-           <EnhancedTournamentInfo />
- */}
-          <TournamentInfo tournament={tournament} />
+
+          <EnhancedTournamentInfo />
+
+          {/* <TournamentInfo tournament={tournament} /> */}
 
           <Box sx={styles.tabs.container}>
             <Tabs

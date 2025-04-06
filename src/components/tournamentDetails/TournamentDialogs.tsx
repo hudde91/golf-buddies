@@ -100,7 +100,6 @@ const TournamentDialogs: React.FC<TournamentDialogsProps> = ({
         </DialogActions>
       </Dialog>
 
-      {/* Add Round Dialog */}
       <Dialog
         open={dialogState.addRoundOpen}
         onClose={handlers.closeAddRound}

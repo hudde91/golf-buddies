@@ -161,14 +161,14 @@ const PlayerScorecard: React.FC<PlayerScorecardProps> = ({
         >
           <Box sx={{ flexShrink: 0 }}>
             <Typography variant="h6">Scorecard</Typography>
-
+            {/* 
             {tournament.isTeamEvent && playerTeam && (
               <Chip
                 label={playerTeam.name}
                 size="small"
                 sx={styles.chips.team(playerTeam.color || "primary.main")}
               />
-            )}
+            )} */}
           </Box>
 
           {tournament.status === "completed" && (

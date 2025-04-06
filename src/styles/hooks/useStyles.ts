@@ -537,7 +537,7 @@ export const useStyles = () => {
       editButton: tournamentTeams.editButton(theme),
       deleteButton: tournamentTeams.deleteButton(theme),
 
-      dialogPaper: tournamentTeams.dialogPaper(theme),
+      // dialogPaper: tournamentTeams.dialogPaper(theme),
       dialogTitle: tournamentTeams.dialogTitle(theme),
       dialogActions: tournamentTeams.dialogActions(theme),
 

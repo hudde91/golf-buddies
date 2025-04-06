@@ -521,7 +521,6 @@ const GroupDetailPage: React.FC<GroupDetailPageProps> = ({
                       </IconButton>
                     </Box>
                   </Box>
-
                   <Collapse
                     in={expandedPlayerIds.includes(player.id)}
                     timeout="auto"

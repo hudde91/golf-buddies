@@ -52,7 +52,7 @@ const PlayerProfileDialog: React.FC<PlayerProfileDialogProps> = ({
       maxWidth="sm"
       fullWidth
       PaperProps={{
-        sx: styles.tournamentPlayers.profileDialog,
+        sx: styles.dialogs.paper,
       }}
     >
       <DialogTitle sx={{ color: "white", pr: 6 }}>

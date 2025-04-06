@@ -155,8 +155,9 @@ const TournamentLeaderboard: React.FC<TournamentLeaderboardProps> = ({
 
               const playerObj = tournament.players.find(
                 (p) => p.id === player.playerId
-              );
-              const playerTeam = playerObj?.teamId
+              )!;
+
+              const playerTeam = playerObj.teamId
                 ? tournament.teams.find((t) => t.id === playerObj.teamId)
                 : null;
 
@@ -178,7 +179,7 @@ const TournamentLeaderboard: React.FC<TournamentLeaderboardProps> = ({
                       sx={styles.tournamentLeaderboard.centeredDataCell}
                     >
                       <Box sx={{ display: "flex", alignItems: "center" }}>
-                        <IconButton
+                        {/* <IconButton
                           aria-label="expand row"
                           size="small"
                           onClick={(e) => {
@@ -192,17 +193,17 @@ const TournamentLeaderboard: React.FC<TournamentLeaderboardProps> = ({
                           ) : (
                             <KeyboardArrowDownIcon />
                           )}
-                        </IconButton>
+                        </IconButton> */}
                         <Box component="span">
                           {position}
-                          {index === 0 && tournament.status === "completed" && (
+                          {/* {index === 0 && tournament.status === "completed" && (
                             <Chip
                               label="Winner"
                               color="primary"
                               size="small"
                               sx={styles.tournamentLeaderboard.winnerChip}
                             />
-                          )}
+                          )} */}
                         </Box>
                       </Box>
                     </TableCell>

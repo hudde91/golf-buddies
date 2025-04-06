@@ -125,6 +125,7 @@ const Header: React.FC = () => {
             disableGutters
             sx={{
               py: styles.mobile.spacing.touch.py,
+              px: styles.mobile.spacing.touch.px,
             }}
           >
             <Typography
