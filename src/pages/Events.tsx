@@ -271,7 +271,6 @@ const Events: React.FC = () => {
   };
 
   const renderEventCard = (event: Event) => {
-    // debugger;
     // Extract the common data based on event type
     const eventData = event.data;
     const name = eventData.name;
@@ -508,7 +507,6 @@ const Events: React.FC = () => {
           >
             {tabValue === 1 && (
               <Box sx={styles.tabs.panel}>
-                {/* Replace with UpdatedInvitationList when implemented */}
                 <InvitationList
                   invitations={invitations}
                   roundInvitations={roundInvitations}

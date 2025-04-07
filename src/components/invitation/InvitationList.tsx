@@ -15,7 +15,7 @@ interface InvitationListProps {
   onDeclineRound: (roundId: string) => void;
 }
 
-const UpdatedInvitationList: React.FC<InvitationListProps> = ({
+const InvitationList: React.FC<InvitationListProps> = ({
   invitations,
   roundInvitations,
   onAcceptInvitation,
@@ -80,4 +80,4 @@ const UpdatedInvitationList: React.FC<InvitationListProps> = ({
   );
 };
 
-export default UpdatedInvitationList;
+export default InvitationList;
