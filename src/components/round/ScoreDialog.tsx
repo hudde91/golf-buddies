@@ -1,3 +1,4 @@
+// src/components/shared/ScoreDialog.tsx
 import React, { useState, useEffect } from "react";
 import {
   Box,
@@ -18,37 +19,47 @@ import {
   NavigateNext as NavigateNextIcon,
   Close as CloseIcon,
 } from "@mui/icons-material";
-import { Player } from "../../../../types/event";
-import { useStyles } from "../../../../styles/hooks/useStyles";
+import { Player } from "../../types/event";
+import { useStyles } from "../../styles/hooks/useStyles";
+import { getScoreToParColor } from "./scoringUtils";
 
 interface ScoreDialogProps {
   open: boolean;
   onClose: () => void;
+  onHoleChange: (newHole: number) => void;
   hole: number;
   holePar: number | null;
   players: Player[];
-  playerScores: Record<string, { score?: number }[]>;
+  playerScores: Record<
+    string,
+    { score?: number; par?: number; hole?: number }[]
+  >;
   onSave: (playerId: string, score: number) => void;
+  totalHoles?: number;
 }
 
 const ScoreDialog: React.FC<ScoreDialogProps> = ({
   open,
   onClose,
+  onHoleChange,
   hole,
   holePar,
   players,
   playerScores,
   onSave,
+  totalHoles = 18,
 }) => {
   const styles = useStyles();
   const [scores, setScores] = useState<Record<string, number>>({});
   const [currentHole, setCurrentHole] = useState<number>(hole);
-  const totalHoles = 18; // Should be obtained from tournament data
 
-  // Reset current hole when the hole prop changes
+  // Reset current hole when the hole prop changes or when dialog opens/closes
   useEffect(() => {
-    setCurrentHole(hole);
-  }, [hole]);
+    if (open) {
+      console.log(`ScoreDialog opened, setting currentHole to: ${hole}`);
+      setCurrentHole(hole);
+    }
+  }, [hole, open]);
 
   // Initialize scores whenever open changes or the hole changes
   useEffect(() => {
@@ -96,29 +107,20 @@ const ScoreDialog: React.FC<ScoreDialogProps> = ({
   };
 
   const handleSaveAndNext = () => {
-    // Save all player scores
+    // Save all player scores for the current hole
     Object.entries(scores).forEach(([playerId, score]) => {
       onSave(playerId, score);
     });
 
     // Move to next hole or close if last hole
     if (currentHole < totalHoles) {
-      setCurrentHole((prev) => prev + 1);
+      const nextHole = currentHole + 1;
 
-      // Reset scores for the next hole
-      const nextHoleScores: Record<string, number> = {};
-      players.forEach((player) => {
-        const playerScore = playerScores[player.id]?.[currentHole]?.score;
-        if (playerScore !== undefined) {
-          nextHoleScores[player.id] = playerScore;
-        } else {
-          // Default to par if available
-          nextHoleScores[player.id] = holePar || 4;
-        }
-      });
-      setScores(nextHoleScores);
+      // Important: This updates both the internal state and parent component state
+      setCurrentHole(nextHole);
+      onHoleChange(nextHole);
     } else {
-      // Close dialog if we're on the last hole
+      // We're on the last hole, so close dialog
       onClose();
     }
   };
@@ -153,13 +155,6 @@ const ScoreDialog: React.FC<ScoreDialogProps> = ({
     return diff > 0 ? `+${diff}` : `${diff}`;
   };
 
-  // Get color for score to par
-  const getScoreToParColor = (relativeToPar: string): string => {
-    if (relativeToPar === "E") return "#2e7d32"; // Green for even par
-    if (relativeToPar.startsWith("-")) return "#d32f2f"; // Red for under par
-    return "#0288d1"; // Blue for over par
-  };
-
   // Get the hole par value, which might vary depending on the hole
   const getHolePar = (): number => {
     // Try to get hole-specific par if available
@@ -168,7 +163,7 @@ const ScoreDialog: React.FC<ScoreDialogProps> = ({
     );
 
     if (anyPlayerWithPar && anyPlayerWithPar[currentHole - 1]?.par) {
-      return anyPlayerWithPar[currentHole - 1].par;
+      return anyPlayerWithPar[currentHole - 1].par!;
     }
 
     // Fallback to the provided general hole par
@@ -177,10 +172,17 @@ const ScoreDialog: React.FC<ScoreDialogProps> = ({
 
   const currentHolePar = getHolePar();
 
+  const handleDialogClose = () => {
+    // Make sure we pass back the current hole when closing
+    console.log(`Dialog closing, updating parent with hole: ${currentHole}`);
+    onHoleChange(currentHole);
+    onClose();
+  };
+
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={handleDialogClose}
       fullWidth
       maxWidth="sm"
       PaperProps={{
@@ -226,7 +228,7 @@ const ScoreDialog: React.FC<ScoreDialogProps> = ({
         )}
         <IconButton
           aria-label="close"
-          onClick={onClose}
+          onClick={handleDialogClose}
           sx={{
             position: "absolute",
             right: 8,
@@ -250,7 +252,9 @@ const ScoreDialog: React.FC<ScoreDialogProps> = ({
             const playerScore = scores[player.id] || currentHolePar || 4;
             const scoreStatus = getScoreStatus(playerScore);
             const relativeToPar = getPlayerRelativeToPar(player.id);
-            const scoreToParColor = getScoreToParColor(relativeToPar);
+            const scoreToParColor = getScoreToParColor(
+              relativeToPar === "E" ? 0 : parseInt(relativeToPar)
+            );
 
             return (
               <React.Fragment key={player.id}>

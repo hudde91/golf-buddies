@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   Box,
   Typography,
   Button,
   Paper,
-  Avatar,
+  Grid,
   Chip,
+  Avatar,
   IconButton,
   Collapse,
   Divider,
@@ -14,7 +15,6 @@ import {
   Container,
   useTheme,
   useMediaQuery,
-  Grid,
 } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom";
 import {
@@ -23,13 +23,23 @@ import {
   Flag as FlagIcon,
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon,
-  Menu as MenuIcon,
+  NavigateNext as NavigateNextIcon,
+  NavigateBefore as NavigateBeforeIcon,
   GolfCourse as GolfCourseIcon,
 } from "@mui/icons-material";
+import { useGroupScoring } from "../../../../hooks/useScoreUpdater";
+import { useStyles } from "../../../../styles";
 import { Tournament, Player } from "../../../../types/event";
+import ScoreDialog from "../../../round/ScoreDialog";
+import {
+  getHolesList,
+  isHoleScored,
+  calculateTotalScore,
+  calculateScoreToPar,
+  getScoreToParColor,
+  formatScoreToPar,
+} from "../../../round/scoringUtils";
 import PlayerScorecard from "../../PlayerScorecard";
-import ScoreDialog from "./ScoreDialog";
-import { useStyles } from "../../../../styles/hooks/useStyles";
 
 interface GroupDetailPageProps {
   tournament: Tournament;
@@ -50,81 +60,48 @@ const GroupDetailPage: React.FC<GroupDetailPageProps> = ({
     groupId: string;
   }>();
 
-  const [currentHole, setCurrentHole] = useState<number>(1);
-  const [expandedPlayerIds, setExpandedPlayerIds] = useState<string[]>([]);
-  const [scoreDialogOpen, setScoreDialogOpen] = useState<boolean>(false);
-  const [holePickerOpen, setHolePickerOpen] = useState<boolean>(false);
-  const [dialogHole, setDialogHole] = useState<number>(1);
-
   const round = tournament.rounds.find((r) => r.id === roundId)!;
   const group = round?.playerGroups?.find((g) => g.id === groupId);
 
+  // Get the players in the group
   const groupPlayers =
     (group?.playerIds
       .map((playerId) => tournament.players.find((p) => p.id === playerId))
       .filter(Boolean) as Player[]) || [];
 
-  useEffect(() => {
-    // Find the first hole that doesn't have a score for any player
-    if (groupPlayers.length > 0 && round) {
-      const holeCount = round.courseDetails?.holes || 18;
-
-      for (let hole = 1; hole <= holeCount; hole++) {
-        const holeIndex = hole - 1;
-        let allPlayersHaveScore = true;
-
-        for (const player of groupPlayers) {
-          const playerScores = round.scores[player.id] || [];
-          const holeScore = playerScores[holeIndex]?.score;
-
-          if (holeScore === undefined) {
-            allPlayersHaveScore = false;
-            break;
-          }
-        }
-
-        if (!allPlayersHaveScore) {
-          setCurrentHole(hole);
-          setDialogHole(hole);
-          break;
-        }
-      }
-    }
-  }, [groupPlayers, round]);
-
-  const togglePlayerExpanded = (playerId: string) => {
-    setExpandedPlayerIds((prev) =>
-      prev.includes(playerId)
-        ? prev.filter((id) => id !== playerId)
-        : [...prev, playerId]
-    );
-  };
+  // Use the shared group scoring hook
+  const {
+    currentHole,
+    setCurrentHole,
+    dialogHole,
+    setDialogHole,
+    expandedPlayerIds,
+    scoreDialogOpen,
+    setScoreDialogOpen,
+    holePickerOpen,
+    togglePlayerExpanded,
+    openScoreDialog,
+    handleCloseScoreDialog,
+    setHolePickerOpen,
+    navigateHole,
+  } = useGroupScoring({
+    round,
+    groupPlayers,
+  });
 
   const handleBack = () => {
     navigate(`/tournaments/${tournamentId}?tab=rounds`);
   };
 
-  const openScoreDialog = (hole: number | null = null) => {
-    // If a specific hole is provided, use it for the dialog
-    if (hole !== null) {
-      setDialogHole(hole);
-    } else {
-      // Otherwise use the current hole
-      setDialogHole(currentHole);
+  const handleSaveScore = (playerId: string, score: number) => {
+    if (!roundId || !round) {
+      console.error("Cannot save score: round or roundId is missing");
+      return;
     }
 
-    setScoreDialogOpen(true);
-    setHolePickerOpen(false);
-  };
-
-  const handleCloseScoreDialog = () => {
-    setScoreDialogOpen(false);
-    // Update the current hole to match the last viewed hole in the dialog
-    setCurrentHole(dialogHole);
-  };
-
-  const handleSaveScore = (playerId: string, score: number) => {
-    if (!roundId) return;
+    console.log(
+      `Saving score for player ${playerId} on hole ${dialogHole}: ${score}`
+    );
 
     // Get current scores for the player
     const currentScores = [...(round.scores[playerId] || [])];
@@ -147,83 +124,14 @@ const GroupDetailPage: React.FC<GroupDetailPageProps> = ({
       hole: dialogHole,
     };
 
-    onUpdateScores(roundId, playerId, currentScores);
-  };
-
-  // Calculate total score for a player
-  const calculateTotalScore = (playerId: string): number => {
-    const playerScores = round?.scores[playerId] || [];
-    return playerScores.reduce(
-      (total, hole) => total + (hole.score !== undefined ? hole.score : 0),
-      0
-    );
-  };
-
-  // Calculate score to par for a player
-  const calculateScoreToPar = (playerId: string): number | null => {
-    const playerScores = round?.scores[playerId] || [];
-
-    if (!round?.courseDetails?.par || playerScores.length === 0) {
-      return null;
+    // Update the scores via the parent component
+    try {
+      // Create a complete new scores array
+      onUpdateScores(roundId, playerId, [...currentScores]);
+      console.log("Scores updated successfully");
+    } catch (error) {
+      console.error("Error updating scores:", error);
     }
-
-    const validScores = playerScores.filter((hole) => hole.score !== undefined);
-
-    if (validScores.length === 0) {
-      return null;
-    }
-
-    const totalPar = validScores.reduce(
-      (total, hole) =>
-        total +
-        (hole.par !== undefined
-          ? hole.par
-          : Math.floor(
-              round?.courseDetails!.par! / (round?.courseDetails?.holes || 18)
-            )),
-      0
-    );
-
-    const totalScore = validScores.reduce(
-      (total, hole) => total + (hole.score !== undefined ? hole.score : 0),
-      0
-    );
-
-    return totalScore - totalPar;
-  };
-
-  // Format score to par as a string (e.g., "E", "+2", "-1")
-  const formatScoreToPar = (scoreToPar: number | null): string => {
-    if (scoreToPar === null) return "E";
-    if (scoreToPar === 0) return "E";
-    return scoreToPar > 0 ? `+${scoreToPar}` : `${scoreToPar}`;
-  };
-
-  // Get the color for a score relative to par
-  const getScoreToParColor = (scoreToPar: number | null): string => {
-    if (scoreToPar === null || scoreToPar === 0) return "#2e7d32"; // Green for even par
-    if (scoreToPar < 0) return "#d32f2f"; // Red for under par
-    return "#0288d1"; // Blue for over par
-  };
-
-  // Check if a hole has a score for all players
-  const isHoleScored = (holeNumber: number): boolean => {
-    if (!groupPlayers.length) return false;
-
-    const holeIndex = holeNumber - 1;
-    for (const player of groupPlayers) {
-      const playerScore = round.scores[player.id]?.[holeIndex]?.score;
-      if (playerScore === undefined) {
-        return false;
-      }
-    }
-    return true;
-  };
-
-  // Get a list of all holes for hole picker
-  const getHolesList = (): number[] => {
-    const holeCount = round.courseDetails?.holes || 18;
-    return Array.from({ length: holeCount }, (_, i) => i + 1);
   };
 
   if (!round || !group) {
@@ -309,6 +217,7 @@ const GroupDetailPage: React.FC<GroupDetailPageProps> = ({
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
+              flexWrap: "wrap",
             }}
           >
             <Box>
@@ -329,6 +238,7 @@ const GroupDetailPage: React.FC<GroupDetailPageProps> = ({
                 flexDirection: "column",
                 alignItems: "center",
                 gap: 1,
+                mt: { xs: 2, sm: 0 },
               }}
             >
               <Button
@@ -337,7 +247,6 @@ const GroupDetailPage: React.FC<GroupDetailPageProps> = ({
                 startIcon={
                   holePickerOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />
                 }
-                // endIcon={<MenuIcon />}
                 size="small"
                 sx={{
                   ...styles.button.outlined,
@@ -347,14 +256,6 @@ const GroupDetailPage: React.FC<GroupDetailPageProps> = ({
               >
                 Hole {currentHole}
               </Button>
-
-              {/* {holePar && (
-                <Chip
-                  label={`Par ${holePar}`}
-                  size="small"
-                  variant="outlined"
-                />
-              )} */}
             </Box>
           </Box>
 
@@ -367,9 +268,13 @@ const GroupDetailPage: React.FC<GroupDetailPageProps> = ({
               }}
             >
               <Grid container spacing={1}>
-                {getHolesList().map((holeNumber) => {
+                {getHolesList(holeCount).map((holeNumber) => {
                   const isCurrentHole = holeNumber === currentHole;
-                  const hasScores = isHoleScored(holeNumber);
+                  const hasScores = isHoleScored(
+                    holeNumber,
+                    groupPlayers,
+                    round.scores
+                  );
 
                   return (
                     <Grid item xs={2} key={`hole-${holeNumber}`}>
@@ -410,6 +315,36 @@ const GroupDetailPage: React.FC<GroupDetailPageProps> = ({
                   );
                 })}
               </Grid>
+
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  mt: 2,
+                  gap: 2,
+                }}
+              >
+                <Button
+                  variant="outlined"
+                  size="small"
+                  startIcon={<NavigateBeforeIcon />}
+                  onClick={() => navigateHole("prev")}
+                  disabled={currentHole <= 1}
+                  sx={styles.button.outlined}
+                >
+                  Previous Hole
+                </Button>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  endIcon={<NavigateNextIcon />}
+                  onClick={() => navigateHole("next")}
+                  disabled={currentHole >= holeCount}
+                  sx={styles.button.outlined}
+                >
+                  Next Hole
+                </Button>
+              </Box>
             </Box>
           </Collapse>
         </Paper>
@@ -432,11 +367,16 @@ const GroupDetailPage: React.FC<GroupDetailPageProps> = ({
               gap: 2,
             }}
           >
-            {groupPlayers.map((player, playerIndex) => {
+            {groupPlayers.map((player) => {
               const playerScores = round.scores[player.id] || [];
               const currentHoleScore = playerScores[currentHole - 1]?.score;
-              const totalScore = calculateTotalScore(player.id);
-              const scoreToPar = calculateScoreToPar(player.id);
+              const totalScore = calculateTotalScore(player.id, round.scores);
+              const scoreToPar = calculateScoreToPar(
+                player.id,
+                round.scores,
+                round.courseDetails?.par,
+                round.courseDetails?.holes
+              );
 
               return (
                 <Box
@@ -530,12 +470,10 @@ const GroupDetailPage: React.FC<GroupDetailPageProps> = ({
                       <Divider sx={{ mb: 2, opacity: 0.2 }} />
                       <PlayerScorecard
                         player={player}
-                        tournament={{
-                          ...tournament,
-                          rounds: [round],
-                        }}
+                        tournament={tournament}
                         showAllRounds={false}
                         currentPlayingHole={currentHole}
+                        key={`scorecard-${player.id}-${currentHole}`} // Add key to force re-render on hole change
                       />
                     </Box>
                   </Collapse>
@@ -550,11 +488,19 @@ const GroupDetailPage: React.FC<GroupDetailPageProps> = ({
       <ScoreDialog
         open={scoreDialogOpen}
         onClose={handleCloseScoreDialog}
+        onHoleChange={(newHole) => {
+          // Important: When the dialog changes holes, update both hole states together
+          setDialogHole(newHole);
+          // This helps ensure our currentHole stays in sync with dialogHole
+          // after saving scores and navigating in the dialog
+          setCurrentHole(newHole);
+        }}
         hole={dialogHole}
         holePar={holePar}
         players={groupPlayers}
         playerScores={round.scores}
         onSave={handleSaveScore}
+        totalHoles={holeCount}
       />
     </Box>
   );

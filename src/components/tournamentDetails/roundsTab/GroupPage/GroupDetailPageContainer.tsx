@@ -70,19 +70,16 @@ const GroupDetailPageContainer: React.FC = () => {
     if (!tournamentId) return;
 
     try {
-      await eventService.updatePlayerScores(
+      // Update scores in the tournament data
+      const updatedTournament = await eventService.updatePlayerScores(
         tournamentId,
         roundId,
         playerId,
         scores
       );
 
-      // Refresh tournament data to get updated scores
-      const refreshedTournament = await eventService.getTournamentById(
-        tournamentId
-      );
-      if (refreshedTournament) {
-        setTournament(refreshedTournament);
+      if (updatedTournament) {
+        setTournament(updatedTournament);
       }
     } catch (error) {
       console.error("Error updating scores:", error);

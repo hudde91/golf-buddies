@@ -9,6 +9,12 @@ export interface SplashPreset {
 export const splashPresets: SplashPreset[] = [
   {
     id: "default",
+    name: "GolfBuddies",
+    imagePath: "/images/splash/splashGolfBuddies.png",
+    preview: "/images/splash/splashGolfBuddies.png",
+  },
+  {
+    id: "default_old",
     name: "Nice golf image",
     imagePath: "/images/splash/splash.jpg",
     preview: "/images/splash/splash.jpg",

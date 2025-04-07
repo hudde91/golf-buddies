@@ -7,7 +7,6 @@ import {
   Grid,
   Chip,
   Avatar,
-  CircularProgress,
   IconButton,
   Collapse,
   Divider,
@@ -16,7 +15,7 @@ import {
   Container,
   useTheme,
   useMediaQuery,
-  alpha,
+  CircularProgress,
 } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom";
 import {
@@ -31,9 +30,19 @@ import {
 } from "@mui/icons-material";
 import { Round, Player } from "../../types/event";
 import PlayerScorecard from "../tournamentDetails/PlayerScorecard";
-import ScoreDialog from "../tournamentDetails/roundsTab/GroupPage/ScoreDialog";
 import { useStyles } from "../../styles/hooks/useStyles";
 import eventService from "../../services/eventService";
+
+import ScoreDialog from "./ScoreDialog";
+import {
+  getHolesList,
+  isHoleScored,
+  calculateTotalScore,
+  calculateScoreToPar,
+  getScoreToParColor,
+  formatScoreToPar,
+} from "./scoringUtils";
+import { useGroupScoring } from "../../hooks/useScoreUpdater";
 
 const RoundGroupDetailPage: React.FC = () => {
   const styles = useStyles();
@@ -47,11 +56,6 @@ const RoundGroupDetailPage: React.FC = () => {
 
   const [round, setRound] = useState<Round | null>(null);
   const [loading, setLoading] = useState(true);
-  const [currentHole, setCurrentHole] = useState<number>(1);
-  const [expandedPlayerIds, setExpandedPlayerIds] = useState<string[]>([]);
-  const [scoreDialogOpen, setScoreDialogOpen] = useState<boolean>(false);
-  const [holePickerOpen, setHolePickerOpen] = useState<boolean>(false);
-  const [dialogHole, setDialogHole] = useState<number>(1);
 
   useEffect(() => {
     const fetchRound = async () => {
@@ -88,67 +92,44 @@ const RoundGroupDetailPage: React.FC = () => {
       .map((playerId) => round?.players.find((p) => p.id === playerId))
       .filter(Boolean) as Player[]) || [];
 
-  // Find the first incomplete hole for initial focus
-  useEffect(() => {
-    if (groupPlayers.length > 0 && round) {
-      const holeCount = round.courseDetails?.holes || 18;
-
-      for (let hole = 1; hole <= holeCount; hole++) {
-        const holeIndex = hole - 1;
-        let allPlayersHaveScore = true;
-
-        for (const player of groupPlayers) {
-          const playerScores = round.scores[player.id] || [];
-          const holeScore = playerScores[holeIndex]?.score;
-
-          if (holeScore === undefined) {
-            allPlayersHaveScore = false;
-            break;
-          }
-        }
-
-        if (!allPlayersHaveScore) {
-          setCurrentHole(hole);
-          setDialogHole(hole);
-          break;
-        }
-      }
-    }
-  }, [groupPlayers, round]);
-
-  const togglePlayerExpanded = (playerId: string) => {
-    setExpandedPlayerIds((prev) =>
-      prev.includes(playerId)
-        ? prev.filter((id) => id !== playerId)
-        : [...prev, playerId]
-    );
-  };
+  // Use the shared group scoring hook
+  const {
+    currentHole,
+    setCurrentHole,
+    dialogHole,
+    setDialogHole,
+    expandedPlayerIds,
+    scoreDialogOpen,
+    setScoreDialogOpen,
+    holePickerOpen,
+    togglePlayerExpanded,
+    openScoreDialog,
+    handleCloseScoreDialog,
+    setHolePickerOpen,
+    navigateHole,
+  } = useGroupScoring({
+    round:
+      round ||
+      ({
+        scores: {},
+        courseDetails: { holes: 18 },
+      } as Round),
+    groupPlayers,
+  });
 
   const handleBack = () => {
     navigate(`/rounds/${roundId}`);
   };
 
-  const openScoreDialog = (hole: number | null = null) => {
-    // If a specific hole is provided, use it for the dialog
-    if (hole !== null) {
-      setDialogHole(hole);
-    } else {
-      // Otherwise use the current hole
-      setDialogHole(currentHole);
+  const handleSaveScore = (playerId: string, score: number) => {
+    if (!roundId || !round) {
+      console.error("Cannot save score: round or roundId is missing");
+      return;
     }
 
-    setScoreDialogOpen(true);
-    setHolePickerOpen(false);
-  };
-
-  const handleCloseScoreDialog = () => {
-    setScoreDialogOpen(false);
-    // Update the current hole to match the last viewed hole in the dialog
-    setCurrentHole(dialogHole);
-  };
-
-  const handleSaveScore = (playerId: string, score: number) => {
-    if (!roundId || !round) return;
+    console.log(
+      `Saving score for player ${playerId} on hole ${dialogHole}: ${score}`
+    );
 
     // Get current scores for the player
     const currentScores = [...(round.scores[playerId] || [])];
@@ -165,14 +146,16 @@ const RoundGroupDetailPage: React.FC = () => {
         : null
       : null;
 
+    // Ensure the hole score object has the correct structure
     currentScores[dialogHole - 1] = {
       score,
       par: holePar || undefined,
       hole: dialogHole,
     };
 
-    // Update the round with the new scores
-    const updatedRound = {
+    // IMPORTANT: Create a completely new round object with updated scores
+    // This ensures full replacement rather than partial update
+    const completeRound = {
       ...round,
       scores: {
         ...round.scores,
@@ -180,102 +163,22 @@ const RoundGroupDetailPage: React.FC = () => {
       },
     };
 
-    // In a real app, this would be an API call
-    const savedRound = eventService.updateRoundEvent(roundId, updatedRound);
-    if (savedRound) {
-      setRound(savedRound);
-    }
-  };
+    // Update the round with the completely new object
+    try {
+      const updatedRound = eventService.updateRoundEvent(
+        roundId,
+        completeRound
+      );
 
-  // Calculate total score for a player
-  const calculateTotalScore = (playerId: string): number => {
-    if (!round) return 0;
-    const playerScores = round.scores[playerId] || [];
-    return playerScores.reduce(
-      (total, hole) => total + (hole.score !== undefined ? hole.score : 0),
-      0
-    );
-  };
-
-  // Calculate score to par for a player
-  const calculateScoreToPar = (playerId: string): number | null => {
-    if (!round) return null;
-    const playerScores = round.scores[playerId] || [];
-
-    if (!round.courseDetails?.par || playerScores.length === 0) {
-      return null;
-    }
-
-    const validScores = playerScores.filter((hole) => hole.score !== undefined);
-
-    if (validScores.length === 0) {
-      return null;
-    }
-
-    const totalPar = validScores.reduce(
-      (total, hole) =>
-        total +
-        (hole.par !== undefined
-          ? hole.par
-          : Math.floor(
-              round.courseDetails!.par! / (round.courseDetails?.holes || 18)
-            )),
-      0
-    );
-
-    const totalScore = validScores.reduce(
-      (total, hole) => total + (hole.score !== undefined ? hole.score : 0),
-      0
-    );
-
-    return totalScore - totalPar;
-  };
-
-  // Format score to par as a string (e.g., "E", "+2", "-1")
-  const formatScoreToPar = (scoreToPar: number | null): string => {
-    if (scoreToPar === null) return "E";
-    if (scoreToPar === 0) return "E";
-    return scoreToPar > 0 ? `+${scoreToPar}` : `${scoreToPar}`;
-  };
-
-  // Get the color for a score relative to par
-  const getScoreToParColor = (scoreToPar: number | null): string => {
-    if (scoreToPar === null || scoreToPar === 0)
-      return theme.palette.success.main; // Green for even par
-    if (scoreToPar < 0) return theme.palette.error.main; // Red for under par
-    return theme.palette.info.main; // Blue for over par
-  };
-
-  // Check if a hole has a score for all players
-  const isHoleScored = (holeNumber: number): boolean => {
-    if (!round || !groupPlayers.length) return false;
-
-    const holeIndex = holeNumber - 1;
-    for (const player of groupPlayers) {
-      const playerScore = round.scores[player.id]?.[holeIndex]?.score;
-      if (playerScore === undefined) {
-        return false;
+      if (updatedRound) {
+        // Make sure the state update happens
+        console.log("Round updated successfully");
+        setRound(updatedRound);
+      } else {
+        console.error("Failed to update round: no updated round returned");
       }
-    }
-    return true;
-  };
-
-  // Get a list of all holes for hole picker
-  const getHolesList = (): number[] => {
-    if (!round) return Array.from({ length: 18 }, (_, i) => i + 1);
-    const holeCount = round.courseDetails?.holes || 18;
-    return Array.from({ length: holeCount }, (_, i) => i + 1);
-  };
-
-  // Navigate to the next/previous hole
-  const navigateHole = (direction: "next" | "prev") => {
-    if (!round) return;
-    const holeCount = round.courseDetails?.holes || 18;
-
-    if (direction === "next" && currentHole < holeCount) {
-      setCurrentHole(currentHole + 1);
-    } else if (direction === "prev" && currentHole > 1) {
-      setCurrentHole(currentHole - 1);
+    } catch (error) {
+      console.error("Error updating round scores:", error);
     }
   };
 
@@ -428,9 +331,13 @@ const RoundGroupDetailPage: React.FC = () => {
               }}
             >
               <Grid container spacing={1}>
-                {getHolesList().map((holeNumber) => {
+                {getHolesList(holeCount).map((holeNumber) => {
                   const isCurrentHole = holeNumber === currentHole;
-                  const hasScores = isHoleScored(holeNumber);
+                  const hasScores = isHoleScored(
+                    holeNumber,
+                    groupPlayers,
+                    round.scores
+                  );
 
                   return (
                     <Grid item xs={2} key={`hole-${holeNumber}`}>
@@ -526,8 +433,13 @@ const RoundGroupDetailPage: React.FC = () => {
             {groupPlayers.map((player) => {
               const playerScores = round.scores[player.id] || [];
               const currentHoleScore = playerScores[currentHole - 1]?.score;
-              const totalScore = calculateTotalScore(player.id);
-              const scoreToPar = calculateScoreToPar(player.id);
+              const totalScore = calculateTotalScore(player.id, round.scores);
+              const scoreToPar = calculateScoreToPar(
+                player.id,
+                round.scores,
+                round.courseDetails?.par,
+                round.courseDetails?.holes
+              );
 
               return (
                 <Box
@@ -556,9 +468,7 @@ const RoundGroupDetailPage: React.FC = () => {
                         src={player.avatarUrl}
                         alt={player.name}
                         sx={{ width: 48, height: 48 }}
-                      >
-                        {player.name[0].toUpperCase()}
-                      </Avatar>
+                      />
 
                       <Box>
                         <Typography variant="h6">{player.name}</Typography>
@@ -643,7 +553,9 @@ const RoundGroupDetailPage: React.FC = () => {
                           status: round.status || "upcoming",
                         }}
                         showAllRounds={false}
+                        // Ensure we're always passing the most up-to-date currentHole
                         currentPlayingHole={currentHole}
+                        key={`scorecard-${player.id}-${currentHole}`} // Add key to force re-render on hole change
                       />
                     </Box>
                   </Collapse>
@@ -654,15 +566,22 @@ const RoundGroupDetailPage: React.FC = () => {
         </Paper>
       </Container>
 
-      {/* Score dialog */}
       <ScoreDialog
         open={scoreDialogOpen}
         onClose={handleCloseScoreDialog}
+        onHoleChange={(newHole) => {
+          // Important: When the dialog changes holes, update both hole states together
+          setDialogHole(newHole);
+          // This helps ensure our currentHole stays in sync with dialogHole
+          // after saving scores and navigating in the dialog
+          setCurrentHole(newHole);
+        }}
         hole={dialogHole}
         holePar={holePar}
         players={groupPlayers}
         playerScores={round.scores}
         onSave={handleSaveScore}
+        totalHoles={holeCount}
       />
     </Box>
   );

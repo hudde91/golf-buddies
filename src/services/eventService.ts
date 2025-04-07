@@ -1871,6 +1871,7 @@ const eventService = {
 
     return false;
   },
+
   createRound: (
     data: RoundFormData & { inviteFriends?: string[] },
     currentUser: Player
