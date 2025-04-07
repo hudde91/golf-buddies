@@ -1918,7 +1918,13 @@ const eventService = {
       description: data.description || "",
       status,
       invitations: data.inviteFriends || [],
-      playerGroups: [],
+      playerGroups: [
+        {
+          id: uuidv4(),
+          name: data.name,
+          playerIds: [currentUser.id],
+        },
+      ],
     };
 
     // Create event wrapper

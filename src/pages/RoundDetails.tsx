@@ -13,37 +13,36 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  TextField,
   CircularProgress,
-  IconButton,
   Avatar,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  Alert,
   useMediaQuery,
   useTheme,
-  Tooltip,
   Divider,
+  alpha,
+  Card,
+  CardContent,
 } from "@mui/material";
 import {
   GolfCourse as GolfCourseIcon,
   CalendarToday as CalendarIcon,
   LocationOn as LocationIcon,
-  Person as PersonIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
   PersonAdd as PersonAddIcon,
   ArrowBack as ArrowBackIcon,
+  Schedule as ScheduleIcon,
+  Flag as FlagIcon,
+  ChevronRight as ChevronRightIcon,
 } from "@mui/icons-material";
+import { v4 as uuidv4 } from "uuid";
 import eventService from "../services/eventService";
 import friendsService from "../services/friendsService";
-import { Round, RoundFormData } from "../types/event";
+import { Round, RoundFormData, PlayerGroup, Player } from "../types/event";
 import RoundForm from "../components/round/RoundForm";
 import PlayerScorecard from "../components/tournamentDetails/PlayerScorecard";
 import { Friend } from "../services/friendsService";
 import { useStyles } from "../styles/hooks/useStyles";
+import FriendsSelectionDialog from "../components/FriendsSelectionDialog";
 
 const RoundDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -57,9 +56,7 @@ const RoundDetails: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [isCreator, setIsCreator] = useState(false);
   const [openEditDialog, setOpenEditDialog] = useState(false);
-  const [openInviteDialog, setOpenInviteDialog] = useState(false);
-  const [emailsToInvite, setEmailsToInvite] = useState("");
-  const [inviteError, setInviteError] = useState("");
+  const [openFriendsDialog, setOpenFriendsDialog] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [friends, setFriends] = useState<Friend[]>([]);
   const [loadingFriends, setLoadingFriends] = useState(true);
@@ -142,47 +139,104 @@ const RoundDetails: React.FC = () => {
     navigate("/events");
   };
 
-  const handleInvitePlayers = () => {
-    setOpenInviteDialog(true);
+  const handleOpenFriendsDialog = () => {
+    setOpenFriendsDialog(true);
   };
 
-  const handleCloseInviteDialog = () => {
-    setOpenInviteDialog(false);
-    setEmailsToInvite("");
-    setInviteError("");
+  const handleCloseFriendsDialog = () => {
+    setOpenFriendsDialog(false);
   };
 
-  const handleSubmitInvites = () => {
-    if (!id || !round) return;
+  const handleAddFriendsToGroup = async (
+    friendIds: string[],
+    groupId: string,
+    roundId: string
+  ) => {
+    if (!round) return;
 
-    const emails = emailsToInvite
-      .split(",")
-      .map((email) => email.trim())
-      .filter((email) => email !== "");
+    // Create player objects from selected friends
+    const newPlayers: Player[] = friendIds
+      .map((friendId) => {
+        const friend = friends.find((f) => f.id === friendId);
+        return {
+          id: friend?.id || "",
+          name: friend?.name || "",
+          email: friend?.email || "",
+          avatarUrl: friend?.avatarUrl,
+          handicap: friend?.handicap,
+        };
+      })
+      .filter((player) => player.id !== "");
 
-    if (emails.length === 0) {
-      setInviteError("Please enter at least one email address");
-      return;
+    // Get the existing players in the round
+    const existingPlayers = round.players || [];
+
+    // Update the existing group with new player IDs
+    const updatedGroups = round.playerGroups.map((group) => {
+      if (group.id === groupId) {
+        return {
+          ...group,
+          playerIds: [...group.playerIds, ...friendIds],
+        };
+      }
+      return group;
+    });
+
+    // Update round with new players and updated groups
+    const updatedRound = {
+      ...round,
+      players: [...existingPlayers, ...newPlayers],
+      playerGroups: updatedGroups,
+    };
+
+    // In a real app, you would call an API to update the round
+    const savedRound = eventService.updateRoundEvent(roundId, updatedRound);
+    if (savedRound) {
+      setRound(savedRound);
     }
+  };
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const invalidEmails = emails.filter((email) => !emailRegex.test(email));
+  const handleCreateNewGroup = async (name: string, playerIds: string[]) => {
+    if (!round) return;
 
-    if (invalidEmails.length > 0) {
-      setInviteError(`Invalid email format: ${invalidEmails.join(", ")}`);
-      return;
+    // Create player objects from selected friends
+    const newPlayers: Player[] = playerIds
+      .map((playerId) => {
+        const friend = friends.find((f) => f.id === playerId);
+        return {
+          id: friend?.id || "",
+          name: friend?.name || "",
+          email: friend?.email || "",
+          avatarUrl: friend?.avatarUrl,
+          handicap: friend?.handicap,
+        };
+      })
+      .filter((player) => player.id !== "");
+
+    // Create a new group with the selected player IDs
+    const newGroup: PlayerGroup = {
+      id: uuidv4(),
+      name,
+      playerIds,
+    };
+
+    // Update round with new players and new group
+    const updatedRound = {
+      ...round,
+      players: [...(round.players || []), ...newPlayers],
+      playerGroups: [...round.playerGroups, newGroup],
+    };
+
+    // In a real app, you would call an API to update the round
+    const savedRound = eventService.updateRoundEvent(round.id, updatedRound);
+    if (savedRound) {
+      setRound(savedRound);
     }
+  };
 
-    // Send invitations
-    eventService.invitePlayersToRound(id, emails);
-
-    // Refresh round data to update invitations list
-    const updatedRound = eventService.getRoundById(id);
-    if (updatedRound) {
-      setRound(updatedRound);
-    }
-
-    handleCloseInviteDialog();
+  const handleNavigateToGroup = (roundId: string, groupId: string) => {
+    // Navigate to the group detail page
+    navigate(`/rounds/${roundId}/groups/${groupId}`);
   };
 
   if (loading || !isLoaded) {
@@ -215,6 +269,13 @@ const RoundDetails: React.FC = () => {
       </Container>
     );
   }
+
+  // Initialize empty player groups if needed
+  if (!round.playerGroups) {
+    round.playerGroups = [];
+  }
+
+  console.log("Round Details:", round);
 
   return (
     <Box sx={styles.layout.page.withBackground}>
@@ -341,7 +402,7 @@ const RoundDetails: React.FC = () => {
                 />
 
                 <Chip
-                  label={`${round.courseDetails?.holes} holes`}
+                  label={`${round.courseDetails?.holes || 18} holes`}
                   size="small"
                   sx={styles.chips.eventType.tour}
                 />
@@ -377,101 +438,184 @@ const RoundDetails: React.FC = () => {
           </Grid>
         </Paper>
 
-        {/* Players Section */}
+        {/* Players and Groups Section */}
         <Box sx={{ mt: 4 }}>
           <Box
             sx={{
               display: "flex",
-              justifyContent: "space-between",
+              justifyContent: "flex-end",
               alignItems: "center",
               mb: 2,
             }}
           >
-            <Typography variant="h5">
-              Players {round.players && `(${round.players.length})`}
-            </Typography>
+            {/* <Typography variant="h5">Player Groups</Typography> */}
+
             {isCreator && (
               <Button
-                variant="outlined"
+                variant="contained"
+                color="primary"
                 startIcon={<PersonAddIcon />}
-                onClick={handleInvitePlayers}
-                sx={styles.button.outlined}
+                onClick={handleOpenFriendsDialog}
+                sx={styles.button.primary}
               >
-                Invite Players
+                Add Players
               </Button>
             )}
           </Box>
 
-          {/* Player List */}
-          {round.players && round.players.length > 0 ? (
-            <Paper sx={styles.card.glass}>
-              <List>
-                {round.players.map((player) => (
-                  <React.Fragment key={player.id}>
-                    <ListItem>
-                      <ListItemAvatar>
-                        <Avatar sx={styles.avatars.standard()}>
-                          {player.avatarUrl ? (
-                            <img
-                              src={player.avatarUrl}
-                              alt={player.name}
-                              style={{ width: "100%", height: "100%" }}
-                            />
-                          ) : (
-                            <PersonIcon />
-                          )}
-                        </Avatar>
-                      </ListItemAvatar>
-                      <ListItemText
-                        primary={player.name}
-                        secondary={player.email}
-                      />
-                      {player.id === round.createdBy && (
-                        <Chip
-                          label="Creator"
-                          size="small"
-                          color="primary"
-                          sx={{ height: 24 }}
-                        />
-                      )}
-                    </ListItem>
-                    <Divider component="li" />
-                  </React.Fragment>
-                ))}
-              </List>
-            </Paper>
-          ) : (
-            <Alert severity="info">
-              No players have joined this round yet. Invite some friends to
-              join!
-            </Alert>
-          )}
+          <Grid container spacing={2}>
+            {round.playerGroups.map((group) => (
+              <Grid item xs={12} sm={6} md={6} lg={4} key={group.id}>
+                <Card
+                  variant="outlined"
+                  sx={{
+                    bgcolor: (theme) => alpha(theme.palette.common.black, 0.3),
+                    backdropFilter: "blur(10px)",
+                    border: (theme) =>
+                      `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
+                    borderRadius: 2,
+                    transition: "all 0.2s ease",
+                    "&:hover": {
+                      transform: { sm: "translateY(-4px)" },
+                      boxShadow: {
+                        sm: (theme) =>
+                          `0 8px 16px ${alpha(
+                            theme.palette.common.black,
+                            0.3
+                          )}`,
+                      },
+                      bgcolor: (theme) =>
+                        alpha(theme.palette.common.black, 0.4),
+                    },
+                    cursor: "pointer",
+                    height: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
+                  onClick={() => handleNavigateToGroup(round.id, group.id)}
+                >
+                  <CardContent sx={{ p: 2 }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "flex-start",
+                        mb: 1.5,
+                      }}
+                    >
+                      <Box>
+                        <Typography
+                          variant="h6"
+                          sx={{
+                            color: "white",
+                            fontWeight: 600,
+                            display: "flex",
+                            alignItems: "center",
+                          }}
+                        >
+                          {group.name}
+                          <ChevronRightIcon
+                            sx={{
+                              ml: 0.5,
+                              opacity: 0.7,
+                              fontSize: "1.2rem",
+                            }}
+                          />
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: (theme) =>
+                              alpha(theme.palette.common.white, 0.7),
+                          }}
+                        >
+                          {group.playerIds.length} player
+                          {group.playerIds.length !== 1 ? "s" : ""}
+                        </Typography>
+                      </Box>
 
-          {/* Pending Invitations */}
-          {round.invitations && round.invitations.length > 0 && (
-            <Box sx={{ mt: 3 }}>
-              <Typography variant="h6" gutterBottom>
-                Pending Invitations ({round.invitations.length})
-              </Typography>
-              <Paper sx={styles.card.glass}>
-                <List>
-                  {round.invitations.map((email) => (
-                    <React.Fragment key={email}>
-                      <ListItem>
-                        <ListItemAvatar>
-                          <Avatar>
-                            <PersonIcon />
-                          </Avatar>
-                        </ListItemAvatar>
-                        <ListItemText primary={email} secondary="Pending" />
-                      </ListItem>
-                      <Divider component="li" />
-                    </React.Fragment>
-                  ))}
-                </List>
-              </Paper>
-            </Box>
-          )}
+                      <Box sx={{ display: "flex", gap: 1 }}>
+                        {group.teeTime && (
+                          <Chip
+                            icon={<ScheduleIcon fontSize="small" />}
+                            label={group.teeTime}
+                            size="small"
+                            sx={{
+                              bgcolor: (theme) =>
+                                alpha(theme.palette.info.main, 0.1),
+                              color: (theme) => theme.palette.info.light,
+                              borderRadius: "4px",
+                              height: "24px",
+                            }}
+                          />
+                        )}
+                        {group.startingHole && (
+                          <Chip
+                            icon={<FlagIcon fontSize="small" />}
+                            label={`Hole ${group.startingHole}`}
+                            size="small"
+                            sx={{
+                              bgcolor: (theme) =>
+                                alpha(theme.palette.success.main, 0.1),
+                              color: (theme) => theme.palette.success.light,
+                              borderRadius: "4px",
+                              height: "24px",
+                            }}
+                          />
+                        )}
+                      </Box>
+                    </Box>
+
+                    <Divider
+                      sx={{
+                        my: 1.5,
+                        borderColor: (theme) =>
+                          alpha(theme.palette.common.white, 0.1),
+                      }}
+                    />
+
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: 0.5,
+                        mt: 1,
+                      }}
+                    >
+                      {group.playerIds.map((playerId) => {
+                        const player = round.players!.find(
+                          (p) => p.id === playerId
+                        );
+                        if (!player) return null;
+
+                        return (
+                          <Chip
+                            key={player.id}
+                            avatar={
+                              <Avatar src={player.avatarUrl} alt={player.name}>
+                                {player.name[0].toUpperCase()}
+                              </Avatar>
+                            }
+                            label={player.name}
+                            size="small"
+                            sx={{
+                              bgcolor: (theme) =>
+                                alpha(theme.palette.common.white, 0.1),
+                              color: "white",
+                              "& .MuiChip-avatar": {
+                                width: 24,
+                                height: 24,
+                              },
+                            }}
+                          />
+                        );
+                      })}
+                    </Box>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
         </Box>
 
         {/* Scorecard Section - only show if there are players */}
@@ -539,57 +683,19 @@ const RoundDetails: React.FC = () => {
         />
       </Dialog>
 
-      {/* TODO: Replace this Dialog with instead something that shows your friends that you can add to this event.
-      No invitation is needed, they should instead be directly added to a playerGroups for this round on this event. 
-      Then it should display like GroupDetailPage.tsx does but for a single round instead of a tournament.
-      Create a new component for this for now and then later we will try to create one that can handle both tournament and single round.
-      */}
-      <Dialog
-        open={openInviteDialog}
-        onClose={handleCloseInviteDialog}
-        maxWidth="sm"
-        fullWidth
-        PaperProps={{ sx: styles.dialogs.paper }}
-      >
-        <DialogTitle sx={styles.dialogs.title}>Invite Players</DialogTitle>
-        <DialogContent sx={styles.dialogs.content}>
-          <Typography
-            variant="body2"
-            sx={{ mb: 2, mt: 2, ...styles.text.body.primary }}
-          >
-            Enter email addresses of players you want to invite to this round.
-            Separate multiple emails with commas.
-          </Typography>
-
-          <TextField
-            label="Email Addresses"
-            multiline
-            rows={3}
-            fullWidth
-            value={emailsToInvite}
-            onChange={(e) => setEmailsToInvite(e.target.value)}
-            placeholder="example@email.com, another@email.com"
-            error={!!inviteError}
-            helperText={inviteError}
-            InputLabelProps={styles.tournamentCard.formStyles.labelProps(theme)}
-            InputProps={styles.tournamentCard.formStyles.inputProps(theme)}
-          />
-        </DialogContent>
-        <DialogActions sx={styles.dialogs.actions}>
-          <Button onClick={handleCloseInviteDialog} sx={styles.button.cancel}>
-            Cancel
-          </Button>
-          <Button
-            onClick={handleSubmitInvites}
-            variant="contained"
-            color="primary"
-            fullWidth={isMobile}
-            sx={styles.button.primary}
-          >
-            Send Invitations
-          </Button>
-        </DialogActions>
-      </Dialog>
+      {/* Friends Selection Dialog - for adding friends directly to groups */}
+      <FriendsSelectionDialog
+        open={openFriendsDialog}
+        onClose={handleCloseFriendsDialog}
+        friends={friends}
+        loadingFriends={loadingFriends}
+        currentPlayers={round.players || []}
+        playerGroups={round.playerGroups || []}
+        roundId={round.id}
+        shouldNotShowGroups
+        onAddFriendsToGroup={handleAddFriendsToGroup}
+        onCreateNewGroup={handleCreateNewGroup}
+      />
 
       {/* Delete Confirmation Dialog */}
       <Dialog

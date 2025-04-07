@@ -355,7 +355,7 @@ const PlayerScorecard: React.FC<PlayerScorecardProps> = ({
                                     : "inherit",
                                 }}
                               >
-                                {/* TODO: Instead of highlighting isCurrentHole like this, wrap the whole hole, (the hole number, the par value and the score value) */}
+                                {/* TODO: Instead of highlighting isCurrentHole like this, wrap the whole hole, (the hole number, the par value and the score value) with a green border */}
                                 {isCurrentHole && (
                                   <Box
                                     sx={{

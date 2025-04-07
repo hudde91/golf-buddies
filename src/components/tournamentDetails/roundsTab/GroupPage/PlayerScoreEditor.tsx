@@ -22,7 +22,6 @@ import {
 } from "@mui/icons-material";
 import { HoleScore, Round } from "../../../../types/event";
 import { useStyles } from "../../../../styles/hooks/useStyles";
-import theme from "../../../../theme/theme";
 
 interface PlayerScoreEditorProps {
   playerId: string;
@@ -41,6 +40,7 @@ const PlayerScoreEditor: React.FC<PlayerScoreEditorProps> = ({
   onClose,
   onSave,
 }) => {
+  const theme = useStyles();
   const styles = useStyles();
   const [scores, setScores] = useState<HoleScore[]>([]);
   const [currentTab, setCurrentTab] = useState(0);

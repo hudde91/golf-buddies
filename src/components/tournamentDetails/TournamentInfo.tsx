@@ -1,24 +1,42 @@
-import React from "react";
-import { Grid, Typography, Box, Chip, Divider } from "@mui/material";
+import React, { useState } from "react";
+import {
+  Grid,
+  Typography,
+  Box,
+  Chip,
+  Divider,
+  Collapse,
+  IconButton,
+  useMediaQuery,
+} from "@mui/material";
 import {
   CalendarToday as CalendarIcon,
   LocationOn as LocationIcon,
   Event as EventIcon,
   PersonAdd as PersonAddIcon,
+  ExpandMore as ExpandMoreIcon,
+  ExpandLess as ExpandLessIcon,
 } from "@mui/icons-material";
 import { Tournament } from "../../types/event";
 import { useStyles } from "../../styles/hooks/useStyles";
+import { useTheme } from "@mui/material/styles";
 
 interface TournamentInfoProps {
   tournament: Tournament;
 }
 
-// TODO: Make this into a Collapse and make it collapsed by default on mobile size
 const TournamentInfo: React.FC<TournamentInfoProps> = ({ tournament }) => {
   const styles = useStyles();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const [expanded, setExpanded] = useState(!isMobile);
 
-  return (
-    <Box sx={styles.card.glass}>
+  const toggleExpanded = () => {
+    setExpanded(!expanded);
+  };
+
+  const renderInfoContent = () => (
+    <Box>
       <Grid container spacing={3}>
         <Grid item xs={12} md={6}>
           <Box sx={{ ...styles.tournamentCard.infoItem, mb: { xs: 1, md: 2 } }}>
@@ -93,6 +111,41 @@ const TournamentInfo: React.FC<TournamentInfoProps> = ({ tournament }) => {
           </Grid>
         )}
       </Grid>
+    </Box>
+  );
+
+  return (
+    <Box sx={styles.card.glass}>
+      {/* Mobile toggle header */}
+      {isMobile && (
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            cursor: "pointer",
+            mb: expanded ? 2 : 0,
+            py: 1,
+          }}
+          onClick={toggleExpanded}
+        >
+          <Typography variant="h6" sx={styles.text.body.primary}>
+            Tournament Info
+          </Typography>
+          <IconButton size="small">
+            {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+          </IconButton>
+        </Box>
+      )}
+
+      {/* Content - wrapped in Collapse for mobile */}
+      {isMobile ? (
+        <Collapse in={expanded} timeout="auto" unmountOnExit>
+          {renderInfoContent()}
+        </Collapse>
+      ) : (
+        renderInfoContent()
+      )}
     </Box>
   );
 };
