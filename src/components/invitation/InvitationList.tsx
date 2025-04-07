@@ -4,7 +4,6 @@ import { Tournament, Round } from "../../types/event";
 import InvitationCard from "./InvitationCard";
 import RoundInvitationCard from "./RoundInvitationCard";
 import InvitationEmptyState from "./InvitationEmptyState";
-import { useStyles } from "../../styles/hooks/useStyles";
 
 interface InvitationListProps {
   invitations: Tournament[];
@@ -23,7 +22,6 @@ const InvitationList: React.FC<InvitationListProps> = ({
   onAcceptRound,
   onDeclineRound,
 }) => {
-  const styles = useStyles();
   const hasInvitations = invitations.length > 0 || roundInvitations.length > 0;
 
   if (!hasInvitations) {
