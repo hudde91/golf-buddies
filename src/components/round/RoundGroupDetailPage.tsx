@@ -16,6 +16,7 @@ import {
   useTheme,
   useMediaQuery,
   CircularProgress,
+  alpha,
 } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom";
 import {
@@ -384,29 +385,58 @@ const RoundGroupDetailPage: React.FC = () => {
                   display: "flex",
                   justifyContent: "center",
                   mt: 2,
-                  gap: 2,
+                  gap: 4,
                 }}
               >
-                <Button
-                  variant="outlined"
-                  size="small"
-                  startIcon={<NavigateBeforeIcon />}
+                <IconButton
                   onClick={() => navigateHole("prev")}
                   disabled={currentHole <= 1}
-                  sx={styles.button.outlined}
+                  size="large"
+                  sx={{
+                    backgroundColor: alpha(theme.palette.common.white, 0.1),
+                    color:
+                      currentHole <= 1
+                        ? alpha(theme.palette.common.white, 0.3)
+                        : theme.palette.common.white,
+                    "&:hover": {
+                      backgroundColor: alpha(theme.palette.common.white, 0.2),
+                    },
+                  }}
                 >
-                  Previous Hole
-                </Button>
-                <Button
-                  variant="outlined"
-                  size="small"
-                  endIcon={<NavigateNextIcon />}
+                  <NavigateBeforeIcon fontSize="large" />
+                </IconButton>
+
+                <IconButton
+                  onClick={() => openScoreDialog(currentHole)}
+                  size="large"
+                  sx={{
+                    backgroundColor: alpha(theme.palette.primary.main, 0.3),
+                    color: theme.palette.primary.main,
+                    "&:hover": {
+                      backgroundColor: alpha(theme.palette.primary.main, 0.4),
+                    },
+                  }}
+                >
+                  <GolfCourseIcon fontSize="large" />
+                </IconButton>
+
+                <IconButton
                   onClick={() => navigateHole("next")}
                   disabled={currentHole >= holeCount}
-                  sx={styles.button.outlined}
+                  size="large"
+                  sx={{
+                    backgroundColor: alpha(theme.palette.common.white, 0.1),
+                    color:
+                      currentHole >= holeCount
+                        ? alpha(theme.palette.common.white, 0.3)
+                        : theme.palette.common.white,
+                    "&:hover": {
+                      backgroundColor: alpha(theme.palette.common.white, 0.2),
+                    },
+                  }}
                 >
-                  Next Hole
-                </Button>
+                  <NavigateNextIcon fontSize="large" />
+                </IconButton>
               </Box>
             </Box>
           </Collapse>

@@ -23,7 +23,6 @@ import {
   Chip,
   useTheme,
   useMediaQuery,
-  Divider,
   Grid,
   alpha,
 } from "@mui/material";

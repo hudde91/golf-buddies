@@ -16,6 +16,7 @@ import {
 import {
   Add as AddIcon,
   Remove as RemoveIcon,
+  NavigateBefore as NavigateBeforeIcon,
   NavigateNext as NavigateNextIcon,
   Close as CloseIcon,
 } from "@mui/icons-material";
@@ -386,14 +387,44 @@ const ScoreDialog: React.FC<ScoreDialogProps> = ({
           borderTop: "1px solid #eaeaea",
           px: 3,
           py: 3,
+          display: "flex",
+          justifyContent: "space-between",
+          gap: 2,
         }}
       >
-        {/* TODO: Add a button to step back to previous hole. Should not call save when do so */}
+        {/* Previous hole button - only show if not on the first hole */}
+        {currentHole > 1 && (
+          <Button
+            onClick={() => {
+              // Update both states without saving scores
+              const prevHole = currentHole - 1;
+              setCurrentHole(prevHole);
+              onHoleChange(prevHole);
+            }}
+            variant="outlined"
+            color="inherit"
+            size="large"
+            startIcon={<NavigateBeforeIcon />}
+            sx={{
+              py: 1.5,
+              borderRadius: 2,
+              fontWeight: "medium",
+              textTransform: "none",
+              fontSize: "1rem",
+              flex: 1,
+            }}
+          >
+            Previous Hole
+          </Button>
+        )}
+
+        {/* Spacer for when Previous button is not shown */}
+        {currentHole === 1 && <Box sx={{ flex: 1 }} />}
+
         <Button
           onClick={handleSaveAndNext}
           variant="contained"
           color="primary"
-          fullWidth
           size="large"
           endIcon={<NavigateNextIcon />}
           sx={{
@@ -402,9 +433,10 @@ const ScoreDialog: React.FC<ScoreDialogProps> = ({
             fontWeight: "bold",
             textTransform: "none",
             fontSize: "1rem",
+            flex: 1,
           }}
         >
-          {currentHole < totalHoles ? "Save & Next Hole" : "Save & Finish"}
+          {currentHole < totalHoles ? "Save & Next" : "Save & Finish"}
         </Button>
       </DialogActions>
     </Dialog>

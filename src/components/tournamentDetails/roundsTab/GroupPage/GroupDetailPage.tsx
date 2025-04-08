@@ -15,6 +15,7 @@ import {
   Container,
   useTheme,
   useMediaQuery,
+  alpha,
 } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom";
 import {
@@ -212,54 +213,63 @@ const GroupDetailPage: React.FC<GroupDetailPageProps> = ({
             p: 2,
           }}
         >
-          {/* <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              flexWrap: "wrap",
-            }}
-          > */}
-          {/* <Box>
-              <Typography variant="h6">{round.name}</Typography>
+          <Box sx={{ mb: 2 }}>
+            <Typography variant="h6">{round.name}</Typography>
+            <Typography variant="body2" sx={styles.text.body.secondary}>
+              {new Date(round.date).toLocaleDateString()}
+            </Typography>
+            {round.courseDetails?.name && (
               <Typography variant="body2" sx={styles.text.body.secondary}>
-                {new Date(round.date).toLocaleDateString()}
+                {round.courseDetails.name}{" "}
+                {round.courseDetails.par && `(Par ${round.courseDetails.par})`}
               </Typography>
-              {round.courseDetails?.name && (
-                <Typography variant="body2" sx={styles.text.body.secondary}>
-                  {round.courseDetails.name}
-                </Typography>
-              )}
-            </Box> */}
+            )}
+          </Box>
 
-          {/* TODO: Make it easier to user to understand that clicking here is for starting to score 
-              We can make this whole Box clickable actually */}
+          {/* Use the enhanced hole selection component here */}
           <Box
             sx={{
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              gap: 1,
-              mt: { xs: 2, sm: 0 },
+              width: "100%",
+              p: 2,
+              border: "1px solid rgba(255,255,255,0.1)",
+              borderRadius: 2,
+              backgroundColor: alpha(theme.palette.primary.main, 0.05),
+              cursor: "pointer",
+              transition: "all 0.2s ease",
+              "&:hover": {
+                backgroundColor: alpha(theme.palette.primary.main, 0.1),
+              },
             }}
+            onClick={() => setHolePickerOpen(!holePickerOpen)}
           >
-            <Button
-              variant="text"
-              onClick={() => setHolePickerOpen(!holePickerOpen)}
-              startIcon={
-                holePickerOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />
-              }
-              size="small"
-              sx={{
-                ...styles.button.outlined,
-                borderColor: theme.palette.primary.main,
-                color: theme.palette.primary.main,
-              }}
+            <Typography
+              variant="h5"
+              sx={{ fontWeight: "bold", color: theme.palette.primary.main }}
             >
               Hole {currentHole}
-            </Button>
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{ color: alpha(theme.palette.common.white, 0.7), mt: 0.5 }}
+            >
+              {!holePickerOpen
+                ? "Tap to select hole"
+                : "Select a hole to score"}
+            </Typography>
+            <Box sx={{ mt: 1 }}>
+              <IconButton
+                size="small"
+                sx={{
+                  color: theme.palette.primary.main,
+                }}
+              >
+                {holePickerOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+              </IconButton>
+            </Box>
           </Box>
-          {/* </Box> */}
 
           <Collapse in={holePickerOpen}>
             <Box
@@ -318,35 +328,64 @@ const GroupDetailPage: React.FC<GroupDetailPageProps> = ({
                 })}
               </Grid>
 
-              {/* TODO: Remove these 2 buttons */}
+              {/* Use the simplified hole navigation */}
               <Box
                 sx={{
                   display: "flex",
                   justifyContent: "center",
                   mt: 2,
-                  gap: 2,
+                  gap: 4,
                 }}
               >
-                <Button
-                  variant="outlined"
-                  size="small"
-                  startIcon={<NavigateBeforeIcon />}
+                <IconButton
                   onClick={() => navigateHole("prev")}
                   disabled={currentHole <= 1}
-                  sx={styles.button.outlined}
+                  size="large"
+                  sx={{
+                    backgroundColor: alpha(theme.palette.common.white, 0.1),
+                    color:
+                      currentHole <= 1
+                        ? alpha(theme.palette.common.white, 0.3)
+                        : theme.palette.common.white,
+                    "&:hover": {
+                      backgroundColor: alpha(theme.palette.common.white, 0.2),
+                    },
+                  }}
                 >
-                  Previous Hole
-                </Button>
-                <Button
-                  variant="outlined"
-                  size="small"
-                  endIcon={<NavigateNextIcon />}
+                  <NavigateBeforeIcon fontSize="large" />
+                </IconButton>
+
+                <IconButton
+                  onClick={() => openScoreDialog(currentHole)}
+                  size="large"
+                  sx={{
+                    backgroundColor: alpha(theme.palette.primary.main, 0.3),
+                    color: theme.palette.primary.main,
+                    "&:hover": {
+                      backgroundColor: alpha(theme.palette.primary.main, 0.4),
+                    },
+                  }}
+                >
+                  <GolfCourseIcon fontSize="large" />
+                </IconButton>
+
+                <IconButton
                   onClick={() => navigateHole("next")}
                   disabled={currentHole >= holeCount}
-                  sx={styles.button.outlined}
+                  size="large"
+                  sx={{
+                    backgroundColor: alpha(theme.palette.common.white, 0.1),
+                    color:
+                      currentHole >= holeCount
+                        ? alpha(theme.palette.common.white, 0.3)
+                        : theme.palette.common.white,
+                    "&:hover": {
+                      backgroundColor: alpha(theme.palette.common.white, 0.2),
+                    },
+                  }}
                 >
-                  Next Hole
-                </Button>
+                  <NavigateNextIcon fontSize="large" />
+                </IconButton>
               </Box>
             </Box>
           </Collapse>

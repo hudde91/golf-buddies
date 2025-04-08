@@ -467,8 +467,9 @@ const TournamentDetail: React.FC = () => {
             onEditTournament={dialogHandlers.editTournament.open}
           />
 
-          {/* TODO: When in mobile view, EnhancedTournamentInfo should only be displayed on LeaderboardTab */}
-          <EnhancedTournamentInfo />
+          {(!isMobile || (isMobile && tabValue === 0)) && (
+            <EnhancedTournamentInfo />
+          )}
 
           {!isMobile && (
             <Box sx={styles.tabs.container}>
