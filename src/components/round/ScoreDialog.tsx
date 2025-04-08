@@ -388,6 +388,7 @@ const ScoreDialog: React.FC<ScoreDialogProps> = ({
           py: 3,
         }}
       >
+        {/* TODO: Add a button to step back to previous hole. Should not call save when do so */}
         <Button
           onClick={handleSaveAndNext}
           variant="contained"

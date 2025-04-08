@@ -9,6 +9,7 @@ import {
   Dialog,
   useTheme,
   alpha,
+  useMediaQuery,
 } from "@mui/material";
 import { ArrowBack as ArrowBackIcon } from "@mui/icons-material";
 import eventService from "../services/eventService";
@@ -19,6 +20,7 @@ import LoadingState from "../components/tournament/LoadingState";
 import TourHeader from "../components/tour/TourHeader";
 import TourTabs from "../components/tourDetails/TourTabs";
 import { colors, useStyles } from "../styles";
+import MobileTourBottomNavigation from "../components/tourDetails/MobileTourBottomNavigation";
 
 const TourDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -26,6 +28,7 @@ const TourDetails: React.FC = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const styles = useStyles();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const [event, setEvent] = useState<Event | null>(null);
   const [tour, setTour] = useState<Tour | null>(null);
@@ -165,12 +168,19 @@ const TourDetails: React.FC = () => {
     );
   }
 
+  // Calculate counts for badge indicators in mobile nav
+  const tournamentCount = tour.tournaments.length || 0;
+  const playerCount = tour.players?.length || 0;
+  const teamCount = tour.teams?.length || 0;
+  const hasTeams = Boolean(tour.teams && tour.teams.length > 0);
+
   return (
     <Box
       sx={{
         background: colors.background.main,
         minHeight: "calc(100vh - 64px)",
         py: { xs: 3, md: 4 },
+        pb: isMobile ? "56px" : undefined,
       }}
     >
       <Container maxWidth="lg">
@@ -191,18 +201,401 @@ const TourDetails: React.FC = () => {
           onDelete={handleDeleteTour}
         />
 
-        <TourTabs
-          tour={tour}
-          tabValue={tabValue}
-          leaderboard={leaderboard}
-          isCreator={isCreator}
-          onTabChange={handleTabChange}
-          onAddTournament={handleAddTournament}
-          navigateToTournament={(tournamentId) =>
-            navigate(`/tournaments/${tournamentId}`)
-          }
-        />
+        {!isMobile ? (
+          // Desktop version with tabs
+          <TourTabs
+            tour={tour}
+            tabValue={tabValue}
+            leaderboard={leaderboard}
+            isCreator={isCreator}
+            onTabChange={handleTabChange}
+            onAddTournament={handleAddTournament}
+            navigateToTournament={(tournamentId) =>
+              navigate(`/tournaments/${tournamentId}`)
+            }
+          />
+        ) : (
+          // Mobile version with customized content containers
+          <Box sx={styles.card.glass}>
+            {/* Tournaments Tab */}
+            <div
+              role="tabpanel"
+              hidden={tabValue !== 0}
+              id="tour-tabpanel-0"
+              aria-labelledby="tour-tab-0"
+            >
+              {tabValue === 0 && (
+                <Box sx={styles.tabs.panel}>
+                  <Box sx={styles.headers.tour.headerContainer}>
+                    <Typography
+                      variant="h6"
+                      sx={styles.headers.tour.sectionTitle}
+                    >
+                      Tournaments in this Tour
+                    </Typography>
+                    {isCreator && (
+                      <Button
+                        variant="contained"
+                        startIcon={<ArrowBackIcon />}
+                        sx={styles.button.primary}
+                        onClick={handleAddTournament}
+                      >
+                        Add
+                      </Button>
+                    )}
+                  </Box>
+
+                  {tournamentCount === 0 ? (
+                    <Box sx={styles.feedback.emptyState.container}>
+                      <Typography
+                        variant="h6"
+                        sx={styles.feedback.emptyState.title}
+                      >
+                        No Tournaments Added Yet
+                      </Typography>
+                      {isCreator && (
+                        <Button
+                          variant="contained"
+                          sx={styles.button.primary}
+                          onClick={handleAddTournament}
+                        >
+                          Add First Tournament
+                        </Button>
+                      )}
+                    </Box>
+                  ) : (
+                    tour.tournaments.map((tournament: any) => (
+                      <Box
+                        key={tournament.id}
+                        sx={{
+                          mb: 2,
+                          p: 2,
+                          borderRadius: 2,
+                          bgcolor: alpha(theme.palette.common.black, 0.3),
+                          border: `1px solid ${alpha(
+                            theme.palette.common.white,
+                            0.1
+                          )}`,
+                        }}
+                        onClick={() =>
+                          navigate(`/tournaments/${tournament.id}`)
+                        }
+                      >
+                        <Typography variant="h6" sx={{ color: "white", mb: 1 }}>
+                          {tournament.name}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: alpha(theme.palette.common.white, 0.7),
+                            mb: 1,
+                          }}
+                        >
+                          Status: {tournament.status}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: alpha(theme.palette.common.white, 0.7) }}
+                        >
+                          Players: {tournament.players.length}
+                        </Typography>
+                      </Box>
+                    ))
+                  )}
+                </Box>
+              )}
+            </div>
+
+            {/* Leaderboard Tab */}
+            <div
+              role="tabpanel"
+              hidden={tabValue !== 1}
+              id="tour-tabpanel-1"
+              aria-labelledby="tour-tab-1"
+            >
+              {tabValue === 1 && (
+                <Box sx={styles.tabs.panel}>
+                  <Typography
+                    variant="h6"
+                    sx={styles.headers.tour.sectionTitle}
+                  >
+                    Tour Leaderboard
+                  </Typography>
+
+                  {leaderboard.length === 0 ? (
+                    <Box sx={styles.feedback.emptyState.container}>
+                      <Typography
+                        variant="h6"
+                        sx={styles.feedback.emptyState.title}
+                      >
+                        No Leaderboard Data
+                      </Typography>
+                      <Typography sx={styles.feedback.emptyState.description}>
+                        Leaderboard data will appear when tournaments have been
+                        completed.
+                      </Typography>
+                    </Box>
+                  ) : (
+                    leaderboard.map((player, index) => (
+                      <Box
+                        key={player.playerId}
+                        sx={{
+                          mb: 1,
+                          p: 2,
+                          borderRadius: 2,
+                          bgcolor:
+                            index % 2 === 0
+                              ? alpha(theme.palette.common.black, 0.4)
+                              : alpha(theme.palette.common.black, 0.2),
+                          border: `1px solid ${alpha(
+                            theme.palette.common.white,
+                            0.1
+                          )}`,
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Box sx={{ display: "flex", alignItems: "center" }}>
+                          <Typography
+                            variant="h5"
+                            sx={{ color: "white", mr: 2, fontWeight: "bold" }}
+                          >
+                            {index + 1}.
+                          </Typography>
+                          <Box>
+                            <Typography variant="body1" sx={{ color: "white" }}>
+                              {player.playerName}
+                            </Typography>
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                color: alpha(theme.palette.common.white, 0.7),
+                              }}
+                            >
+                              Tournaments:{" "}
+                              {Object.keys(player.tournamentResults).length}
+                            </Typography>
+                          </Box>
+                        </Box>
+                        <Typography
+                          variant="h6"
+                          sx={{ color: "white", fontWeight: "bold" }}
+                        >
+                          {player.totalPoints}
+                        </Typography>
+                      </Box>
+                    ))
+                  )}
+                </Box>
+              )}
+            </div>
+
+            {/* Players Tab */}
+            <div
+              role="tabpanel"
+              hidden={tabValue !== 2}
+              id="tour-tabpanel-2"
+              aria-labelledby="tour-tab-2"
+            >
+              {tabValue === 2 && (
+                <Box sx={styles.tabs.panel}>
+                  <Typography
+                    variant="h6"
+                    sx={styles.headers.tour.sectionTitle}
+                  >
+                    Tour Participants
+                  </Typography>
+
+                  {!tour.players || tour.players.length === 0 ? (
+                    <Box sx={styles.feedback.emptyState.container}>
+                      <Typography
+                        variant="h6"
+                        sx={styles.feedback.emptyState.title}
+                      >
+                        No Players Yet
+                      </Typography>
+                      <Typography sx={styles.feedback.emptyState.description}>
+                        Players will be added when they join tournaments in this
+                        tour.
+                      </Typography>
+                    </Box>
+                  ) : (
+                    tour.players.map((player) => {
+                      const team = tour.teams?.find(
+                        (t) => t.id === player.teamId
+                      );
+
+                      return (
+                        <Box
+                          key={player.id}
+                          sx={{
+                            mb: 1,
+                            p: 2,
+                            borderRadius: 2,
+                            bgcolor: alpha(theme.palette.common.black, 0.3),
+                            border: `1px solid ${alpha(
+                              theme.palette.common.white,
+                              0.1
+                            )}`,
+                          }}
+                        >
+                          <Typography variant="h6" sx={{ color: "white" }}>
+                            {player.name}
+                          </Typography>
+                          {team && (
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                color: team.color,
+                                mt: 0.5,
+                                display: "inline-block",
+                                px: 1,
+                                py: 0.25,
+                                borderRadius: 1,
+                                bgcolor: alpha(team.color, 0.1),
+                                border: `1px solid ${alpha(team.color, 0.3)}`,
+                              }}
+                            >
+                              Team: {team.name}
+                            </Typography>
+                          )}
+                        </Box>
+                      );
+                    })
+                  )}
+                </Box>
+              )}
+            </div>
+
+            {/* Teams Tab */}
+            {hasTeams && (
+              <div
+                role="tabpanel"
+                hidden={tabValue !== 3}
+                id="tour-tabpanel-3"
+                aria-labelledby="tour-tab-3"
+              >
+                {tabValue === 3 && (
+                  <Box sx={styles.tabs.panel}>
+                    <Typography
+                      variant="h6"
+                      sx={styles.headers.tour.sectionTitle}
+                    >
+                      Tour Teams
+                    </Typography>
+
+                    {tour.teams.map((team) => {
+                      const teamPlayers =
+                        tour.players?.filter((p) => p.teamId === team.id) || [];
+
+                      return (
+                        <Box
+                          key={team.id}
+                          sx={{
+                            mb: 2,
+                            borderRadius: 2,
+                            overflow: "hidden",
+                            border: `1px solid ${alpha(team.color, 0.3)}`,
+                          }}
+                        >
+                          <Box
+                            sx={{
+                              p: 2,
+                              bgcolor: alpha(team.color, 0.15),
+                              borderBottom: `1px solid ${alpha(
+                                team.color,
+                                0.3
+                              )}`,
+                            }}
+                          >
+                            <Typography variant="h6" sx={{ color: "white" }}>
+                              {team.name}
+                            </Typography>
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                color: alpha(theme.palette.common.white, 0.7),
+                              }}
+                            >
+                              {teamPlayers.length} member
+                              {teamPlayers.length !== 1 ? "s" : ""}
+                            </Typography>
+                          </Box>
+
+                          <Box
+                            sx={{
+                              p: 2,
+                              bgcolor: alpha(theme.palette.common.black, 0.3),
+                            }}
+                          >
+                            {teamPlayers.length === 0 ? (
+                              <Typography
+                                sx={{
+                                  color: alpha(theme.palette.common.white, 0.5),
+                                  fontStyle: "italic",
+                                }}
+                              >
+                                No players assigned to this team
+                              </Typography>
+                            ) : (
+                              teamPlayers.map((player) => (
+                                <Box
+                                  key={player.id}
+                                  sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    mb: 1,
+                                  }}
+                                >
+                                  <Typography sx={{ color: "white" }}>
+                                    {player.name}
+                                  </Typography>
+                                  {player.id === team.captain && (
+                                    <Typography
+                                      variant="caption"
+                                      sx={{
+                                        ml: 1,
+                                        color: team.color,
+                                        px: 0.75,
+                                        py: 0.25,
+                                        borderRadius: 1,
+                                        bgcolor: alpha(team.color, 0.1),
+                                        border: `1px solid ${alpha(
+                                          team.color,
+                                          0.3
+                                        )}`,
+                                      }}
+                                    >
+                                      Captain
+                                    </Typography>
+                                  )}
+                                </Box>
+                              ))
+                            )}
+                          </Box>
+                        </Box>
+                      );
+                    })}
+                  </Box>
+                )}
+              </div>
+            )}
+          </Box>
+        )}
       </Container>
+
+      {/* Mobile Bottom Navigation */}
+      {isMobile && (
+        <MobileTourBottomNavigation
+          activeTab={tabValue}
+          hasTeams={hasTeams}
+          tournamentCount={tournamentCount}
+          playerCount={playerCount}
+          teamCount={teamCount}
+          onTabChange={handleTabChange}
+        />
+      )}
 
       <Dialog
         open={openAddTournament}

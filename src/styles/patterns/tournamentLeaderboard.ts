@@ -24,7 +24,6 @@ export const tournamentLeaderboard = {
   tableContainer: (theme: Theme) => ({
     backgroundColor: alpha(theme.palette.common.black, 0.3),
     backdropFilter: "blur(10px)",
-    overflow: "hidden",
     borderRadius: 2,
     border: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
   }),

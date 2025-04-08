@@ -212,15 +212,15 @@ const GroupDetailPage: React.FC<GroupDetailPageProps> = ({
             p: 2,
           }}
         >
-          <Box
+          {/* <Box
             sx={{
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
               flexWrap: "wrap",
             }}
-          >
-            <Box>
+          > */}
+          {/* <Box>
               <Typography variant="h6">{round.name}</Typography>
               <Typography variant="body2" sx={styles.text.body.secondary}>
                 {new Date(round.date).toLocaleDateString()}
@@ -230,34 +230,36 @@ const GroupDetailPage: React.FC<GroupDetailPageProps> = ({
                   {round.courseDetails.name}
                 </Typography>
               )}
-            </Box>
+            </Box> */}
 
-            <Box
+          {/* TODO: Make it easier to user to understand that clicking here is for starting to score 
+              We can make this whole Box clickable actually */}
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 1,
+              mt: { xs: 2, sm: 0 },
+            }}
+          >
+            <Button
+              variant="text"
+              onClick={() => setHolePickerOpen(!holePickerOpen)}
+              startIcon={
+                holePickerOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />
+              }
+              size="small"
               sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: 1,
-                mt: { xs: 2, sm: 0 },
+                ...styles.button.outlined,
+                borderColor: theme.palette.primary.main,
+                color: theme.palette.primary.main,
               }}
             >
-              <Button
-                variant="text"
-                onClick={() => setHolePickerOpen(!holePickerOpen)}
-                startIcon={
-                  holePickerOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />
-                }
-                size="small"
-                sx={{
-                  ...styles.button.outlined,
-                  borderColor: theme.palette.primary.main,
-                  color: theme.palette.primary.main,
-                }}
-              >
-                Hole {currentHole}
-              </Button>
-            </Box>
+              Hole {currentHole}
+            </Button>
           </Box>
+          {/* </Box> */}
 
           <Collapse in={holePickerOpen}>
             <Box
@@ -316,6 +318,7 @@ const GroupDetailPage: React.FC<GroupDetailPageProps> = ({
                 })}
               </Grid>
 
+              {/* TODO: Remove these 2 buttons */}
               <Box
                 sx={{
                   display: "flex",

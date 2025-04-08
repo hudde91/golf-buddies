@@ -292,7 +292,6 @@ const TournamentLeaderboard: React.FC<TournamentLeaderboardProps> = ({
                       </TableCell>
                     )}
                   </TableRow>
-
                   <TableRow>
                     <TableCell
                       colSpan={calculateColspan()}

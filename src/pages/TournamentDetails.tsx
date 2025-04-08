@@ -467,9 +467,9 @@ const TournamentDetail: React.FC = () => {
             onEditTournament={dialogHandlers.editTournament.open}
           />
 
+          {/* TODO: When in mobile view, EnhancedTournamentInfo should only be displayed on LeaderboardTab */}
           <EnhancedTournamentInfo />
 
-          {/* Desktop Tabs (hidden on mobile) */}
           {!isMobile && (
             <Box sx={styles.tabs.container}>
               <Tabs
@@ -494,7 +494,6 @@ const TournamentDetail: React.FC = () => {
             </Box>
           )}
 
-          {/* Leaderboard Tab */}
           <div
             role="tabpanel"
             hidden={tabValue !== 0}
@@ -512,7 +511,6 @@ const TournamentDetail: React.FC = () => {
             )}
           </div>
 
-          {/* Rounds Tab */}
           <div
             role="tabpanel"
             hidden={tabValue !== 1}
@@ -534,7 +532,6 @@ const TournamentDetail: React.FC = () => {
             )}
           </div>
 
-          {/* Players Tab */}
           <div
             role="tabpanel"
             hidden={tabValue !== 2}
@@ -548,7 +545,6 @@ const TournamentDetail: React.FC = () => {
             )}
           </div>
 
-          {/* Teams Tab (conditional) */}
           {tournament.isTeamEvent && (
             <div
               role="tabpanel"
@@ -572,7 +568,6 @@ const TournamentDetail: React.FC = () => {
             </div>
           )}
 
-          {/* Highlights Tab */}
           <div
             role="tabpanel"
             hidden={tabValue !== (tournament.isTeamEvent ? 4 : 3)}
@@ -600,7 +595,6 @@ const TournamentDetail: React.FC = () => {
         </Box>
       </Box>
 
-      {/* Mobile Bottom Navigation (only visible on mobile) */}
       {isMobile && tournament && (
         <MobileBottomNavigation
           tournamentId={tournament.id}
