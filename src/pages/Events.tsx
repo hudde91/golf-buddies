@@ -245,32 +245,6 @@ const Events: React.FC = () => {
     return <LoadingState />;
   }
 
-  const renderEventHeader = () => {
-    return (
-      <Box sx={styles.headers.event.container}>
-        <Box sx={styles.headers.event.iconContainer}>
-          <EventIcon sx={styles.headers.event.icon} />
-          <Box>
-            <Typography variant="h4" sx={styles.headers.event.title}>
-              Events
-            </Typography>
-            <Typography variant="body1" sx={styles.headers.event.subtitle}>
-              Create, join, and manage your golf events
-            </Typography>
-          </Box>
-        </Box>
-
-        <Button
-          variant="contained"
-          onClick={handleCreateEvent}
-          sx={styles.button.create}
-        >
-          Create Event
-        </Button>
-      </Box>
-    );
-  };
-
   const renderEventCard = (event: Event) => {
     // Extract the common data based on event type
     const eventData = event.data;
@@ -344,7 +318,10 @@ const Events: React.FC = () => {
     };
 
     return (
-      <Box sx={styles.card.event}>
+      <Box
+        sx={styles.card.event}
+        onClick={() => handleViewEvent(event.id, event.type)}
+      >
         <Box sx={styles.card.eventContent}>
           <Box sx={styles.card.eventChipsContainer}>
             <Chip
@@ -481,8 +458,27 @@ const Events: React.FC = () => {
     <Box sx={styles.layout.page.withBackground}>
       <Container maxWidth="lg" sx={styles.layout.container.responsive}>
         <Box sx={styles.card.glass}>
-          {renderEventHeader()}
-
+          <Box sx={styles.headers.event.container}>
+            <Box sx={styles.headers.event.iconContainer}>
+              <EventIcon sx={styles.headers.event.icon} />
+              <Box>
+                <Typography variant="h4" sx={styles.headers.event.title}>
+                  Events
+                </Typography>
+                <Typography variant="body1" sx={styles.headers.event.subtitle}>
+                  Create, join, and manage your golf events
+                </Typography>
+              </Box>
+            </Box>
+            {/* TODO: When in mobile view I want Button to be placed in a bottom navigation */}
+            <Button
+              variant="contained"
+              onClick={handleCreateEvent}
+              sx={styles.button.create}
+            >
+              Create Event
+            </Button>
+          </Box>
           <Box sx={styles.tabs.container}>
             <Tabs
               value={tabValue}

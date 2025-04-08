@@ -425,7 +425,21 @@ const TourDetails: React.FC = () => {
                       const team = tour.teams?.find(
                         (t) => t.id === player.teamId
                       );
-
+                      // TODO: Use the same component for player cards as in PlayersTab in the tournamentsDetails
+                      //  Update PlayersTab to be able to handle tours as well
+                      //  <Grid container spacing={2}>
+                      //       {tour.players.map((player) => (
+                      //         <Grid item xs={12} sm={6} md={4} key={player.id}>
+                      //           <PlayerCard
+                      //             player={player}
+                      //             tournament={tour}
+                      //             onClick={handlePlayerClick}
+                      //             renderPlayerExtra={renderPlayerExtra}
+                      //           />
+                      //         </Grid>
+                      //       ))}
+                      //     </Grid>
+                      // TODO: Remove below return once the above is implemented
                       return (
                         <Box
                           key={player.id}

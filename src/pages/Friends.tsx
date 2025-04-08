@@ -254,6 +254,8 @@ const Friends: React.FC = () => {
             <List sx={{ width: "100%" }}>
               {pendingFriends.map((friend) => (
                 <React.Fragment key={friend.id}>
+                  {/* TODO: This does not look good in mobile view, the Icons gets positioned above the ListItemText below. 
+                      Also the icons are not really visible  */}
                   <ListItem
                     secondaryAction={
                       <Box>
