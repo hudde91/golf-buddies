@@ -93,7 +93,6 @@ const RoundGroupDetailPage: React.FC = () => {
       .map((playerId) => round?.players.find((p) => p.id === playerId))
       .filter(Boolean) as Player[]) || [];
 
-  // Use the shared group scoring hook
   const {
     currentHole,
     setCurrentHole,
@@ -154,8 +153,6 @@ const RoundGroupDetailPage: React.FC = () => {
       hole: dialogHole,
     };
 
-    // IMPORTANT: Create a completely new round object with updated scores
-    // This ensures full replacement rather than partial update
     const completeRound = {
       ...round,
       scores: {
@@ -276,50 +273,60 @@ const RoundGroupDetailPage: React.FC = () => {
             p: 2,
           }}
         >
+          <Box sx={{ mb: 2 }}>
+            <Typography variant="h6">{round.name}</Typography>
+            <Typography variant="body2" sx={styles.text.body.secondary}>
+              {new Date(round.date).toLocaleDateString()}
+            </Typography>
+            {round.courseDetails?.name && (
+              <Typography variant="body2" sx={styles.text.body.secondary}>
+                {round.courseDetails.name}{" "}
+                {round.courseDetails.par && `(Par ${round.courseDetails.par})`}
+              </Typography>
+            )}
+          </Box>
+
           <Box
             sx={{
               display: "flex",
-              justifyContent: "space-between",
+              flexDirection: "column",
               alignItems: "center",
-              flexWrap: "wrap",
+              width: "100%",
+              p: 2,
+              border: "1px solid rgba(255,255,255,0.1)",
+              borderRadius: 2,
+              backgroundColor: alpha(theme.palette.primary.main, 0.05),
+              cursor: "pointer",
+              transition: "all 0.2s ease",
+              "&:hover": {
+                backgroundColor: alpha(theme.palette.primary.main, 0.1),
+              },
             }}
+            onClick={() => setHolePickerOpen(!holePickerOpen)}
           >
-            <Box>
-              <Typography variant="h6">{round.name}</Typography>
-              <Typography variant="body2" sx={styles.text.body.secondary}>
-                {new Date(round.date).toLocaleDateString()}
-              </Typography>
-              {round.courseDetails?.name && (
-                <Typography variant="body2" sx={styles.text.body.secondary}>
-                  {round.courseDetails.name}
-                </Typography>
-              )}
-            </Box>
-
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: 1,
-                mt: { xs: 2, sm: 0 },
-              }}
+            <Typography
+              variant="h5"
+              sx={{ fontWeight: "bold", color: theme.palette.primary.main }}
             >
-              <Button
-                variant="text"
-                onClick={() => setHolePickerOpen(!holePickerOpen)}
-                startIcon={
-                  holePickerOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />
-                }
+              Hole {currentHole}
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{ color: alpha(theme.palette.common.white, 0.7), mt: 0.5 }}
+            >
+              {!holePickerOpen
+                ? "Tap to select hole"
+                : "Select a hole to score"}
+            </Typography>
+            <Box sx={{ mt: 1 }}>
+              <IconButton
                 size="small"
                 sx={{
-                  ...styles.button.outlined,
-                  borderColor: theme.palette.primary.main,
                   color: theme.palette.primary.main,
                 }}
               >
-                Hole {currentHole}
-              </Button>
+                {holePickerOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+              </IconButton>
             </Box>
           </Box>
 
@@ -380,6 +387,7 @@ const RoundGroupDetailPage: React.FC = () => {
                 })}
               </Grid>
 
+              {/* Use the simplified hole navigation */}
               <Box
                 sx={{
                   display: "flex",
@@ -600,10 +608,7 @@ const RoundGroupDetailPage: React.FC = () => {
         open={scoreDialogOpen}
         onClose={handleCloseScoreDialog}
         onHoleChange={(newHole) => {
-          // Important: When the dialog changes holes, update both hole states together
           setDialogHole(newHole);
-          // This helps ensure our currentHole stays in sync with dialogHole
-          // after saving scores and navigating in the dialog
           setCurrentHole(newHole);
         }}
         hole={dialogHole}

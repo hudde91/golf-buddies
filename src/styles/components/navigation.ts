@@ -6,7 +6,6 @@ export const navigation = {
   // Back button styling
   backButton: (theme: Theme) => ({
     color: theme.palette.common.white,
-    mt: { xs: 2, sm: 0 },
     "&:hover": {
       backgroundColor: alpha(theme.palette.common.white, 0.1),
     },

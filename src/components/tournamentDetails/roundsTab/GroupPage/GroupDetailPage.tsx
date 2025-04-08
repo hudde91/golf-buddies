@@ -226,7 +226,6 @@ const GroupDetailPage: React.FC<GroupDetailPageProps> = ({
             )}
           </Box>
 
-          {/* Use the enhanced hole selection component here */}
           <Box
             sx={{
               display: "flex",
@@ -526,15 +525,11 @@ const GroupDetailPage: React.FC<GroupDetailPageProps> = ({
         </Paper>
       </Container>
 
-      {/* Score dialog */}
       <ScoreDialog
         open={scoreDialogOpen}
         onClose={handleCloseScoreDialog}
         onHoleChange={(newHole) => {
-          // Important: When the dialog changes holes, update both hole states together
           setDialogHole(newHole);
-          // This helps ensure our currentHole stays in sync with dialogHole
-          // after saving scores and navigating in the dialog
           setCurrentHole(newHole);
         }}
         hole={dialogHole}
