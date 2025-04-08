@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
 import {
-  Container,
   Typography,
   Box,
   CircularProgress,
@@ -32,8 +31,8 @@ import HighlightsTab from "../components/tournamentDetails/highlightsTab/Highlig
 import { useStyles } from "../styles/hooks/useStyles";
 import { useTheme } from "@mui/material/styles";
 import { alpha } from "@mui/material/styles";
+import MobileBottomNavigation from "../components/tournamentDetails/MobileBottomNavigation";
 
-// Map tab names to their respective indices
 const TAB_INDICES = {
   leaderboard: 0,
   rounds: 1,
@@ -89,7 +88,7 @@ const TournamentDetail: React.FC = () => {
   const location = useLocation();
   const styles = useStyles();
   const theme = useTheme();
-  const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   // Get tab from URL query parameter
   const queryParams = new URLSearchParams(location.search);
@@ -443,7 +442,9 @@ const TournamentDetail: React.FC = () => {
 
   return (
     <Box sx={styles.layout.page.withBackground}>
-      <Box sx={styles.mobile.container.fullWidth}>
+      <Box
+        sx={{ ...styles.mobile.container.fullWidth, pb: isMobile ? "56px" : 0 }}
+      >
         <Box
           sx={{
             ...styles.card.glass,
@@ -468,45 +469,30 @@ const TournamentDetail: React.FC = () => {
 
           <EnhancedTournamentInfo />
 
-          {/* <TournamentInfo tournament={tournament} /> */}
-
-          <Box sx={styles.tabs.container}>
-            <Tabs
-              value={tabValue}
-              onChange={handleTabChange}
-              aria-label="tournament detail tabs"
-              variant={isSmall ? "scrollable" : "standard"}
-              scrollButtons={isSmall ? "auto" : false}
-              allowScrollButtonsMobile
-              textColor="inherit"
-              sx={styles.mobile.tabs.scrollable}
-            >
-              <Tab
-                label="Leaderboard"
-                sx={{ minWidth: isSmall ? "auto" : "initial" }}
-              />
-              <Tab
-                label={`Rounds (${tournament.rounds.length})`}
-                sx={{ minWidth: isSmall ? "auto" : "initial" }}
-              />
-              <Tab
-                label="Players"
-                sx={{ minWidth: isSmall ? "auto" : "initial" }}
-              />
-              {tournament.isTeamEvent && (
+          {/* Desktop Tabs (hidden on mobile) */}
+          {!isMobile && (
+            <Box sx={styles.tabs.container}>
+              <Tabs
+                value={tabValue}
+                onChange={handleTabChange}
+                aria-label="tournament detail tabs"
+                variant="standard"
+                textColor="inherit"
+              >
+                <Tab label="Leaderboard" />
+                <Tab label={`Rounds (${tournament.rounds.length})`} />
+                <Tab label="Players" />
+                {tournament.isTeamEvent && (
+                  <Tab label={`Teams (${tournament.teams.length})`} />
+                )}
                 <Tab
-                  label={`Teams (${tournament.teams.length})`}
-                  sx={{ minWidth: isSmall ? "auto" : "initial" }}
+                  label="Highlights"
+                  icon={<AchievementIcon />}
+                  iconPosition="start"
                 />
-              )}
-              <Tab
-                label="Highlights"
-                icon={<AchievementIcon />}
-                iconPosition="start"
-                sx={{ minWidth: isSmall ? "auto" : "initial" }}
-              />
-            </Tabs>
-          </Box>
+              </Tabs>
+            </Box>
+          )}
 
           {/* Leaderboard Tab */}
           <div
@@ -613,6 +599,17 @@ const TournamentDetail: React.FC = () => {
           </div>
         </Box>
       </Box>
+
+      {/* Mobile Bottom Navigation (only visible on mobile) */}
+      {isMobile && tournament && (
+        <MobileBottomNavigation
+          tournamentId={tournament.id}
+          activeTab={tabValue}
+          teamCount={tournament.teams.length}
+          roundCount={tournament.rounds.length}
+          isTeamEvent={tournament.isTeamEvent}
+        />
+      )}
 
       <TournamentDialogs
         tournament={tournament}

@@ -35,7 +35,6 @@ import GroupDetailPageContainer from "./components/tournamentDetails/roundsTab/G
 import Friends from "./pages/Friends";
 import RoundDetails from "./pages/RoundDetails";
 import RoundGroupDetailPage from "./components/round/RoundGroupDetailPage";
-import LinearLoader from "./components/LinearLoader";
 
 const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || "";
 
