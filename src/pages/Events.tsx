@@ -25,6 +25,7 @@ import PeopleIcon from "@mui/icons-material/People";
 import GolfCourseIcon from "@mui/icons-material/GolfCourse";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import SportsTennisIcon from "@mui/icons-material/SportsTennis";
+import HistoryIcon from "@mui/icons-material/History";
 
 import eventService from "../services/eventService";
 import friendsService from "../services/friendsService";
@@ -448,7 +449,33 @@ const Events: React.FC = () => {
     );
   };
 
+  // Render Empty Completed Events State
+  const renderEmptyCompletedState = () => {
+    return (
+      <Box sx={styles.feedback.emptyState.container}>
+        <HistoryIcon sx={styles.feedback.emptyState.icon} />
+        <Typography variant="h6" sx={styles.feedback.emptyState.title}>
+          No Completed Events
+        </Typography>
+        <Typography sx={styles.feedback.emptyState.description}>
+          You don't have any completed events yet.
+        </Typography>
+      </Box>
+    );
+  };
+
   const totalInvitations = invitations.length + roundInvitations.length;
+
+  // Filter events based on status
+  const activeAndUpcomingEvents = events.filter(
+    (event) =>
+      event.data.status?.toLowerCase() === "active" ||
+      event.data.status?.toLowerCase() === "upcoming"
+  );
+
+  const completedEvents = events.filter(
+    (event) => event.data.status?.toLowerCase() === "completed"
+  );
 
   return (
     <Box sx={styles.layout.page.withBackground}>
@@ -467,6 +494,14 @@ const Events: React.FC = () => {
               <Tab label="My Events" />
               <Tab
                 label={
+                  <Box sx={{ display: "flex", alignItems: "center" }}>
+                    <HistoryIcon sx={{ mr: 1, fontSize: "1.2rem" }} />
+                    <Typography sx={{ color: "white" }}>Completed</Typography>
+                  </Box>
+                }
+              />
+              <Tab
+                label={
                   <Badge badgeContent={totalInvitations} color="error" max={99}>
                     <Typography sx={{ color: "white" }}>Invitations</Typography>
                   </Badge>
@@ -475,7 +510,6 @@ const Events: React.FC = () => {
             </Tabs>
           </Box>
 
-          {/* Tab Panels */}
           <div
             role="tabpanel"
             hidden={tabValue !== 0}
@@ -484,9 +518,9 @@ const Events: React.FC = () => {
           >
             {tabValue === 0 && (
               <Box sx={styles.tabs.panel}>
-                {events.length > 0 ? (
+                {activeAndUpcomingEvents.length > 0 ? (
                   <Grid container spacing={3}>
-                    {events.map((event) => (
+                    {activeAndUpcomingEvents.map((event) => (
                       <Grid item xs={12} sm={6} md={4} key={event.id}>
                         {renderEventCard(event)}
                       </Grid>
@@ -507,6 +541,29 @@ const Events: React.FC = () => {
           >
             {tabValue === 1 && (
               <Box sx={styles.tabs.panel}>
+                {completedEvents.length > 0 ? (
+                  <Grid container spacing={3}>
+                    {completedEvents.map((event) => (
+                      <Grid item xs={12} sm={6} md={4} key={event.id}>
+                        {renderEventCard(event)}
+                      </Grid>
+                    ))}
+                  </Grid>
+                ) : (
+                  renderEmptyCompletedState()
+                )}
+              </Box>
+            )}
+          </div>
+
+          <div
+            role="tabpanel"
+            hidden={tabValue !== 2}
+            id="events-tabpanel-2"
+            aria-labelledby="events-tab-2"
+          >
+            {tabValue === 2 && (
+              <Box sx={styles.tabs.panel}>
                 <InvitationList
                   invitations={invitations}
                   roundInvitations={roundInvitations}
@@ -515,70 +572,6 @@ const Events: React.FC = () => {
                   onAcceptRound={handleAcceptRound}
                   onDeclineRound={handleDeclineRound}
                 />
-
-                {/* Display round invitations here */}
-                {roundInvitations.length > 0 && (
-                  <Box sx={{ mt: 4 }}>
-                    <Typography variant="h5" sx={{ mb: 2 }}>
-                      Round Invitations
-                    </Typography>
-                    <Grid container spacing={3}>
-                      {roundInvitations.map((round) => (
-                        <Grid item xs={12} key={round.id}>
-                          {/* You'll need to create RoundInvitationCard component */}
-                          <Box sx={styles.card.invitation}>
-                            <Box sx={{ p: 3 }}>
-                              <Typography variant="h6">
-                                Round Invitation: {round.name}
-                              </Typography>
-                              <Divider sx={{ my: 2 }} />
-                              <Box
-                                sx={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  mb: 1,
-                                }}
-                              >
-                                <CalendarTodayIcon sx={{ mr: 1 }} />
-                                <Typography>
-                                  {new Date(round.date).toLocaleDateString()}
-                                </Typography>
-                              </Box>
-                              {round.location && (
-                                <Box
-                                  sx={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    mb: 1,
-                                  }}
-                                >
-                                  <LocationOnIcon sx={{ mr: 1 }} />
-                                  <Typography>{round.location}</Typography>
-                                </Box>
-                              )}
-                              <Box sx={{ mt: 2, display: "flex", gap: 1 }}>
-                                <Button
-                                  variant="contained"
-                                  color="primary"
-                                  onClick={() => handleAcceptRound(round.id)}
-                                >
-                                  Accept
-                                </Button>
-                                <Button
-                                  variant="outlined"
-                                  onClick={() => handleDeclineRound(round.id)}
-                                  sx={styles.button.danger}
-                                >
-                                  Decline
-                                </Button>
-                              </Box>
-                            </Box>
-                          </Box>
-                        </Grid>
-                      ))}
-                    </Grid>
-                  </Box>
-                )}
               </Box>
             )}
           </div>

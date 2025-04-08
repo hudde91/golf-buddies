@@ -34,7 +34,6 @@ const Home: React.FC = () => {
                 mb: { xs: 6, md: 0 },
               }}
             >
-              {/* Page Header using design system */}
               <Box sx={{ mb: 4 }}>
                 <Typography variant="h4" sx={styles.text.heading.page}>
                   Golf Tournaments Made Simple
@@ -46,7 +45,6 @@ const Home: React.FC = () => {
                 </Typography>
               </Box>
 
-              {/* Features section */}
               <Box
                 sx={{
                   display: "flex",
@@ -112,7 +110,6 @@ const Home: React.FC = () => {
   );
 };
 
-// Feature component for the feature highlights
 const Feature: React.FC<FeatureProps> = ({ icon, title, description }) => {
   const styles = useStyles();
 
