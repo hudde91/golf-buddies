@@ -14,6 +14,10 @@ import {
   DialogActions,
   Grid,
   Divider,
+  BottomNavigation,
+  BottomNavigationAction,
+  Paper,
+  Fab,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
@@ -26,9 +30,11 @@ import GolfCourseIcon from "@mui/icons-material/GolfCourse";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import SportsTennisIcon from "@mui/icons-material/SportsTennis";
 import HistoryIcon from "@mui/icons-material/History";
+import AddIcon from "@mui/icons-material/Add";
+import NotificationsIcon from "@mui/icons-material/Notifications";
 
 import eventService from "../services/eventService";
-import friendsService from "../services/friendsService";
+import friendsService, { Friend } from "../services/friendsService";
 import { Event, Tournament, Player, Tour, Round } from "../types/event";
 import TournamentForm from "../components/tournament/TournamentForm";
 import TourForm from "../components/tour/TourForm";
@@ -54,7 +60,7 @@ const Events: React.FC = () => {
   const [eventType, setEventType] = useState<
     "tournament" | "tour" | "round" | null
   >(null);
-  const [friends, setFriends] = useState([]);
+  const [friends, setFriends] = useState<Friend[]>([]);
   const [loadingFriends, setLoadingFriends] = useState(true);
 
   useEffect(() => {
@@ -246,13 +252,13 @@ const Events: React.FC = () => {
   }
 
   const renderEventCard = (event: Event) => {
-    // Extract the common data based on event type
+    // Extract the common data based on event type (this stays the same)
     const eventData = event.data;
     const name = eventData.name;
     const description = eventData.description || "No description";
     const status = eventData.status!;
 
-    // Get players array based on event type
+    // Get players array based on event type (this stays the same)
     const players =
       event.type === "tournament"
         ? (eventData as Tournament).players
@@ -260,7 +266,7 @@ const Events: React.FC = () => {
         ? (eventData as Tour).players || []
         : (eventData as Round).players || [];
 
-    // Get date and location based on event type
+    // Get date and location based on event type (this stays the same)
     const date =
       event.type === "tournament"
         ? (eventData as Tournament).startDate
@@ -275,7 +281,6 @@ const Events: React.FC = () => {
         ? (eventData as Round).location
         : undefined;
 
-    // Get specific details based on event type
     const eventSpecificDetails = () => {
       if (event.type === "round") {
         const round = eventData as Round;
@@ -303,7 +308,6 @@ const Events: React.FC = () => {
       return null;
     };
 
-    // Get specific icon based on event type
     const getEventTypeIcon = () => {
       switch (event.type) {
         case "tournament":
@@ -352,9 +356,15 @@ const Events: React.FC = () => {
             {description}
           </Typography>
 
-          {/* Event-specific details */}
           {eventSpecificDetails() && (
-            <Box sx={{ mt: 1, display: "flex", gap: 1, flexWrap: "wrap" }}>
+            <Box
+              sx={{
+                mt: 1,
+                display: "flex",
+                gap: 1,
+                flexWrap: "wrap",
+              }}
+            >
               {eventSpecificDetails()}
             </Box>
           )}
@@ -389,12 +399,14 @@ const Events: React.FC = () => {
           </Box>
         </Box>
 
-        {/* Card Actions */}
         <Box sx={styles.card.actions.centered}>
           <Button
             variant="contained"
-            onClick={() => handleViewEvent(event.id, event.type)}
-            sx={styles.button.viewDetails}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleViewEvent(event.id, event.type);
+            }}
+            sx={styles.button.primary}
             fullWidth
           >
             View Details
@@ -470,16 +482,23 @@ const Events: React.FC = () => {
                 </Typography>
               </Box>
             </Box>
-            {/* TODO: When in mobile view I want Button to be placed in a bottom navigation */}
             <Button
               variant="contained"
               onClick={handleCreateEvent}
-              sx={styles.button.create}
+              sx={{
+                ...styles.button.create,
+                display: { xs: "none", sm: "block" },
+              }}
             >
               Create Event
             </Button>
           </Box>
-          <Box sx={styles.tabs.container}>
+          <Box
+            sx={{
+              ...styles.tabs.container,
+              display: { xs: "none", sm: "block" },
+            }}
+          >
             <Tabs
               value={tabValue}
               onChange={handleTabChange}
@@ -573,6 +592,44 @@ const Events: React.FC = () => {
           </div>
         </Box>
       </Container>
+      {/* TODO: Add this as a BottomNavigation, make it bigger and in the center 
+      In it it should say Play Golf instead of Icon */}
+      <Fab
+        color="primary"
+        aria-label="create event"
+        onClick={handleCreateEvent}
+        sx={styles.bottomNavigation.fab}
+      >
+        <AddIcon />
+      </Fab>
+
+      <Paper sx={styles.bottomNavigation.container}>
+        <BottomNavigation
+          value={tabValue}
+          onChange={handleTabChange}
+          showLabels
+        >
+          <BottomNavigationAction
+            label="My Events"
+            icon={<EventIcon />}
+            sx={styles.bottomNavigation.action}
+          />
+          <BottomNavigationAction
+            label="Completed"
+            icon={<HistoryIcon />}
+            sx={styles.bottomNavigation.action}
+          />
+          <BottomNavigationAction
+            label="Invitations"
+            icon={
+              <Badge badgeContent={totalInvitations} color="error" max={99}>
+                <NotificationsIcon />
+              </Badge>
+            }
+            sx={styles.bottomNavigation.action}
+          />
+        </BottomNavigation>
+      </Paper>
 
       <Dialog
         open={openNewEvent}

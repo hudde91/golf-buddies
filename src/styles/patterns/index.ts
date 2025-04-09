@@ -7,3 +7,4 @@ export * from "./tournamentCard";
 export * from "./tournamentLeaderboard";
 export * from "./tournamentScorecard";
 export * from "./highlightsFeed";
+export * from "./bottomNavigation";

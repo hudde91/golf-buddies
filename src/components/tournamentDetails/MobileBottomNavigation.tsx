@@ -63,44 +63,15 @@ const MobileBottomNavigation: React.FC<MobileBottomNavigationProps> = ({
   };
 
   return (
-    <Paper
-      sx={{
-        position: "fixed",
-        bottom: 0,
-        left: 0,
-        right: 0,
-        zIndex: 1000,
-        backgroundColor: "rgba(0, 0, 0, 0.9)",
-        backdropFilter: "blur(10px)",
-        borderTop: "1px solid rgba(255, 255, 255, 0.1)",
-      }}
-      elevation={3}
-    >
+    <Paper sx={styles.bottomNavigation.container}>
       <BottomNavigation
         value={activeTab}
         onChange={handleNavigationChange}
         showLabels
-        sx={{
-          backgroundColor: "transparent",
-          "& .MuiBottomNavigationAction-root": {
-            color: "rgba(255, 255, 255, 0.5)",
-            minWidth: 0,
-            maxWidth: "none",
-            "&.Mui-selected": {
-              color: "white",
-            },
-          },
-          "& .MuiBottomNavigationAction-label": {
-            fontSize: "0.625rem",
-            "&.Mui-selected": {
-              fontSize: "0.675rem",
-            },
-          },
-        }}
       >
         <BottomNavigationAction
           label="Leaderboard"
-          icon={<LeaderboardIcon />}
+          icon={<LeaderboardIcon sx={styles.bottomNavigation.action} />}
         />
         <BottomNavigationAction
           label="Rounds"
@@ -109,6 +80,7 @@ const MobileBottomNavigation: React.FC<MobileBottomNavigationProps> = ({
               <RoundsIcon />
             </Badge>
           }
+          sx={styles.bottomNavigation.action}
         />
         <BottomNavigationAction label="Players" icon={<PlayersIcon />} />
         {isTeamEvent && (
@@ -119,9 +91,14 @@ const MobileBottomNavigation: React.FC<MobileBottomNavigationProps> = ({
                 <TeamsIcon />
               </Badge>
             }
+            sx={styles.bottomNavigation.action}
           />
         )}
-        <BottomNavigationAction label="Highlights" icon={<HighlightsIcon />} />
+        <BottomNavigationAction
+          label="Highlights"
+          icon={<HighlightsIcon />}
+          sx={styles.bottomNavigation.action}
+        />
       </BottomNavigation>
     </Paper>
   );

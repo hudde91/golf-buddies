@@ -359,7 +359,6 @@ const RoundDetails: React.FC = () => {
           )}
         </Box>
 
-        {/* Round Info Card */}
         <Paper sx={styles.card.glass}>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
@@ -438,7 +437,6 @@ const RoundDetails: React.FC = () => {
           </Grid>
         </Paper>
 
-        {/* Players and Groups Section */}
         <Box sx={{ mt: 4 }}>
           <Box
             sx={{
@@ -448,8 +446,6 @@ const RoundDetails: React.FC = () => {
               mb: 2,
             }}
           >
-            {/* <Typography variant="h5">Player Groups</Typography> */}
-
             {isCreator && (
               <Button
                 variant="contained"
@@ -618,13 +614,12 @@ const RoundDetails: React.FC = () => {
           </Grid>
         </Box>
 
-        {/* Scorecard Section - only show if there are players */}
+        {/* TODO: Replace this with a Leaderboard instead of the players */}
         {round.players && round.players.length > 0 && (
           <Box sx={{ mt: 4 }}>
             <Typography variant="h5" gutterBottom>
               Scorecard
             </Typography>
-
             <Paper sx={styles.card.glass}>
               {round.players.map((player) => (
                 <Box key={player.id} sx={{ mb: 4 }}>

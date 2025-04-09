@@ -1,60 +1,61 @@
 // src/styles/patterns/mobile.ts
-// This new file will contain mobile-specific style patterns
-
 import { Theme } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 
 export const mobilePatterns = {
-  // Container and layout patterns
+  // Existing patterns
   container: {
     fullWidth: (theme: Theme) => ({
       width: "100%",
-      maxWidth: { xs: "100%", sm: "lg" },
-      px: { xs: 0, sm: 2, md: 4 },
-      mx: "auto",
+      px: { xs: 0, sm: 2, md: 3 },
     }),
     edgeToEdge: {
       mx: { xs: -2, sm: 0 },
-      width: { xs: "calc(100% + 32px)", sm: "100%" },
     },
   },
 
-  // Card patterns
   card: {
     edgeToEdge: (theme: Theme) => ({
       borderRadius: { xs: 0, sm: 2 },
+      mx: { xs: -2, sm: 0 },
       border: {
         xs: "none",
         sm: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
       },
     }),
     bottomAnchored: (theme: Theme) => ({
-      borderRadius: { xs: "16px 16px 0 0", sm: 2 },
-      border: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
-      position: { xs: "absolute", sm: "relative" },
-      bottom: { xs: 0, sm: "auto" },
-      width: { xs: "100%", sm: "auto" },
+      position: "fixed",
+      bottom: 0,
+      left: 0,
+      right: 0,
+      zIndex: 10,
+      borderRadius: "16px 16px 0 0",
+      borderBottom: "none",
+      borderLeft: "none",
+      borderRight: "none",
+      borderTop: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
+      py: 2,
+      px: 3,
+      backgroundColor: alpha(theme.palette.common.black, 0.8),
+      backdropFilter: "blur(10px)",
     }),
     touchFeedback: {
-      transition: "transform 0.2s",
       "&:active": {
         transform: { xs: "scale(0.98)", sm: "none" },
+        transition: "transform 0.1s ease",
       },
     },
   },
 
-  // Button patterns
   button: {
     touchable: (theme: Theme) => ({
-      borderRadius: { xs: 28, sm: 8 },
-      py: { xs: 1.2, sm: 1 },
-      px: { xs: 3, sm: 2 },
-      textTransform: "none",
-      fontWeight: 500,
+      py: { xs: 1.5, sm: 1 },
+      minHeight: { xs: 48, sm: "auto" },
+      borderRadius: { xs: 4, sm: 4 },
       "&:active": {
         transform: { xs: "scale(0.98)", sm: "none" },
+        transition: "transform 0.1s ease",
       },
-      minHeight: { xs: "44px", sm: "36px" },
     }),
     fullWidthMobile: {
       width: { xs: "100%", sm: "auto" },
@@ -62,101 +63,241 @@ export const mobilePatterns = {
     touchFeedback: {
       "&:active": {
         transform: { xs: "scale(0.98)", sm: "none" },
+        transition: "transform 0.1s ease",
       },
     },
   },
 
-  // Tab patterns
+  // Existing patterns continued
   tabs: {
     scrollable: {
-      "& .MuiTabs-flexContainer": {
-        gap: { xs: 1, sm: 0 },
-      },
-      "& .MuiTab-root": {
-        minWidth: { xs: "auto", sm: 100 },
-        px: { xs: 2, sm: 3 },
-        py: { xs: 1.5, sm: 1 },
-        fontSize: { xs: "0.85rem", sm: "0.9rem" },
+      ".MuiTabs-flexContainer": {
+        overflowX: "auto",
+        flexWrap: "nowrap",
+        "&::-webkit-scrollbar": {
+          display: "none",
+        },
       },
     },
   },
 
-  // List patterns
   list: {
     touchable: (theme: Theme) => ({
       "& .MuiListItem-root": {
-        py: { xs: 1.5, sm: 1 },
-        minHeight: "48px",
+        py: { xs: 2, sm: 1.5 },
         "&:active": {
-          backgroundColor: alpha(theme.palette.primary.main, 0.1),
+          backgroundColor: {
+            xs: alpha(theme.palette.primary.main, 0.1),
+            sm: "transparent",
+          },
         },
       },
     }),
     horizontal: {
-      display: { xs: "flex", md: "block" },
-      flexDirection: "column",
-      overflowX: { xs: "auto", md: "hidden" },
-      whiteSpace: { xs: "nowrap", md: "normal" },
-      py: { xs: 1, md: 0 },
+      display: "flex",
+      overflowX: "auto",
+      flexWrap: "nowrap",
+      py: 1,
+      px: { xs: 2, sm: 0 },
+      "&::-webkit-scrollbar": {
+        display: "none",
+      },
+      "& > *": {
+        flex: "0 0 auto",
+        mr: 2,
+        minWidth: { xs: 160, sm: 200 },
+      },
     },
   },
 
-  // Dialog patterns
   dialog: {
     bottomSheet: (theme: Theme) => ({
-      position: { xs: "absolute", sm: "relative" },
+      position: { xs: "fixed", sm: "relative" },
       bottom: { xs: 0, sm: "auto" },
-      m: { xs: 0, sm: 2 },
+      left: { xs: 0, sm: "auto" },
+      right: { xs: 0, sm: "auto" },
+      margin: { xs: 0, sm: 2 },
       borderRadius: { xs: "16px 16px 0 0", sm: 2 },
-      maxHeight: { xs: "85vh", sm: "none" },
+      maxHeight: { xs: "90vh", sm: "80vh" },
       width: { xs: "100%", sm: "auto" },
+      backgroundColor: alpha(theme.palette.common.black, 0.8),
+      backdropFilter: "blur(10px)",
+      border: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
     }),
   },
 
-  // Grid patterns
   grid: {
     responsive: {
-      spacing: { xs: 1, sm: 3 },
+      display: "grid",
+      gridTemplateColumns: {
+        xs: "1fr",
+        sm: "repeat(2, 1fr)",
+        md: "repeat(3, 1fr)",
+      },
+      gap: { xs: 2, sm: 3 },
     },
   },
 
-  // Typography patterns
   typography: {
     responsive: {
-      fontSize: { xs: "0.9rem", sm: "1rem" },
-    },
-    adaptive: {
+      h4: {
+        fontSize: { xs: "1.5rem", sm: "2rem" },
+        lineHeight: { xs: 1.3, sm: 1.4 },
+      },
       h5: {
-        fontSize: { xs: "1.2rem", sm: "1.5rem" },
+        fontSize: { xs: "1.25rem", sm: "1.5rem" },
+        lineHeight: { xs: 1.3, sm: 1.4 },
       },
       h6: {
-        fontSize: { xs: "1rem", sm: "1.25rem" },
+        fontSize: { xs: "1.1rem", sm: "1.25rem" },
+        lineHeight: { xs: 1.3, sm: 1.4 },
       },
-      body1: {
-        fontSize: { xs: "0.9rem", sm: "1rem" },
+      subtitle: {
+        fontSize: { xs: "0.875rem", sm: "1rem" },
       },
-      body2: {
-        fontSize: { xs: "0.8rem", sm: "0.875rem" },
-      },
+    },
+    adaptive: {
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      display: "-webkit-box",
+      WebkitLineClamp: { xs: 2, sm: 3 },
+      WebkitBoxOrient: "vertical",
     },
   },
 
-  // Spacing patterns
   spacing: {
     touch: {
-      mt: { xs: 2, sm: 1.5 },
-      mb: { xs: 2, sm: 1.5 },
-      py: { xs: 1.5, sm: 1 },
-      px: { xs: 2, sm: 1.5 },
+      mb: { xs: 3, sm: 2 },
+      mt: { xs: 3, sm: 2 },
+      mx: { xs: 2, sm: 0 },
+      py: { xs: 2, sm: 1.5 },
+      px: { xs: 2, sm: 3 },
     },
   },
 
-  // Layout patterns
   layout: {
     stackedOnMobile: {
       flexDirection: { xs: "column", sm: "row" },
-      alignItems: { xs: "flex-start", sm: "center" },
-      gap: { xs: 2, sm: 0 },
+      alignItems: { xs: "stretch", sm: "center" },
+      gap: { xs: 2, sm: 3 },
+    },
+  },
+
+  navigation: {
+    bottom: {
+      container: {
+        position: "fixed",
+        bottom: 0,
+        left: 0,
+        right: 0,
+        zIndex: 1000,
+        display: { xs: "block", sm: "none" }, // Only show on mobile
+        backgroundColor: (theme: Theme) =>
+          alpha(theme.palette.common.black, 0.8),
+        backdropFilter: "blur(10px)",
+        borderTop: (theme: Theme) =>
+          `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
+      },
+      fab: {
+        position: "fixed",
+        bottom: 16,
+        right: 16,
+        zIndex: 1001,
+        display: { xs: "flex", sm: "none" }, // Only show on mobile
+      },
+      action: {
+        color: "white",
+        "&.Mui-selected": {
+          color: (theme: Theme) => theme.palette.primary.main,
+        },
+      },
+    },
+  },
+
+  friends: {
+    listItem: {
+      responsive: (theme: Theme) => ({
+        flexDirection: { xs: "column", sm: "row" },
+        alignItems: { xs: "flex-start", sm: "center" },
+        py: { xs: 2, sm: 1 },
+        "& .MuiListItemText-root": {
+          mb: { xs: 2, sm: 0 },
+        },
+      }),
+      actionsContainer: {
+        display: "flex",
+        justifyContent: { xs: "flex-start", sm: "flex-end" },
+        width: { xs: "100%", sm: "auto" },
+        ml: { xs: 9, sm: 0 },
+        mt: { xs: 1, sm: 0 },
+      },
+    },
+    actionButton: {
+      mr: 1,
+      borderRadius: 2,
+      py: { xs: 1, sm: 0.5 },
+      minWidth: { xs: 100, sm: "auto" },
+    },
+  },
+
+  events: {
+    card: {
+      responsive: (theme: Theme) => ({
+        ...theme.card.event(theme),
+        width: { xs: "100%", sm: "auto" },
+        height: { xs: "auto", sm: "100%" },
+        minHeight: { xs: "auto", sm: "280px" },
+        p: { xs: 2, sm: 3 },
+      }),
+      content: {
+        flex: 1,
+        display: "flex",
+        flexDirection: "column",
+      },
+      infoContainer: {
+        flexDirection: { xs: "column", sm: "row" },
+        alignItems: { xs: "flex-start", sm: "center" },
+        gap: { xs: 1, sm: 2 },
+        "& > *": {
+          width: { xs: "100%", sm: "auto" },
+        },
+      },
+      chips: {
+        container: {
+          flexWrap: "wrap",
+          gap: { xs: 1, sm: 1.5 },
+        },
+      },
+      title: {
+        fontSize: { xs: "1.1rem", sm: "1.25rem" },
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        display: "-webkit-box",
+        WebkitLineClamp: 2,
+        WebkitBoxOrient: "vertical",
+      },
+      description: {
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        display: "-webkit-box",
+        WebkitLineClamp: { xs: 2, sm: 3 },
+        WebkitBoxOrient: "vertical",
+      },
+      infoItem: {
+        width: { xs: "100%", sm: "auto" },
+        "& .MuiTypography-root": {
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+          maxWidth: { xs: "240px", sm: "160px" },
+        },
+      },
+      actions: {
+        mt: { xs: 2, sm: "auto" },
+        "& .MuiButton-root": {
+          py: { xs: 1.2, sm: 1 },
+        },
+      },
     },
   },
 };

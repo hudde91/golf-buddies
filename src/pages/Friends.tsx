@@ -147,7 +147,7 @@ const Friends: React.FC = () => {
           value={tabValue}
           onChange={handleTabChange}
           aria-label="friends tabs"
-          sx={styles.tabs.container}
+          sx={styles.friends.tabs.container(theme)}
           variant="fullWidth"
         >
           <Tab
@@ -229,12 +229,12 @@ const Friends: React.FC = () => {
               ))}
             </List>
           ) : (
-            <Box sx={styles.feedback.emptyState.container}>
-              <PersonIcon sx={styles.feedback.emptyState.icon} />
-              <Typography variant="h6" sx={styles.feedback.emptyState.title}>
+            <Box sx={styles.friends.empty.container(theme)}>
+              <PersonIcon sx={styles.friends.empty.icon(theme)} />
+              <Typography variant="h6" sx={styles.friends.empty.title(theme)}>
                 No Friends Yet
               </Typography>
-              <Typography sx={styles.feedback.emptyState.description}>
+              <Typography sx={styles.friends.empty.description(theme)}>
                 Add friends to connect and play golf together
               </Typography>
               <Button
@@ -254,62 +254,53 @@ const Friends: React.FC = () => {
             <List sx={{ width: "100%" }}>
               {pendingFriends.map((friend) => (
                 <React.Fragment key={friend.id}>
-                  {/* TODO: This does not look good in mobile view, the Icons gets positioned above the ListItemText below. 
-                      Also the icons are not really visible  */}
-                  <ListItem
-                    secondaryAction={
-                      <Box>
-                        <IconButton
-                          edge="end"
-                          aria-label="accept"
-                          onClick={() => handleAcceptFriend(friend.id)}
-                          sx={{
-                            color: theme.palette.success.main,
-                            mr: 1,
-                            "&:hover": {
-                              backgroundColor: alpha(
-                                theme.palette.success.main,
-                                0.1
-                              ),
-                            },
-                          }}
-                        >
-                          <CheckIcon />
-                        </IconButton>
-                        <IconButton
-                          edge="end"
-                          aria-label="reject"
-                          onClick={() => handleRejectFriend(friend.id)}
-                          sx={{
-                            color: theme.palette.error.main,
-                            "&:hover": {
-                              backgroundColor: alpha(
-                                theme.palette.error.main,
-                                0.1
-                              ),
-                            },
-                          }}
-                        >
-                          <CloseIcon />
-                        </IconButton>
-                      </Box>
-                    }
-                  >
-                    <ListItemAvatar>
-                      <Avatar sx={styles.avatars.standard()}>
-                        <PersonIcon />
-                      </Avatar>
-                    </ListItemAvatar>
-                    <ListItemText
-                      primary={friend.name || friend.email}
-                      secondary={!friend.name ? "" : friend.email}
-                      primaryTypographyProps={{
-                        fontWeight: 500,
+                  <ListItem sx={styles.friends.list.responsive}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        width: "100%",
+                        mb: { xs: 1, sm: 0 },
                       }}
-                      secondaryTypographyProps={{
-                        color: alpha(theme.palette.text.primary, 0.7),
-                      }}
-                    />
+                    >
+                      <ListItemAvatar>
+                        <Avatar sx={styles.avatars.standard()}>
+                          <PersonIcon />
+                        </Avatar>
+                      </ListItemAvatar>
+                      <ListItemText
+                        primary={friend.name || friend.email}
+                        secondary={!friend.name ? "" : friend.email}
+                        primaryTypographyProps={{
+                          fontWeight: 500,
+                        }}
+                        secondaryTypographyProps={{
+                          color: alpha(theme.palette.text.primary, 0.7),
+                        }}
+                      />
+                    </Box>
+                    <Box sx={styles.friends.list.actionsContainer}>
+                      <Button
+                        size="small"
+                        variant="contained"
+                        color="success"
+                        startIcon={<CheckIcon />}
+                        onClick={() => handleAcceptFriend(friend.id)}
+                        sx={styles.friends.buttons.actionButton}
+                      >
+                        Accept
+                      </Button>
+                      <Button
+                        size="small"
+                        variant="outlined"
+                        color="error"
+                        startIcon={<CloseIcon />}
+                        onClick={() => handleRejectFriend(friend.id)}
+                        sx={styles.friends.buttons.actionButton}
+                      >
+                        Decline
+                      </Button>
+                    </Box>
                   </ListItem>
                   <Divider
                     variant="inset"

@@ -22,17 +22,6 @@ export const tabs = {
     },
   }),
 
-  scrollable: (theme: Theme) => ({
-    // For scrollable tabs on mobile
-    "& .MuiTabs-flexContainer": {
-      gap: { xs: 1, sm: 0 }, // Gap between scrollable tabs
-    },
-    "& .MuiTabs-scrollButtons": {
-      opacity: 0.6,
-    },
-    // Add other scrollable tab styles
-  }),
-
   panel: {
     p: { xs: 1, sm: 2, md: 3 }, // Less padding on mobile
   },

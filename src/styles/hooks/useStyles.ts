@@ -26,6 +26,7 @@ import {
   tournamentLeaderboard,
   tournamentScorecard,
   highlightsFeed,
+  bottomNavigation,
 } from "../patterns";
 import { getStatusColor } from "../patterns/tournamentCard";
 import { tournamentRounds } from "../patterns/tournamentRounds";
@@ -63,6 +64,7 @@ export const useStyles = () => {
       media: card.media,
     },
 
+    // Mobile patterns
     mobile: {
       container: {
         fullWidth: mobilePatterns.container.fullWidth(theme),
@@ -349,6 +351,12 @@ export const useStyles = () => {
       backButtonContainer: navigation.backButtonContainer,
       link: navigation.link(theme),
       breadcrumbs: navigation.breadcrumbs(theme),
+    },
+
+    bottomNavigation: {
+      container: bottomNavigation.navigation.container,
+      fab: bottomNavigation.navigation.fab,
+      action: bottomNavigation.navigation.action,
     },
 
     getPositionStyle: (position: number) => {
@@ -761,44 +769,23 @@ export const useStyles = () => {
       getTourChip: tour.header.tourChip(theme),
       getTeamHeader: (color: string) => tour.teamHeader(color)(theme),
     },
+
     friends: {
-      dialog: {
-        paper: friends.dialog.paper(theme),
-        title: friends.dialog.title(theme),
-        content: friends.dialog.content,
-      },
-      tabs: {
-        container: friends.tabs.container(theme),
-      },
+      dialog: friends.dialog,
+      tabs: friends.tabs,
       list: {
-        container: friends.list.container(theme),
-        item: friends.list.item(theme),
-        avatar: friends.list.avatar(theme),
-        name: friends.list.name,
-        email: friends.list.email(theme),
+        ...friends.list,
+        responsive: friends.list.responsive(theme),
+        actionsContainer: friends.list.actionsContainer,
       },
-      search: {
-        container: friends.search.container(theme),
-        field: friends.search.field(theme),
-      },
-      empty: {
-        container: friends.empty.container(theme),
-        icon: friends.empty.icon(theme),
-        title: friends.empty.title(theme),
-        description: friends.empty.description(theme),
-      },
-      actions: {
-        container: friends.actions.container(theme),
-        accept: friends.actions.accept(theme),
-        reject: friends.actions.reject(theme),
-        remove: friends.actions.remove(theme),
-      },
+      search: friends.search,
+      empty: friends.empty,
+      actions: friends.actions,
       buttons: {
-        add: friends.buttons.add(theme),
+        ...friends.buttons,
+        actionButton: friends.buttons.actionButton,
       },
-      badge: {
-        container: friends.badge.container(theme),
-      },
+      badge: friends.badge,
     },
   };
 };
