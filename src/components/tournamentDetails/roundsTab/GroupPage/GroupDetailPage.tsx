@@ -326,66 +326,6 @@ const GroupDetailPage: React.FC<GroupDetailPageProps> = ({
                   );
                 })}
               </Grid>
-
-              {/* TODO Move this into ScoreDialog and replace the Previous hole and handleSaveAndNext button. The look and feel should be these buttons but the logic from the other buttons should be places in these */}
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  mt: 2,
-                  gap: 4,
-                }}
-              >
-                <IconButton
-                  onClick={() => navigateHole("prev")}
-                  disabled={currentHole <= 1}
-                  size="large"
-                  sx={{
-                    backgroundColor: alpha(theme.palette.common.white, 0.1),
-                    color:
-                      currentHole <= 1
-                        ? alpha(theme.palette.common.white, 0.3)
-                        : theme.palette.common.white,
-                    "&:hover": {
-                      backgroundColor: alpha(theme.palette.common.white, 0.2),
-                    },
-                  }}
-                >
-                  <NavigateBeforeIcon fontSize="large" />
-                </IconButton>
-
-                <IconButton
-                  onClick={() => openScoreDialog(currentHole)}
-                  size="large"
-                  sx={{
-                    backgroundColor: alpha(theme.palette.primary.main, 0.3),
-                    color: theme.palette.primary.main,
-                    "&:hover": {
-                      backgroundColor: alpha(theme.palette.primary.main, 0.4),
-                    },
-                  }}
-                >
-                  <GolfCourseIcon fontSize="large" />
-                </IconButton>
-
-                <IconButton
-                  onClick={() => navigateHole("next")}
-                  disabled={currentHole >= holeCount}
-                  size="large"
-                  sx={{
-                    backgroundColor: alpha(theme.palette.common.white, 0.1),
-                    color:
-                      currentHole >= holeCount
-                        ? alpha(theme.palette.common.white, 0.3)
-                        : theme.palette.common.white,
-                    "&:hover": {
-                      backgroundColor: alpha(theme.palette.common.white, 0.2),
-                    },
-                  }}
-                >
-                  <NavigateNextIcon fontSize="large" />
-                </IconButton>
-              </Box>
             </Box>
           </Collapse>
         </Paper>

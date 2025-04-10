@@ -1,4 +1,3 @@
-// src/components/shared/ScoreDialog.tsx
 import React, { useState, useEffect } from "react";
 import {
   Box,
@@ -12,6 +11,7 @@ import {
   Avatar,
   IconButton,
   Divider,
+  alpha,
 } from "@mui/material";
 import {
   Add as AddIcon,
@@ -19,10 +19,12 @@ import {
   NavigateBefore as NavigateBeforeIcon,
   NavigateNext as NavigateNextIcon,
   Close as CloseIcon,
+  GolfCourse as GolfCourseIcon,
 } from "@mui/icons-material";
 import { Player } from "../../types/event";
 import { useStyles } from "../../styles/hooks/useStyles";
 import { getScoreToParColor } from "./scoringUtils";
+import { useTheme } from "@mui/material/styles";
 
 interface ScoreDialogProps {
   open: boolean;
@@ -51,6 +53,7 @@ const ScoreDialog: React.FC<ScoreDialogProps> = ({
   totalHoles = 18,
 }) => {
   const styles = useStyles();
+  const theme = useTheme();
   const [scores, setScores] = useState<Record<string, number>>({});
   const [currentHole, setCurrentHole] = useState<number>(hole);
 
@@ -113,17 +116,29 @@ const ScoreDialog: React.FC<ScoreDialogProps> = ({
       onSave(playerId, score);
     });
 
-    // Move to next hole or close if last hole
+    // If not on the last hole, move to next
     if (currentHole < totalHoles) {
-      const nextHole = currentHole + 1;
-
-      // Important: This updates both the internal state and parent component state
-      setCurrentHole(nextHole);
-      onHoleChange(nextHole);
+      navigateToHole("next");
     } else {
       // We're on the last hole, so close dialog
       onClose();
     }
+  };
+
+  const navigateToHole = (direction: "prev" | "next") => {
+    // Save current scores before navigating
+    Object.entries(scores).forEach(([playerId, score]) => {
+      onSave(playerId, score);
+    });
+
+    const newHole =
+      direction === "prev"
+        ? Math.max(1, currentHole - 1)
+        : Math.min(totalHoles, currentHole + 1);
+
+    // Update both the internal state and parent state
+    setCurrentHole(newHole);
+    onHoleChange(newHole);
   };
 
   // Get total strokes for a player
@@ -385,51 +400,71 @@ const ScoreDialog: React.FC<ScoreDialogProps> = ({
       <DialogActions
         sx={{
           borderTop: "1px solid #eaeaea",
-          px: 3,
-          py: 3,
+          px: 2,
+          py: 2,
           display: "flex",
-          justifyContent: "space-between",
+          justifyContent: "center",
           gap: 2,
         }}
       >
-        <Button
-          onClick={() => {
-            // Update both states without saving scores
-            const prevHole = currentHole - 1;
-            setCurrentHole(prevHole);
-            onHoleChange(prevHole);
-          }}
-          variant="outlined"
-          color="inherit"
-          size="large"
-          startIcon={<NavigateBeforeIcon />}
+        <Box
           sx={{
-            py: 1.5,
-            borderRadius: 2,
-            fontWeight: "medium",
-            textTransform: "none",
-            fontSize: "1rem",
-            flex: 1,
+            display: "flex",
+            justifyContent: "center",
+            gap: 4,
           }}
         >
-          Previous Hole
-        </Button>
+          <IconButton
+            onClick={() => navigateToHole("prev")}
+            disabled={currentHole <= 1}
+            size="large"
+            sx={{
+              backgroundColor: "#f5f5f5",
+              color: currentHole <= 1 ? "#c0c0c0" : "#000000",
+              width: 64,
+              height: 64,
+              "&:hover": {
+                backgroundColor: "#e0e0e0",
+              },
+              border: "1px solid #e0e0e0",
+              flex: 1,
+            }}
+          >
+            <NavigateBeforeIcon fontSize="large" />
+          </IconButton>
 
-        <Button
-          onClick={handleSaveAndNext}
-          variant="contained"
-          color="primary"
-          size="large"
-          endIcon={<NavigateNextIcon />}
-          sx={{
-            py: 1.5,
-            borderRadius: 2,
-            fontWeight: "bold",
-            textTransform: "none",
-            fontSize: "1rem",
-            flex: 1,
-          }}
-        ></Button>
+          <IconButton
+            size="large"
+            sx={{
+              backgroundColor: alpha(theme.palette.primary.main, 0.3),
+              color: theme.palette.primary.main,
+              "&:hover": {
+                backgroundColor: alpha(theme.palette.primary.main, 0.4),
+              },
+            }}
+          >
+            <GolfCourseIcon fontSize="large" />
+          </IconButton>
+
+          <IconButton
+            onClick={handleSaveAndNext}
+            disabled={currentHole >= totalHoles}
+            size="large"
+            sx={{
+              backgroundColor: "#f5f5f5",
+              color: currentHole >= totalHoles ? "#c0c0c0" : "#000000",
+              width: 64,
+              height: 64,
+              "&:hover": {
+                backgroundColor: "#e0e0e0",
+              },
+              border: "1px solid #e0e0e0",
+              flex: 1,
+            }}
+          >
+            <NavigateNextIcon fontSize="large" />
+          </IconButton>
+        </Box>
       </DialogActions>
     </Dialog>
   );

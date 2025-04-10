@@ -619,7 +619,6 @@ const RoundDetails: React.FC = () => {
           </Grid>
         </Box>
 
-        {/* TODO: Replace this with a Leaderboard instead of the players */}
         {round.players && round.players.length > 0 && (
           <Box sx={{ mt: 4 }}>
             <Typography variant="h5" gutterBottom>
@@ -631,7 +630,7 @@ const RoundDetails: React.FC = () => {
                 .sort((a, b) => {
                   const aTotal = calculateTotal(a.id, round);
                   const bTotal = calculateTotal(b.id, round);
-                  // Sort ascending (lower scores are better in golf)
+
                   return aTotal - bTotal;
                 })
                 .map((player, index) => (
@@ -651,7 +650,7 @@ const RoundDetails: React.FC = () => {
                         {player.name[0].toUpperCase()}
                       </Avatar>
                       <Typography variant="h6">{player.name}</Typography>
-                      {/* Display the total score */}
+
                       <Typography
                         variant="h6"
                         sx={{ ml: "auto", fontWeight: "bold" }}
@@ -734,7 +733,6 @@ const RoundDetails: React.FC = () => {
         />
       </Dialog>
 
-      {/* Friends Selection Dialog - for adding friends directly to groups */}
       <FriendsSelectionDialog
         open={openFriendsDialog}
         onClose={handleCloseFriendsDialog}
@@ -748,7 +746,6 @@ const RoundDetails: React.FC = () => {
         onCreateNewGroup={handleCreateNewGroup}
       />
 
-      {/* Delete Confirmation Dialog */}
       <Dialog
         open={confirmDelete}
         onClose={handleCancelDelete}

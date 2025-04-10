@@ -15,14 +15,6 @@ export const mobilePatterns = {
   },
 
   card: {
-    edgeToEdge: (theme: Theme) => ({
-      borderRadius: { xs: 0, sm: 2 },
-      mx: { xs: -2, sm: 0 },
-      border: {
-        xs: "none",
-        sm: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
-      },
-    }),
     bottomAnchored: (theme: Theme) => ({
       position: "fixed",
       bottom: 0,

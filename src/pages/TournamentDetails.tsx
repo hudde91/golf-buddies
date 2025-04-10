@@ -445,12 +445,7 @@ const TournamentDetail: React.FC = () => {
       <Box
         sx={{ ...styles.mobile.container.fullWidth, pb: isMobile ? "56px" : 0 }}
       >
-        <Box
-          sx={{
-            ...styles.card.glass,
-            ...styles.mobile.card.edgeToEdge,
-          }}
-        >
+        <Box sx={styles.card.glass}>
           <Box sx={styles.navigation.backButtonContainer}>
             <Button
               startIcon={<ArrowBackIcon />}

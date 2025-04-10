@@ -71,7 +71,6 @@ export const useStyles = () => {
         edgeToEdge: mobilePatterns.container.edgeToEdge,
       },
       card: {
-        edgeToEdge: mobilePatterns.card.edgeToEdge(theme),
         bottomAnchored: mobilePatterns.card.bottomAnchored(theme),
         touchFeedback: mobilePatterns.card.touchFeedback,
       },

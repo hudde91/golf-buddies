@@ -33,6 +33,8 @@ import SportsTennisIcon from "@mui/icons-material/SportsTennis";
 import HistoryIcon from "@mui/icons-material/History";
 import AddIcon from "@mui/icons-material/Add";
 import NotificationsIcon from "@mui/icons-material/Notifications";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import UpdateIcon from "@mui/icons-material/Update";
 
 import eventService from "../services/eventService";
 import friendsService, { Friend } from "../services/friendsService";
@@ -253,13 +255,13 @@ const Events: React.FC = () => {
   }
 
   const renderEventCard = (event: Event) => {
-    // Extract the common data based on event type (this stays the same)
+    // Extract the common data based on event type
     const eventData = event.data;
     const name = eventData.name;
     const description = eventData.description || "No description";
     const status = eventData.status!;
 
-    // Get players array based on event type (this stays the same)
+    // Get players array based on event type
     const players =
       event.type === "tournament"
         ? (eventData as Tournament).players
@@ -267,7 +269,7 @@ const Events: React.FC = () => {
         ? (eventData as Tour).players || []
         : (eventData as Round).players || [];
 
-    // Get date and location based on event type (this stays the same)
+    // Get date and location based on event type
     const date =
       event.type === "tournament"
         ? (eventData as Tournament).startDate
@@ -418,38 +420,45 @@ const Events: React.FC = () => {
   };
 
   // Render Empty State
-  const renderEmptyState = () => {
-    return (
-      <Box sx={styles.feedback.emptyState.container}>
-        <CalendarTodayIcon sx={styles.feedback.emptyState.icon} />
-        <Typography variant="h6" sx={styles.feedback.emptyState.title}>
-          No Events Found
-        </Typography>
-        <Typography sx={styles.feedback.emptyState.description}>
-          You don't have any events yet. Create a new event to get started.
-        </Typography>
-        <Button
-          variant="contained"
-          onClick={handleCreateEvent}
-          sx={styles.button.create}
-        >
-          Create Event
-        </Button>
-      </Box>
-    );
-  };
+  const renderEmptyState = (type: "active" | "upcoming" | "completed") => {
+    let icon, title, description;
 
-  // Render Empty Completed Events State
-  const renderEmptyCompletedState = () => {
+    switch (type) {
+      case "active":
+        icon = <PlayArrowIcon sx={styles.feedback.emptyState.icon} />;
+        title = "No Active Events";
+        description = "You don't have any active events right now.";
+        break;
+      case "upcoming":
+        icon = <UpdateIcon sx={styles.feedback.emptyState.icon} />;
+        title = "No Upcoming Events";
+        description = "You don't have any upcoming events scheduled.";
+        break;
+      case "completed":
+        icon = <HistoryIcon sx={styles.feedback.emptyState.icon} />;
+        title = "No Completed Events";
+        description = "You don't have any completed events yet.";
+        break;
+    }
+
     return (
       <Box sx={styles.feedback.emptyState.container}>
-        <HistoryIcon sx={styles.feedback.emptyState.icon} />
+        {icon}
         <Typography variant="h6" sx={styles.feedback.emptyState.title}>
-          No Completed Events
+          {title}
         </Typography>
         <Typography sx={styles.feedback.emptyState.description}>
-          You don't have any completed events yet.
+          {description}
         </Typography>
+        {type !== "completed" && (
+          <Button
+            variant="contained"
+            onClick={handleCreateEvent}
+            sx={styles.button.create}
+          >
+            Create Event
+          </Button>
+        )}
       </Box>
     );
   };
@@ -457,10 +466,12 @@ const Events: React.FC = () => {
   const totalInvitations = invitations.length + roundInvitations.length;
 
   // Filter events based on status
-  const activeAndUpcomingEvents = events.filter(
-    (event) =>
-      event.data.status?.toLowerCase() === "active" ||
-      event.data.status?.toLowerCase() === "upcoming"
+  const activeEvents = events.filter(
+    (event) => event.data.status?.toLowerCase() === "active"
+  );
+
+  const upcomingEvents = events.filter(
+    (event) => event.data.status?.toLowerCase() === "upcoming"
   );
 
   const completedEvents = events.filter(
@@ -507,8 +518,22 @@ const Events: React.FC = () => {
               textColor="inherit"
               variant={isMobile ? "fullWidth" : "standard"}
             >
-              <Tab label="My Events" />
-              {/* TODO: Add a Tab for Upcoming events */}
+              <Tab
+                label={
+                  <Box sx={{ display: "flex", alignItems: "center" }}>
+                    <PlayArrowIcon sx={{ mr: 1, fontSize: "1.2rem" }} />
+                    <Typography sx={{ color: "white" }}>Active</Typography>
+                  </Box>
+                }
+              />
+              <Tab
+                label={
+                  <Box sx={{ display: "flex", alignItems: "center" }}>
+                    <UpdateIcon sx={{ mr: 1, fontSize: "1.2rem" }} />
+                    <Typography sx={{ color: "white" }}>Upcoming</Typography>
+                  </Box>
+                }
+              />
               <Tab
                 label={
                   <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -527,6 +552,7 @@ const Events: React.FC = () => {
             </Tabs>
           </Box>
 
+          {/* Active Events Tab */}
           <div
             role="tabpanel"
             hidden={tabValue !== 0}
@@ -535,21 +561,22 @@ const Events: React.FC = () => {
           >
             {tabValue === 0 && (
               <Box sx={styles.tabs.panel}>
-                {activeAndUpcomingEvents.length > 0 ? (
+                {activeEvents.length > 0 ? (
                   <Grid container spacing={3}>
-                    {activeAndUpcomingEvents.map((event) => (
+                    {activeEvents.map((event) => (
                       <Grid item xs={12} sm={6} md={4} key={event.id}>
                         {renderEventCard(event)}
                       </Grid>
                     ))}
                   </Grid>
                 ) : (
-                  renderEmptyState()
+                  renderEmptyState("active")
                 )}
               </Box>
             )}
           </div>
 
+          {/* Upcoming Events Tab */}
           <div
             role="tabpanel"
             hidden={tabValue !== 1}
@@ -557,6 +584,30 @@ const Events: React.FC = () => {
             aria-labelledby="events-tab-1"
           >
             {tabValue === 1 && (
+              <Box sx={styles.tabs.panel}>
+                {upcomingEvents.length > 0 ? (
+                  <Grid container spacing={3}>
+                    {upcomingEvents.map((event) => (
+                      <Grid item xs={12} sm={6} md={4} key={event.id}>
+                        {renderEventCard(event)}
+                      </Grid>
+                    ))}
+                  </Grid>
+                ) : (
+                  renderEmptyState("upcoming")
+                )}
+              </Box>
+            )}
+          </div>
+
+          {/* Completed Events Tab */}
+          <div
+            role="tabpanel"
+            hidden={tabValue !== 2}
+            id="events-tabpanel-2"
+            aria-labelledby="events-tab-2"
+          >
+            {tabValue === 2 && (
               <Box sx={styles.tabs.panel}>
                 {completedEvents.length > 0 ? (
                   <Grid container spacing={3}>
@@ -567,19 +618,20 @@ const Events: React.FC = () => {
                     ))}
                   </Grid>
                 ) : (
-                  renderEmptyCompletedState()
+                  renderEmptyState("completed")
                 )}
               </Box>
             )}
           </div>
 
+          {/* Invitations Tab */}
           <div
             role="tabpanel"
-            hidden={tabValue !== 2}
-            id="events-tabpanel-2"
-            aria-labelledby="events-tab-2"
+            hidden={tabValue !== 3}
+            id="events-tabpanel-3"
+            aria-labelledby="events-tab-3"
           >
-            {tabValue === 2 && (
+            {tabValue === 3 && (
               <Box sx={styles.tabs.panel}>
                 <InvitationList
                   invitations={invitations}
@@ -631,18 +683,22 @@ const Events: React.FC = () => {
             }}
           >
             <BottomNavigationAction
-              label="My Events"
-              icon={<EventIcon />}
+              label="Active"
+              icon={<PlayArrowIcon />}
               sx={styles.bottomNavigation.action}
             />
-            {/* TODO: Add Upcoming event as a BottomNavigationAction as well*/}
+            <BottomNavigationAction
+              label="Upcoming"
+              icon={<UpdateIcon />}
+              sx={styles.bottomNavigation.action}
+            />
             <BottomNavigationAction
               label="Completed"
               icon={<HistoryIcon />}
               sx={styles.bottomNavigation.action}
             />
             <BottomNavigationAction
-              label="Invitations"
+              label="Invites"
               icon={
                 <Badge badgeContent={totalInvitations} color="error" max={99}>
                   <NotificationsIcon />
