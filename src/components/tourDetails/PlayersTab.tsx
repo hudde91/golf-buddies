@@ -1,16 +1,10 @@
-import React from "react";
-import {
-  Box,
-  Typography,
-  Card,
-  CardContent,
-  Grid,
-  Chip,
-  Avatar,
-} from "@mui/material";
+import React, { useState } from "react";
+import { Box, Typography, Grid } from "@mui/material";
 import { People as PeopleIcon } from "@mui/icons-material";
-import { Tour } from "../../types/event";
+import { Player, Tour } from "../../types/event";
 import { useStyles } from "../../styles/hooks/useStyles";
+import SharedPlayerCard from "../SharedPlayerCard";
+import PlayerProfileDialog from "../tournamentDetails/playersTab/PlayerProfileDialog";
 
 interface PlayersTabProps {
   tour: Tour;
@@ -18,6 +12,17 @@ interface PlayersTabProps {
 
 const PlayersTab: React.FC<PlayersTabProps> = ({ tour }) => {
   const styles = useStyles();
+  const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
+  const [profileDialogOpen, setProfileDialogOpen] = useState(false);
+
+  const handlePlayerClick = (player: Player) => {
+    setSelectedPlayer(player);
+    setProfileDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setProfileDialogOpen(false);
+  };
 
   return (
     <Box sx={styles.tabs.panel}>
@@ -38,41 +43,37 @@ const PlayersTab: React.FC<PlayersTabProps> = ({ tour }) => {
       ) : (
         <Grid container spacing={2}>
           {tour.players.map((player) => {
-            const team = tour.teams?.find((t) => t.id === player.teamId);
-            const teamColor = team?.color;
-
             return (
               <Grid item xs={12} sm={6} md={4} key={player.id}>
-                <Card sx={styles.card.glass}>
-                  <CardContent>
-                    <Box sx={{ display: "flex", alignItems: "center" }}>
-                      <Avatar
-                        src={player.avatarUrl}
-                        alt={player.name}
-                        sx={styles.avatars.player(teamColor)}
-                      >
-                        {player.name.charAt(0)}
-                      </Avatar>
-                      <Box>
-                        <Typography variant="h6" sx={styles.text.heading.card}>
-                          {player.name}
-                        </Typography>
-                        {team && (
-                          <Chip
-                            label={team.name}
-                            size="small"
-                            sx={styles.chips.team(team.color)}
-                          />
-                        )}
-                      </Box>
-                    </Box>
-                  </CardContent>
-                </Card>
+                <SharedPlayerCard
+                  player={player}
+                  event={tour}
+                  onClick={handlePlayerClick}
+                />
               </Grid>
             );
           })}
         </Grid>
       )}
+      <PlayerProfileDialog
+        open={profileDialogOpen}
+        player={selectedPlayer}
+        tournament={{
+          ...tour,
+          startDate: tour.startDate,
+          endDate: tour.endDate,
+          rounds: [],
+          location: "",
+          format: "",
+          players: tour.players || [],
+          teams: tour.teams || [],
+          invitations: [],
+          isTeamEvent: true,
+          scoringType: "individual",
+          status: tour.status || "active",
+        }}
+        onClose={handleCloseDialog}
+      />
     </Box>
   );
 };

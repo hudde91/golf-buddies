@@ -392,34 +392,28 @@ const ScoreDialog: React.FC<ScoreDialogProps> = ({
           gap: 2,
         }}
       >
-        {/* Previous hole button - only show if not on the first hole */}
-        {currentHole > 1 && (
-          <Button
-            onClick={() => {
-              // Update both states without saving scores
-              const prevHole = currentHole - 1;
-              setCurrentHole(prevHole);
-              onHoleChange(prevHole);
-            }}
-            variant="outlined"
-            color="inherit"
-            size="large"
-            startIcon={<NavigateBeforeIcon />}
-            sx={{
-              py: 1.5,
-              borderRadius: 2,
-              fontWeight: "medium",
-              textTransform: "none",
-              fontSize: "1rem",
-              flex: 1,
-            }}
-          >
-            Previous Hole
-          </Button>
-        )}
-
-        {/* Spacer for when Previous button is not shown */}
-        {currentHole === 1 && <Box sx={{ flex: 1 }} />}
+        <Button
+          onClick={() => {
+            // Update both states without saving scores
+            const prevHole = currentHole - 1;
+            setCurrentHole(prevHole);
+            onHoleChange(prevHole);
+          }}
+          variant="outlined"
+          color="inherit"
+          size="large"
+          startIcon={<NavigateBeforeIcon />}
+          sx={{
+            py: 1.5,
+            borderRadius: 2,
+            fontWeight: "medium",
+            textTransform: "none",
+            fontSize: "1rem",
+            flex: 1,
+          }}
+        >
+          Previous Hole
+        </Button>
 
         <Button
           onClick={handleSaveAndNext}
@@ -435,9 +429,7 @@ const ScoreDialog: React.FC<ScoreDialogProps> = ({
             fontSize: "1rem",
             flex: 1,
           }}
-        >
-          {currentHole < totalHoles ? "Save & Next" : "Save & Finish"}
-        </Button>
+        ></Button>
       </DialogActions>
     </Dialog>
   );

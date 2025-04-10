@@ -327,7 +327,7 @@ const GroupDetailPage: React.FC<GroupDetailPageProps> = ({
                 })}
               </Grid>
 
-              {/* Use the simplified hole navigation */}
+              {/* TODO Move this into ScoreDialog and replace the Previous hole and handleSaveAndNext button. The look and feel should be these buttons but the logic from the other buttons should be places in these */}
               <Box
                 sx={{
                   display: "flex",

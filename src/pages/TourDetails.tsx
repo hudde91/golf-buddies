@@ -21,6 +21,8 @@ import TourHeader from "../components/tour/TourHeader";
 import TourTabs from "../components/tourDetails/TourTabs";
 import { colors, useStyles } from "../styles";
 import MobileTourBottomNavigation from "../components/tourDetails/MobileTourBottomNavigation";
+import SharedPlayerCard from "../components/SharedPlayerCard";
+import PlayerProfileDialog from "../components/tournamentDetails/playersTab/PlayerProfileDialog";
 
 const TourDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -38,6 +40,8 @@ const TourDetails: React.FC = () => {
   const [openAddTournament, setOpenAddTournament] = useState(false);
   const [openEditTour, setOpenEditTour] = useState(false);
   const [isCreator, setIsCreator] = useState(false);
+  const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
+  const [profileDialogOpen, setProfileDialogOpen] = useState(false);
 
   useEffect(() => {
     if (!isLoaded || !user || !id) return;
@@ -421,62 +425,18 @@ const TourDetails: React.FC = () => {
                       </Typography>
                     </Box>
                   ) : (
-                    tour.players.map((player) => {
-                      const team = tour.teams?.find(
-                        (t) => t.id === player.teamId
-                      );
-                      // TODO: Use the same component for player cards as in PlayersTab in the tournamentsDetails
-                      //  Update PlayersTab to be able to handle tours as well
-                      //  <Grid container spacing={2}>
-                      //       {tour.players.map((player) => (
-                      //         <Grid item xs={12} sm={6} md={4} key={player.id}>
-                      //           <PlayerCard
-                      //             player={player}
-                      //             tournament={tour}
-                      //             onClick={handlePlayerClick}
-                      //             renderPlayerExtra={renderPlayerExtra}
-                      //           />
-                      //         </Grid>
-                      //       ))}
-                      //     </Grid>
-                      // TODO: Remove below return once the above is implemented
-                      return (
-                        <Box
-                          key={player.id}
-                          sx={{
-                            mb: 1,
-                            p: 2,
-                            borderRadius: 2,
-                            bgcolor: alpha(theme.palette.common.black, 0.3),
-                            border: `1px solid ${alpha(
-                              theme.palette.common.white,
-                              0.1
-                            )}`,
+                    tour.players.map((player) => (
+                      <Box key={player.id} sx={{ mb: 2 }}>
+                        <SharedPlayerCard
+                          player={player}
+                          event={tour}
+                          onClick={(player) => {
+                            setSelectedPlayer(player);
+                            setProfileDialogOpen(true);
                           }}
-                        >
-                          <Typography variant="h6" sx={{ color: "white" }}>
-                            {player.name}
-                          </Typography>
-                          {team && (
-                            <Typography
-                              variant="body2"
-                              sx={{
-                                color: team.color,
-                                mt: 0.5,
-                                display: "inline-block",
-                                px: 1,
-                                py: 0.25,
-                                borderRadius: 1,
-                                bgcolor: alpha(team.color, 0.1),
-                                border: `1px solid ${alpha(team.color, 0.3)}`,
-                              }}
-                            >
-                              Team: {team.name}
-                            </Typography>
-                          )}
-                        </Box>
-                      );
-                    })
+                        />
+                      </Box>
+                    ))
                   )}
                 </Box>
               )}
@@ -660,6 +620,25 @@ const TourDetails: React.FC = () => {
           }
         />
       </Dialog>
+      <PlayerProfileDialog
+        open={profileDialogOpen}
+        player={selectedPlayer}
+        tournament={{
+          ...tour,
+          startDate: tour.startDate,
+          endDate: tour.endDate,
+          rounds: [],
+          location: "",
+          format: "",
+          players: tour.players || [],
+          teams: tour.teams || [],
+          invitations: [],
+          isTeamEvent: true,
+          scoringType: "individual",
+          status: tour.status || "active",
+        }}
+        onClose={() => setProfileDialogOpen(false)}
+      />
     </Box>
   );
 };

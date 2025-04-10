@@ -20,6 +20,7 @@ import {
   Fab,
   useMediaQuery,
   useTheme,
+  alpha,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import EventIcon from "@mui/icons-material/Event";
@@ -507,6 +508,7 @@ const Events: React.FC = () => {
               variant={isMobile ? "fullWidth" : "standard"}
             >
               <Tab label="My Events" />
+              {/* TODO: Add a Tab for Upcoming events */}
               <Tab
                 label={
                   <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -592,45 +594,65 @@ const Events: React.FC = () => {
           </div>
         </Box>
       </Container>
-      {/* TODO: Add this as a BottomNavigation, make it bigger and in the center 
-      In it it should say Play Golf instead of Icon */}
-      <Fab
-        color="primary"
-        aria-label="create event"
-        onClick={handleCreateEvent}
-        sx={styles.bottomNavigation.fab}
+
+      <Paper
+        sx={{
+          ...styles.bottomNavigation.container,
+          overflow: "visible", // Allow the FAB to overflow
+        }}
       >
-        <AddIcon />
-      </Fab>
+        <Box sx={{ position: "relative", height: "100%" }}>
+          <Fab
+            color="primary"
+            aria-label="create event"
+            onClick={handleCreateEvent}
+            sx={{
+              position: "absolute",
+              top: "-28px", // Pull up to overlap with the navigation
+              left: "50%",
+              transform: "translateX(-50%)",
+              zIndex: 1101, // Above the bottom navigation
+              width: "60px",
+              height: "60px",
+              boxShadow: (theme) =>
+                `0 4px 10px ${alpha(theme.palette.common.black, 0.3)}`,
+            }}
+          >
+            <AddIcon sx={{ fontSize: "28px" }} />
+          </Fab>
 
-      <Paper sx={styles.bottomNavigation.container}>
-        <BottomNavigation
-          value={tabValue}
-          onChange={handleTabChange}
-          showLabels
-        >
-          <BottomNavigationAction
-            label="My Events"
-            icon={<EventIcon />}
-            sx={styles.bottomNavigation.action}
-          />
-          <BottomNavigationAction
-            label="Completed"
-            icon={<HistoryIcon />}
-            sx={styles.bottomNavigation.action}
-          />
-          <BottomNavigationAction
-            label="Invitations"
-            icon={
-              <Badge badgeContent={totalInvitations} color="error" max={99}>
-                <NotificationsIcon />
-              </Badge>
-            }
-            sx={styles.bottomNavigation.action}
-          />
-        </BottomNavigation>
+          <BottomNavigation
+            value={tabValue}
+            onChange={handleTabChange}
+            showLabels
+            sx={{
+              height: "100%",
+              width: "100%",
+            }}
+          >
+            <BottomNavigationAction
+              label="My Events"
+              icon={<EventIcon />}
+              sx={styles.bottomNavigation.action}
+            />
+            {/* TODO: Add Upcoming event as a BottomNavigationAction as well*/}
+            <BottomNavigationAction
+              label="Completed"
+              icon={<HistoryIcon />}
+              sx={styles.bottomNavigation.action}
+            />
+            <BottomNavigationAction
+              label="Invitations"
+              icon={
+                <Badge badgeContent={totalInvitations} color="error" max={99}>
+                  <NotificationsIcon />
+                </Badge>
+              }
+              sx={styles.bottomNavigation.action}
+            />
+          </BottomNavigation>
+        </Box>
       </Paper>
-
       <Dialog
         open={openNewEvent}
         onClose={handleEventFormClose}

@@ -43,6 +43,11 @@ import PlayerScorecard from "../components/tournamentDetails/PlayerScorecard";
 import { Friend } from "../services/friendsService";
 import { useStyles } from "../styles/hooks/useStyles";
 import FriendsSelectionDialog from "../components/FriendsSelectionDialog";
+import {
+  calculateTotal,
+  formatScoreToPar,
+  getScoreColor,
+} from "../components/tournamentDetails/leaderboardTab/scorecardUtils";
 
 const RoundDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -618,35 +623,86 @@ const RoundDetails: React.FC = () => {
         {round.players && round.players.length > 0 && (
           <Box sx={{ mt: 4 }}>
             <Typography variant="h5" gutterBottom>
-              Scorecard
+              Leaderboard
             </Typography>
             <Paper sx={styles.card.glass}>
-              {round.players.map((player) => (
-                <Box key={player.id} sx={{ mb: 4 }}>
-                  <PlayerScorecard
-                    player={player}
-                    tournament={{
-                      ...round,
-                      id: round.id,
-                      name: round.name,
-                      startDate: round.date,
-                      endDate: round.date,
-                      rounds: [round],
-                      location: round.location || "",
-                      format: round.format,
-                      createdBy: round.createdBy || "",
-                      createdAt: round.createdAt || new Date().toISOString(),
-                      players: round.players || [],
-                      teams: [],
-                      invitations: round.invitations || [],
-                      isTeamEvent: false,
-                      scoringType: "individual",
-                      status: round.status || "upcoming",
-                    }}
-                    showAllRounds={false}
-                  />
-                </Box>
-              ))}
+              {/* Sort players by their scores */}
+              {round.players
+                .sort((a, b) => {
+                  const aTotal = calculateTotal(a.id, round);
+                  const bTotal = calculateTotal(b.id, round);
+                  // Sort ascending (lower scores are better in golf)
+                  return aTotal - bTotal;
+                })
+                .map((player, index) => (
+                  <Box key={player.id} sx={{ mb: 4 }}>
+                    <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+                      <Typography
+                        variant="h6"
+                        sx={{ mr: 2, fontWeight: "bold" }}
+                      >
+                        {index + 1}.
+                      </Typography>
+                      <Avatar
+                        src={player.avatarUrl}
+                        alt={player.name}
+                        sx={{ mr: 2 }}
+                      >
+                        {player.name[0].toUpperCase()}
+                      </Avatar>
+                      <Typography variant="h6">{player.name}</Typography>
+                      {/* Display the total score */}
+                      <Typography
+                        variant="h6"
+                        sx={{ ml: "auto", fontWeight: "bold" }}
+                      >
+                        {calculateTotal(player.id, round)}
+                        {round.courseDetails?.par && (
+                          <Typography
+                            component="span"
+                            variant="body2"
+                            sx={{
+                              ml: 1,
+                              color: getScoreColor(
+                                calculateTotal(player.id, round),
+                                round.courseDetails.par
+                              ),
+                            }}
+                          >
+                            (
+                            {formatScoreToPar(
+                              calculateTotal(player.id, round),
+                              round.courseDetails.par
+                            )}
+                            )
+                          </Typography>
+                        )}
+                      </Typography>
+                    </Box>
+                    <PlayerScorecard
+                      player={player}
+                      tournament={{
+                        ...round,
+                        id: round.id,
+                        name: round.name,
+                        startDate: round.date,
+                        endDate: round.date,
+                        rounds: [round],
+                        location: round.location || "",
+                        format: round.format,
+                        createdBy: round.createdBy || "",
+                        createdAt: round.createdAt || new Date().toISOString(),
+                        players: round.players || [],
+                        teams: [],
+                        invitations: round.invitations || [],
+                        isTeamEvent: false,
+                        scoringType: "individual",
+                        status: round.status || "upcoming",
+                      }}
+                      showAllRounds={false}
+                    />
+                  </Box>
+                ))}
             </Paper>
           </Box>
         )}
