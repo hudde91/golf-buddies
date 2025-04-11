@@ -35,6 +35,7 @@ import GroupDetailPageContainer from "./components/tournamentDetails/roundsTab/G
 import Friends from "./pages/Friends";
 import RoundDetails from "./pages/RoundDetails";
 import RoundGroupDetailPage from "./components/round/RoundGroupDetailPage";
+import { QueryProvider } from "./QueryProvider";
 
 const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || "";
 
@@ -62,6 +63,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 };
 
 // Protected route component
+// TODO: Allow not logged in users to see Events
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
@@ -110,121 +112,123 @@ const App: React.FC = () => {
 
   return (
     <ClerkProvider publishableKey={clerkPubKey}>
-      <AppThemeProvider>
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
-          {showSplash && (
-            <SplashScreen
-              onFinish={handleSplashFinish}
-              duration={3000}
-              backgroundImage={splashImage}
-              logoText={splashText}
-            />
-          )}
+      <QueryProvider>
+        <AppThemeProvider>
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+            {showSplash && (
+              <SplashScreen
+                onFinish={handleSplashFinish}
+                duration={3000}
+                backgroundImage={splashImage}
+                logoText={splashText}
+              />
+            )}
 
-          <Fade in={contentLoaded} timeout={800}>
-            <div style={{ visibility: contentLoaded ? "visible" : "hidden" }}>
-              <Router>
-                <ClerkLoading>
-                  <Loading />
-                </ClerkLoading>
-                <ClerkLoaded>
-                  <Layout>
-                    <Routes>
-                      <Route path="/" element={<Home />} />
+            <Fade in={contentLoaded} timeout={800}>
+              <div style={{ visibility: contentLoaded ? "visible" : "hidden" }}>
+                <Router>
+                  <ClerkLoading>
+                    <Loading />
+                  </ClerkLoading>
+                  <ClerkLoaded>
+                    <Layout>
+                      <Routes>
+                        <Route path="/" element={<Home />} />
 
-                      <Route
-                        path="/profile"
-                        element={
-                          <ProtectedRoute>
-                            <Profile />
-                          </ProtectedRoute>
-                        }
-                      />
-
-                      <Route
-                        path="/settings"
-                        element={
-                          <ProtectedRoute>
-                            <Settings />
-                          </ProtectedRoute>
-                        }
-                      />
-
-                      <Route
-                        path="/events"
-                        element={
-                          <ProtectedRoute>
-                            <Events />
-                          </ProtectedRoute>
-                        }
-                      />
-
-                      <Route
-                        path="/events/:id"
-                        element={
-                          <ProtectedRoute>
-                            <EventDetailsRouter />
-                          </ProtectedRoute>
-                        }
-                      />
-
-                      <Route
-                        path="/tournaments/:id/*"
-                        element={
-                          <ProtectedRoute>
-                            <TournamentDetails />
-                          </ProtectedRoute>
-                        }
-                      />
-
-                      <Route
-                        path="/tournaments/:tournamentId/rounds/:roundId/groups/:groupId"
-                        element={
-                          <ProtectedRoute>
-                            <GroupDetailPageContainer />
-                          </ProtectedRoute>
-                        }
-                      />
-
-                      <Route
-                        path="/rounds/:id"
-                        element={
-                          <ProtectedRoute>
-                            <RoundDetails />
-                          </ProtectedRoute>
-                        }
-                      />
-
-                      <Route
-                        path="/rounds/:roundId/groups/:groupId"
-                        element={
-                          <ProtectedRoute>
-                            <RoundGroupDetailPage />
-                          </ProtectedRoute>
-                        }
-                      />
-
-                      <Route
-                        path="/friends"
-                        element={
-                          <>
+                        <Route
+                          path="/profile"
+                          element={
                             <ProtectedRoute>
-                              <Friends />
+                              <Profile />
                             </ProtectedRoute>
-                          </>
-                        }
-                      />
+                          }
+                        />
 
-                      <Route path="/sign-in" element={<SignInPage />} />
-                      <Route path="*" element={<NotFound />} />
-                    </Routes>
-                  </Layout>
-                </ClerkLoaded>
-              </Router>
-            </div>
-          </Fade>
-        </LocalizationProvider>
-      </AppThemeProvider>
+                        <Route
+                          path="/settings"
+                          element={
+                            <ProtectedRoute>
+                              <Settings />
+                            </ProtectedRoute>
+                          }
+                        />
+
+                        <Route
+                          path="/events"
+                          element={
+                            <ProtectedRoute>
+                              <Events />
+                            </ProtectedRoute>
+                          }
+                        />
+
+                        <Route
+                          path="/events/:id"
+                          element={
+                            <ProtectedRoute>
+                              <EventDetailsRouter />
+                            </ProtectedRoute>
+                          }
+                        />
+
+                        <Route
+                          path="/tournaments/:id/*"
+                          element={
+                            <ProtectedRoute>
+                              <TournamentDetails />
+                            </ProtectedRoute>
+                          }
+                        />
+
+                        <Route
+                          path="/tournaments/:tournamentId/rounds/:roundId/groups/:groupId"
+                          element={
+                            <ProtectedRoute>
+                              <GroupDetailPageContainer />
+                            </ProtectedRoute>
+                          }
+                        />
+
+                        <Route
+                          path="/rounds/:id"
+                          element={
+                            <ProtectedRoute>
+                              <RoundDetails />
+                            </ProtectedRoute>
+                          }
+                        />
+
+                        <Route
+                          path="/rounds/:roundId/groups/:groupId"
+                          element={
+                            <ProtectedRoute>
+                              <RoundGroupDetailPage />
+                            </ProtectedRoute>
+                          }
+                        />
+
+                        <Route
+                          path="/friends"
+                          element={
+                            <>
+                              <ProtectedRoute>
+                                <Friends />
+                              </ProtectedRoute>
+                            </>
+                          }
+                        />
+
+                        <Route path="/sign-in" element={<SignInPage />} />
+                        <Route path="*" element={<NotFound />} />
+                      </Routes>
+                    </Layout>
+                  </ClerkLoaded>
+                </Router>
+              </div>
+            </Fade>
+          </LocalizationProvider>
+        </AppThemeProvider>
+      </QueryProvider>
     </ClerkProvider>
   );
 };

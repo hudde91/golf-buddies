@@ -6,6 +6,7 @@ import { Container, Box } from "@mui/material";
 const SignInPage: React.FC = () => {
   return (
     <Container maxWidth="sm" sx={{ mt: 8 }}>
+      {/* TODO: Add SignedUp flow from Clerk */}
       <SignedIn>
         <Navigate to="/profile" replace />
       </SignedIn>

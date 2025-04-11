@@ -16,8 +16,36 @@ import {
   PlayerGroup,
 } from "../types/event";
 import achievementService from "./achievementService";
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
 
 const EVENTS_KEY = "events";
+const API_BASE_URL =
+  "https://golf-buddies-epfddeddfqdhbtgy.westeurope-01.azurewebsites.net/api";
+
+// export const useGetEventById = (clerkId: string) => {
+//   return useQuery({
+//     queryKey: ["event", clerkId],
+//     queryFn: async () => {
+//       const response = await axios.get(`${API_BASE_URL}/events/${clerkId}`);
+//       return response.data;
+//     },
+//     enabled: !!clerkId, // Only run the query if clerkId is provided
+//   });
+// };
+
+export const useGetUserEvents = (userId: string) => {
+  return useQuery({
+    queryKey: ["userEvents", userId],
+    queryFn: async () => {
+      const response = await axios.get(
+        `${API_BASE_URL}/event/${userId}/events`
+      );
+      return response.data;
+    },
+    enabled: !!userId, // Only run the query if userId is provided
+  });
+};
 
 // Available round formats
 export const roundFormats = [
@@ -145,6 +173,24 @@ const eventService = {
     return JSON.parse(eventsJson);
   },
 
+  // Get event by ID - using the API now
+  // getEventById: async (id: string): Promise<Event | null> => {
+  //   try {
+  //     const response = await axios.get(`${API_BASE_URL}/events/${id}`);
+  //     return response.data;
+  //   } catch (error) {
+  //     console.error("Error fetching event by ID:", error);
+  //     return null;
+  //   }
+  // },
+
+  // Legacy getEventById for when you need the synchronous version
+  getEventByIdSync: (id: string): Event | null => {
+    const events = eventService.getAllEvents();
+    const event = events.find((e) => e.id === id);
+    return event || null;
+  },
+
   // Get events where user is owner or player
   getUserEvents: (userId: string): Event[] => {
     const events = eventService.getAllEvents();
@@ -177,7 +223,7 @@ const eventService = {
     });
   },
 
-  // Get event by ID
+  // // Get event by ID
   getEventById: (id: string): Event | null => {
     const events = eventService.getAllEvents();
     const event = events.find((e) => e.id === id);
@@ -296,7 +342,7 @@ const eventService = {
     tournamentData: TournamentFormData & { inviteFriends?: string[] },
     currentUser: Player
   ): Event | null => {
-    const event = eventService.getEventById(tourId);
+    const event = eventService.getEventByIdSync(tourId);
     if (!event || event.type !== "tour") return null;
 
     const tour = event.data as Tour;
@@ -442,7 +488,7 @@ const eventService = {
 
   // Add a player to a tournament event
   addPlayerToEvent: (eventId: string, player: Player): Event | null => {
-    const event = eventService.getEventById(eventId);
+    const event = eventService.getEventByIdSync(eventId);
     if (!event) return null;
 
     if (event.type === "tournament") {
