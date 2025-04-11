@@ -99,7 +99,7 @@ export interface Tour {
   endDate: string;
   createdBy: string;
   createdAt: string;
-  tournaments: Tournament[];
+  tournaments: Tournament[]; // TODO: Replace this with Round[] instead of Tournament[]
   players?: Player[];
   teams?: Team[]; // Optional shared teams across tournaments
   invitations?: string[];

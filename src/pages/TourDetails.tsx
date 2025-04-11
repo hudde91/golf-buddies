@@ -206,7 +206,6 @@ const TourDetails: React.FC = () => {
         />
 
         {!isMobile ? (
-          // Desktop version with tabs
           <TourTabs
             tour={tour}
             tabValue={tabValue}
@@ -219,15 +218,14 @@ const TourDetails: React.FC = () => {
             }
           />
         ) : (
-          // Mobile version with customized content containers
           <Box sx={styles.card.glass}>
-            {/* Tournaments Tab */}
             <div
               role="tabpanel"
               hidden={tabValue !== 0}
               id="tour-tabpanel-0"
               aria-labelledby="tour-tab-0"
             >
+              {/* TODO: Update so from here you don't add tournament but instead Rounds. Should display RoundForm instead  */}
               {tabValue === 0 && (
                 <Box sx={styles.tabs.panel}>
                   <Box sx={styles.headers.tour.headerContainer}>
@@ -310,7 +308,6 @@ const TourDetails: React.FC = () => {
               )}
             </div>
 
-            {/* Leaderboard Tab */}
             <div
               role="tabpanel"
               hidden={tabValue !== 1}
@@ -395,7 +392,6 @@ const TourDetails: React.FC = () => {
               )}
             </div>
 
-            {/* Players Tab */}
             <div
               role="tabpanel"
               hidden={tabValue !== 2}
@@ -442,7 +438,6 @@ const TourDetails: React.FC = () => {
               )}
             </div>
 
-            {/* Teams Tab */}
             {hasTeams && (
               <div
                 role="tabpanel"
@@ -559,7 +554,6 @@ const TourDetails: React.FC = () => {
         )}
       </Container>
 
-      {/* Mobile Bottom Navigation */}
       {isMobile && (
         <MobileTourBottomNavigation
           activeTab={tabValue}
