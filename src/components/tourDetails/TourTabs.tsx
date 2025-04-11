@@ -47,7 +47,7 @@ const TourTabs: React.FC<TourTabsProps> = ({
         </Tabs>
       </Box>
 
-      {/* Tab Panel for Tournaments */}
+      {/* TODO Replace with adding Round instead of Tournament. Should display RoundsTab   */}
       <div
         role="tabpanel"
         hidden={tabValue !== 0}
