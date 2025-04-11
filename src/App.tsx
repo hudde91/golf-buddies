@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import eventService from "./services/eventService";
+import eventService, { useGetEventById } from "./services/eventService";
 import React, { useState, useEffect } from "react";
 import {
   BrowserRouter as Router,
@@ -26,6 +26,7 @@ import Events from "./pages/Events";
 import TournamentDetails from "./pages/TournamentDetails";
 import TourDetails from "./pages/TourDetails";
 import SignInPage from "./pages/SignInPage";
+import SignUpPage from "./pages/SignUpPage";
 import NotFound from "./pages/NotFound";
 import Loading from "./components/Loading";
 import SplashScreen from "./components/splashScreen/SplashScreen";
@@ -36,6 +37,7 @@ import Friends from "./pages/Friends";
 import RoundDetails from "./pages/RoundDetails";
 import RoundGroupDetailPage from "./components/round/RoundGroupDetailPage";
 import { QueryProvider } from "./QueryProvider";
+import EventDetailsRouter from "./components/EventDetailsRouter";
 
 const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || "";
 
@@ -62,9 +64,18 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   );
 };
 
-// Protected route component
-// TODO: Allow not logged in users to see Events
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+// Protected route component with option to allow public access
+const ProtectedRoute = ({
+  children,
+  requireAuth = true,
+}: {
+  children: React.ReactNode;
+  requireAuth?: boolean;
+}) => {
+  if (!requireAuth) {
+    return <>{children}</>;
+  }
+
   return (
     <>
       <SignedIn>{children}</SignedIn>
@@ -156,7 +167,7 @@ const App: React.FC = () => {
                         <Route
                           path="/events"
                           element={
-                            <ProtectedRoute>
+                            <ProtectedRoute requireAuth={false}>
                               <Events />
                             </ProtectedRoute>
                           }
@@ -165,7 +176,7 @@ const App: React.FC = () => {
                         <Route
                           path="/events/:id"
                           element={
-                            <ProtectedRoute>
+                            <ProtectedRoute requireAuth={false}>
                               <EventDetailsRouter />
                             </ProtectedRoute>
                           }
@@ -174,7 +185,7 @@ const App: React.FC = () => {
                         <Route
                           path="/tournaments/:id/*"
                           element={
-                            <ProtectedRoute>
+                            <ProtectedRoute requireAuth={false}>
                               <TournamentDetails />
                             </ProtectedRoute>
                           }
@@ -192,7 +203,7 @@ const App: React.FC = () => {
                         <Route
                           path="/rounds/:id"
                           element={
-                            <ProtectedRoute>
+                            <ProtectedRoute requireAuth={false}>
                               <RoundDetails />
                             </ProtectedRoute>
                           }
@@ -210,15 +221,14 @@ const App: React.FC = () => {
                         <Route
                           path="/friends"
                           element={
-                            <>
-                              <ProtectedRoute>
-                                <Friends />
-                              </ProtectedRoute>
-                            </>
+                            <ProtectedRoute>
+                              <Friends />
+                            </ProtectedRoute>
                           }
                         />
 
                         <Route path="/sign-in" element={<SignInPage />} />
+                        <Route path="/sign-up" element={<SignUpPage />} />
                         <Route path="*" element={<NotFound />} />
                       </Routes>
                     </Layout>
@@ -231,44 +241,6 @@ const App: React.FC = () => {
       </QueryProvider>
     </ClerkProvider>
   );
-};
-
-// Component to route to either TournamentDetails or TourDetails based on event type
-const EventDetailsRouter: React.FC = () => {
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [eventType, setEventType] = useState<string | null>(null);
-  const { id } = useParams<{ id: string }>();
-
-  useEffect(() => {
-    if (!id) return;
-
-    const fetchEventType = async () => {
-      setIsLoading(true);
-      try {
-        const event = eventService.getEventById(id);
-        if (event) {
-          setEventType(event.type);
-        }
-      } catch (error) {
-        console.error("Error fetching event type:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchEventType();
-  }, [id]);
-
-  if (isLoading) {
-    return <Loading />;
-  }
-
-  // Route to the appropriate component based on event type
-  if (eventType === "tour") {
-    return <TourDetails />;
-  } else {
-    return <TournamentDetails />;
-  }
 };
 
 export default App;

@@ -34,14 +34,81 @@ const API_BASE_URL =
 //   });
 // };
 
+// export const useGetUserEvents = (userId: string) => {
+//   return useQuery({
+//     queryKey: ["userEvents", userId],
+//     queryFn: async () => {
+//       const response = await axios.get(
+//         `${API_BASE_URL}/event/${userId}/events`
+//       );
+//       return response.data;
+//     },
+//     enabled: !!userId, // Only run the query if userId is provided
+//   });
+// };
+
+// Enhanced getEventById with fallback to local storage
+export const getEventById = async (id: string): Promise<Event | null> => {
+  try {
+    // Try to get from API first
+    const response = await axios.get(`${API_BASE_URL}/events/${id}`);
+    return response.data;
+  } catch (error) {
+    console.warn("API fetch failed, falling back to local storage:", error);
+
+    // Fall back to local storage
+    try {
+      const events = eventService.getAllEvents();
+      return events.find((e) => e.id === id) || null;
+    } catch (fallbackError) {
+      console.error("Local storage fallback also failed:", fallbackError);
+      return null;
+    }
+  }
+};
+
+// Enhanced useGetEventById hook with fallback
+export const useGetEventById = (eventId: string) => {
+  return useQuery({
+    queryKey: ["event", eventId],
+    queryFn: async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/events/${eventId}`);
+        return response.data;
+      } catch (error) {
+        console.warn("API fetch failed, falling back to local storage");
+
+        // Fall back to local storage
+        const events = eventService.getAllEvents();
+        const event = events.find((e) => e.id === eventId);
+
+        if (!event) {
+          throw new Error("Event not found in API or local storage");
+        }
+
+        return event;
+      }
+    },
+    enabled: !!eventId, // Only run the query if eventId is provided
+  });
+};
+
+// Similarly enhanced useGetUserEvents
 export const useGetUserEvents = (userId: string) => {
   return useQuery({
     queryKey: ["userEvents", userId],
     queryFn: async () => {
-      const response = await axios.get(
-        `${API_BASE_URL}/event/${userId}/events`
-      );
-      return response.data;
+      try {
+        const response = await axios.get(
+          `${API_BASE_URL}/users/${userId}/events`
+        );
+        return response.data;
+      } catch (error) {
+        console.warn("API fetch failed, falling back to local storage");
+
+        // Fall back to local storage
+        return eventService.getUserEvents(userId);
+      }
     },
     enabled: !!userId, // Only run the query if userId is provided
   });

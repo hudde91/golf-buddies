@@ -171,6 +171,37 @@ const Header: React.FC = () => {
                 Home
               </Button>
 
+              <Button
+                color="inherit"
+                component={RouterLink}
+                to="/events"
+                startIcon={
+                  <Badge
+                    badgeContent={pendingInvitations}
+                    color="error"
+                    max={99}
+                  >
+                    <EmojiEventsIcon />
+                  </Badge>
+                }
+                sx={{
+                  mx: 1,
+                  borderRadius: 2,
+                  "&:hover": {
+                    backgroundColor: alpha(theme.palette.common.white, 0.1),
+                  },
+                  ...((isActive("/events") ||
+                    location.pathname.startsWith("/events/")) && {
+                    backgroundColor: alpha(theme.palette.common.white, 0.15),
+                    "&:hover": {
+                      backgroundColor: alpha(theme.palette.common.white, 0.2),
+                    },
+                  }),
+                }}
+              >
+                Events
+              </Button>
+
               <SignedIn>
                 <Button
                   color="inherit"
@@ -192,37 +223,6 @@ const Header: React.FC = () => {
                   }}
                 >
                   Profile
-                </Button>
-
-                <Button
-                  color="inherit"
-                  component={RouterLink}
-                  to="/events"
-                  startIcon={
-                    <Badge
-                      badgeContent={pendingInvitations}
-                      color="error"
-                      max={99}
-                    >
-                      <EmojiEventsIcon />
-                    </Badge>
-                  }
-                  sx={{
-                    mx: 1,
-                    borderRadius: 2,
-                    "&:hover": {
-                      backgroundColor: alpha(theme.palette.common.white, 0.1),
-                    },
-                    ...((isActive("/events") ||
-                      location.pathname.startsWith("/events/")) && {
-                      backgroundColor: alpha(theme.palette.common.white, 0.15),
-                      "&:hover": {
-                        backgroundColor: alpha(theme.palette.common.white, 0.2),
-                      },
-                    }),
-                  }}
-                >
-                  Events
                 </Button>
 
                 <Button
@@ -372,6 +372,36 @@ const Header: React.FC = () => {
                     Home
                   </MenuItem>
 
+                  <MenuItem
+                    onClick={handleClose}
+                    component={RouterLink}
+                    to="/events"
+                    selected={
+                      isActive("/events") ||
+                      location.pathname.startsWith("/events/")
+                    }
+                    sx={{
+                      "&.Mui-selected": {
+                        backgroundColor: alpha(
+                          theme.palette.common.white,
+                          0.15
+                        ),
+                      },
+                      "&:hover": {
+                        backgroundColor: alpha(theme.palette.common.white, 0.1),
+                      },
+                    }}
+                  >
+                    <Badge
+                      badgeContent={pendingInvitations}
+                      color="error"
+                      max={99}
+                    >
+                      <EmojiEventsIcon fontSize="small" sx={{ mr: 2 }} />
+                    </Badge>
+                    Events
+                  </MenuItem>
+
                   <SignedIn>
                     <MenuItem
                       onClick={handleClose}
@@ -395,39 +425,6 @@ const Header: React.FC = () => {
                     >
                       <PersonIcon fontSize="small" sx={{ mr: 2 }} />
                       My Profile
-                    </MenuItem>
-
-                    <MenuItem
-                      onClick={handleClose}
-                      component={RouterLink}
-                      to="/events"
-                      selected={
-                        isActive("/events") ||
-                        location.pathname.startsWith("/events/")
-                      }
-                      sx={{
-                        "&.Mui-selected": {
-                          backgroundColor: alpha(
-                            theme.palette.common.white,
-                            0.15
-                          ),
-                        },
-                        "&:hover": {
-                          backgroundColor: alpha(
-                            theme.palette.common.white,
-                            0.1
-                          ),
-                        },
-                      }}
-                    >
-                      <Badge
-                        badgeContent={pendingInvitations}
-                        color="error"
-                        max={99}
-                      >
-                        <EmojiEventsIcon fontSize="small" sx={{ mr: 2 }} />
-                      </Badge>
-                      Events
                     </MenuItem>
 
                     <MenuItem
