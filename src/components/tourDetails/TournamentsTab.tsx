@@ -29,7 +29,7 @@ const TournamentsTab: React.FC<TournamentsTabProps> = ({
         <Typography variant="h6" sx={styles.headers.tour.sectionTitle}>
           Tournaments in this Tour
         </Typography>
-        {/* TODO: Instead of adding a tournament here, the user should be able to add a round connected to this Tour. So the service that creates the round needs to take in the id of the Tour */}
+
         {isCreator && (
           <Button
             variant="contained"

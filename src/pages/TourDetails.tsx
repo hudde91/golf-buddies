@@ -225,7 +225,8 @@ const TourDetails: React.FC = () => {
               id="tour-tabpanel-0"
               aria-labelledby="tour-tab-0"
             >
-              {/* TODO: Update so from here you don't add tournament but instead Rounds. Should display RoundForm instead  */}
+              {/* TODO: Instead of adding a tournament here, the user should be able to add a round connected to this Tour. Should display RoundForm instead of TournamentForm. Do the service that creates the round needs to take in the id of the Tour in order to connect them? */}
+
               {tabValue === 0 && (
                 <Box sx={styles.tabs.panel}>
                   <Box sx={styles.headers.tour.headerContainer}>
