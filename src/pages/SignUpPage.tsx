@@ -36,9 +36,6 @@ const SignUpPage: React.FC = () => {
             signInUrl="/sign-in"
             redirectUrl="/events"
             afterSignUpUrl="/events"
-            onSignUpSuccess={() => {
-              navigate("/events");
-            }}
           />
         </Paper>
       </Box>

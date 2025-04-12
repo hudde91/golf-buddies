@@ -231,7 +231,6 @@ const TourDetails: React.FC = () => {
 
   const handleRoundFormSubmit = (data: RoundFormData) => {
     if (!user || !tour) return;
-    debugger;
     const currentUser: Player = {
       id: user.id,
       name: `${user.firstName} ${user.lastName}`.trim() || "Unknown User",
@@ -493,7 +492,6 @@ const TourDetails: React.FC = () => {
             }
             onSelectRound={handleSelectRound}
             navigateToRound={(roundId) => {
-              debugger;
               navigate(`/rounds/${roundId}`);
             }}
             onDeleteTeam={handleDeleteTeam}
@@ -562,7 +560,6 @@ const TourDetails: React.FC = () => {
                           )}`,
                         }}
                         onClick={() => {
-                          debugger;
                           navigate(`/rounds/${round.id}`);
                         }}
                       >
