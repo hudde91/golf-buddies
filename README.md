@@ -67,7 +67,6 @@ golf-app/
 │   │   ├── feedback.ts     - Feedback, dialogs, empty states
 │   │   ├── headers.ts      - Page and section headers
 │   │   ├── icon.ts         - Icon styling
-│   │   ├── infoItems.ts    - Information items with icons
 │   │   ├── layout.ts       - Layout containers and structures
 │   │   ├── tabs.ts         - Tab styling
 │   │   ├── text.ts         - Typography styles
