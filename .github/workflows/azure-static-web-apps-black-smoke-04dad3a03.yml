@@ -19,23 +19,23 @@ jobs:
         with:
           submodules: true
           lfs: false
-            
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
-          cache: 'npm'
+          node-version: "18"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
 
       - name: Build
-        run: npm run build
+        run: npm run build --silent
         env:
           VITE_CLERK_PUBLISHABLE_KEY: ${{ secrets.VITE_CLERK_PUBLISHABLE_KEY }}
           VITE_SPLASH_BACKGROUND: ${{ secrets.VITE_SPLASH_BACKGROUND }}
           VITE_SPLASH_LOGO_TEXT: ${{ secrets.VITE_SPLASH_LOGO_TEXT }}
-          
+
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
