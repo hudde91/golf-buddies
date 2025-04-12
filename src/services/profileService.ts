@@ -18,97 +18,95 @@ interface CreateUserParams {
 
 // React Query hooks
 // TO be implemented in the future
-export const useGetUserProfile = (userId: string) => {
-  return useQuery({
-    queryKey: ["userProfile", userId],
-    queryFn: async () => {
-      try {
-        const response = await axios.get(
-          `${API_BASE_URL}/user/${userId}/profile`
-        );
-        return response.data;
-      } catch (error) {
-        console.warn("API fetch failed, falling back to local storage");
-        // Fall back to local storage
-        return profileService.getProfile(userId);
-      }
-    },
-    enabled: !!userId,
-  });
-};
+// export const useGetUserProfile = (userId: string) => {
+//   return useQuery({
+//     queryKey: ["userProfile", userId],
+//     queryFn: async () => {
+//       try {
+//         const response = await axios.get(
+//           `${API_BASE_URL}/user/${userId}/profile`
+//         );
+//         return response.data;
+//       } catch (error) {
+//         console.warn("API fetch failed, falling back to local storage");
+//         // Fall back to local storage
+//         return profileService.getProfile(userId);
+//       }
+//     },
+//     enabled: !!userId,
+//   });
+// };
 
 // TO be implemented in the future
-export const useGetUserAchievements = (userId: string) => {
-  return useQuery({
-    queryKey: ["userAchievements", userId],
-    queryFn: async () => {
-      try {
-        const response = await axios.get(
-          `${API_BASE_URL}/user/${userId}/achievements`
-        );
-        return response.data;
-      } catch (error) {
-        console.warn("API fetch failed, falling back to local storage");
-        // Fall back to local storage
-        return profileService.getUserAchievements(userId);
-      }
-    },
-    enabled: !!userId,
-  });
-};
+// export const useGetUserAchievements = (userId: string) => {
+//   return useQuery({
+//     queryKey: ["userAchievements", userId],
+//     queryFn: async () => {
+//       try {
+//         const response = await axios.get(
+//           `${API_BASE_URL}/user/${userId}/achievements`
+//         );
+//         return response.data;
+//       } catch (error) {
+//         console.warn("API fetch failed, falling back to local storage");
+//         // Fall back to local storage
+//         return profileService.getUserAchievements(userId);
+//       }
+//     },
+//     enabled: !!userId,
+//   });
+// };
 
 // TO be implemented in the future
-export const useUpdateProfile = () => {
-  const queryClient = useQueryClient();
+// export const useUpdateProfile = () => {
+//   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: async ({
-      userId,
-      profileData,
-    }: {
-      userId: string;
-      profileData: Partial<UserProfile>;
-    }) => {
-      try {
-        const response = await axios.put(
-          `${API_BASE_URL}/user/${userId}/profile`,
-          profileData
-        );
-        // Also update local storage for backward compatibility
-        profileService.saveProfile(userId, profileData);
-        return response.data;
-      } catch (error) {
-        console.warn("API update failed, using local storage only");
-        // Fall back to local storage only
-        profileService.saveProfile(userId, profileData);
-        return profileService.getProfile(userId);
-      }
-    },
-    onSuccess: (data, variables) => {
-      // Invalidate and refetch the profile query after a successful update
-      queryClient.invalidateQueries({
-        queryKey: ["userProfile", variables.userId],
-      });
-    },
-  });
-};
+//   return useMutation({
+//     mutationFn: async ({
+//       userId,
+//       profileData,
+//     }: {
+//       userId: string;
+//       profileData: Partial<UserProfile>;
+//     }) => {
+//       try {
+//         const response = await axios.put(
+//           `${API_BASE_URL}/user/${userId}/profile`,
+//           profileData
+//         );
+//         // Also update local storage for backward compatibility
+//         profileService.saveProfile(userId, profileData);
+//         return response.data;
+//       } catch (error) {
+//         console.warn("API update failed, using local storage only");
+//         // Fall back to local storage only
+//         profileService.saveProfile(userId, profileData);
+//         return profileService.getProfile(userId);
+//       }
+//     },
+//     onSuccess: (data, variables) => {
+//       // Invalidate and refetch the profile query after a successful update
+//       queryClient.invalidateQueries({
+//         queryKey: ["userProfile", variables.userId],
+//       });
+//     },
+//   });
+// };
 
 export const useCreateUser = () => {
   return useMutation({
     mutationFn: async (params: CreateUserParams) => {
       try {
         // Attempt to fetch the user first to check if they already exist
-        try {
-          const checkResponse = await axios.get(
-            `${API_BASE_URL}/user/${params.userId}`
-          );
-          console.log("User already exists in backend, skipping creation");
-          // If the user exists, return the existing user data
-          return checkResponse.data;
-        } catch (error) {
-          // If the GET request fails with 404, user doesn't exist yet, proceed with creation
-          console.log("User does not exist in backend, creating new user");
-        }
+        // try {
+        //   const checkResponse = await axios.get(`${API_BASE_URL}/user`);
+        //   console.log("User already exists in backend, skipping creation");
+        //   // If the user exists, return the existing user data
+        //   return checkResponse.data;
+        // } catch (error) {
+        //   // If the GET request fails with 404, user doesn't exist yet, proceed with creation
+        //   console.log("User does not exist in backend, creating new user");
+        // }
 
         // Create the user if they don't exist yet
         const response = await axios.post(
