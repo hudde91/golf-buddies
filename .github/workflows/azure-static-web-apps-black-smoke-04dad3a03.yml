@@ -30,7 +30,7 @@ jobs:
         run: npm ci
 
       - name: Build
-        run: npm run build --silent
+        run: CI=false npm run build
         env:
           VITE_CLERK_PUBLISHABLE_KEY: ${{ secrets.VITE_CLERK_PUBLISHABLE_KEY }}
           VITE_SPLASH_BACKGROUND: ${{ secrets.VITE_SPLASH_BACKGROUND }}
