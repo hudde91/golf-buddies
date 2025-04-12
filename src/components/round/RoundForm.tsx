@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   DialogTitle,
   DialogContent,
@@ -159,7 +159,7 @@ const RoundForm: React.FC<RoundFormProps> = ({
   const [selectedClub, setSelectedClub] = useState<GolfClub | null>(null);
 
   // Load golf clubs when the input changes
-  React.useEffect(() => {
+  useEffect(() => {
     let active = true;
 
     setLoading(true);
@@ -183,7 +183,7 @@ const RoundForm: React.FC<RoundFormProps> = ({
   }, [inputValue]);
 
   // For initial data, try to match courseName string to a club option
-  React.useEffect(() => {
+  useEffect(() => {
     if (initialData.courseName) {
       setInputValue(initialData.courseName);
       fetchGolfClubs("").then((clubs) => {

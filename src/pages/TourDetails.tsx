@@ -118,7 +118,9 @@ const TourDetails: React.FC = () => {
           setLeaderboard(tourLeaderboard);
 
           try {
-            const fetchedFriends = await friendsService.getFriends(user.id);
+            const fetchedFriends = await friendsService.getAcceptedFriends(
+              user.id
+            );
             setFriends(fetchedFriends || []);
           } catch (friendsError) {
             console.error("Error fetching friends:", friendsError);

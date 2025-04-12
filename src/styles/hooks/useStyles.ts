@@ -117,7 +117,6 @@ export const useStyles = () => {
       viewDetails: button.viewDetails,
     },
 
-    // Feedback components
     feedback: {
       emptyState: {
         container: feedback.emptyState.container(theme),
@@ -227,7 +226,6 @@ export const useStyles = () => {
       return statusIndicator.chip(color, theme);
     },
 
-    getTeamChip: (teamColor: string) => statusIndicator.team(teamColor, theme),
     divider: {
       standard: divider.standard(theme),
       section: divider.section(theme),
@@ -236,33 +234,20 @@ export const useStyles = () => {
 
     avatars: {
       standard: (teamColor?: string) => avatars.standard(theme, teamColor),
-      profile: (teamColor?: string) => avatars.profile(theme, teamColor),
-      player: (teamColor?: string) => avatars.player(theme, teamColor),
       leaderboard: (teamColor?: string) =>
         avatars.leaderboard(theme, teamColor),
-      team: (color: string) => avatars.team(color),
-      iconContainer: avatars.iconContainer(theme),
-      badge: (color: string) => avatars.badge(theme, color),
     },
 
     chips: {
       status: {
         active: chips.status.active(theme),
-        completed: chips.status.completed(theme),
-        pending: chips.status.pending(theme),
-        cancelled: chips.status.cancelled(theme),
-        upcoming: chips.status.upcoming(theme),
-        draft: chips.status.draft(theme),
         custom: (color: string) => chips.status.custom(theme, color),
       },
       eventType: {
         tournament: chips.eventType.tournament(theme),
         tour: chips.eventType.tour(theme),
-        match: chips.eventType.match(theme),
         custom: (color: string) => chips.eventType.custom(theme, color),
       },
-      badge: chips.badge(theme),
-      team: (teamColor: string) => chips.team(theme, teamColor),
     },
 
     tabs: {
@@ -272,21 +257,9 @@ export const useStyles = () => {
     },
 
     tables: {
-      container: tables.container(theme),
-      headerCell: tables.headerCell(theme),
-      dataCell: tables.dataCell(theme),
-      getRowStyle: (index: number, highlight?: boolean) =>
-        tables.getRowStyle(theme, index, highlight),
       leaderboard: {
-        container: tables.leaderboard.container(theme),
         header: tables.leaderboard.header(theme),
         row: tables.leaderboard.row(theme),
-        position: {
-          first: tables.leaderboard.position.first(theme),
-          second: tables.leaderboard.position.second(theme),
-          third: tables.leaderboard.position.third(theme),
-          default: tables.leaderboard.position.default(theme),
-        },
       },
     },
 
@@ -306,22 +279,6 @@ export const useStyles = () => {
         icon: headers.event.icon,
         title: headers.event.title,
         subtitle: headers.event.subtitle(theme),
-      },
-      dashboard: {
-        container: headers.dashboard.container,
-        title: headers.dashboard.title,
-        actions: headers.dashboard.actions,
-      },
-      tournament: {
-        container: headers.tournament.container(theme),
-        title: headers.tournament.title,
-        subtitle: headers.tournament.subtitle(theme),
-        background: headers.tournament.background,
-      },
-      tabs: {
-        container: headers.tabs.container,
-        title: headers.tabs.title,
-        actions: headers.tabs.actions,
       },
       tour: {
         sectionTitle: headers.tour.sectionTitle,
@@ -354,7 +311,6 @@ export const useStyles = () => {
 
     bottomNavigation: {
       container: bottomNavigation.navigation.container,
-      fab: bottomNavigation.navigation.fab,
       action: bottomNavigation.navigation.action,
     },
 
@@ -363,14 +319,6 @@ export const useStyles = () => {
       if (position === 1) return tables.leaderboard.position.second(theme);
       if (position === 2) return tables.leaderboard.position.third(theme);
       return tables.leaderboard.position.default(theme);
-    },
-
-    playerCard: {
-      container: playerCard.container(theme),
-      avatar: (teamColor?: string) => playerCard.avatar(theme, teamColor),
-      content: playerCard.content,
-      name: playerCard.name(theme),
-      teamChip: (teamColor: string) => playerCard.teamChip(theme, teamColor),
     },
 
     profileCard: {
@@ -410,53 +358,7 @@ export const useStyles = () => {
     },
 
     tournamentScorecard: {
-      scorecardHeader: tournamentScorecard.scorecardHeader,
-      weatherDisplay: tournamentScorecard.weatherDisplay,
-      scorecardSection: tournamentScorecard.scorecardSection,
-      tableHeaderCell: tournamentScorecard.tableHeaderCell(theme),
-      parRow: tournamentScorecard.parRow,
-      playerScoreRow: tournamentScorecard.playerScoreRow,
       scoreCell: tournamentScorecard.scoreCell,
-      roundsTab: tournamentScorecard.roundsTab,
-      actionButtons: tournamentScorecard.actionButtons,
-    },
-
-    highlightsFeed: {
-      container: highlightsFeed.container,
-      header: highlightsFeed.header,
-      headerTitle: highlightsFeed.headerTitle,
-      headerSubtitle: highlightsFeed.headerSubtitle(theme),
-      feedContainer: highlightsFeed.feedContainer(theme),
-      feedItem: highlightsFeed.feedItem(theme),
-      divider: highlightsFeed.divider(theme),
-      itemHeader: highlightsFeed.itemHeader,
-      playerName: highlightsFeed.playerName,
-      getTypeChip: (color: string) => highlightsFeed.getTypeChip(color, theme),
-      contentText: highlightsFeed.contentText(theme),
-      highlightTitle: highlightsFeed.highlightTitle,
-      mediaContainer: highlightsFeed.mediaContainer(theme),
-      metadataContainer: highlightsFeed.metadataContainer,
-      metadataText: highlightsFeed.metadataText(theme),
-      getAvatarStyle: (type: string, color: string) =>
-        highlightsFeed.getAvatarStyle(type, color, theme),
-      emptyState: highlightsFeed.emptyState(theme),
-      emptyStateIcon: highlightsFeed.emptyStateIcon(theme),
-      emptyStateTitle: highlightsFeed.emptyStateTitle,
-      emptyStateText: highlightsFeed.emptyStateText(theme),
-      formDialog: highlightsFeed.formDialog,
-      uploadBox: highlightsFeed.uploadBox(theme),
-      uploadIcon: highlightsFeed.uploadIcon,
-      uploadTitle: highlightsFeed.uploadTitle,
-      uploadSubtext: highlightsFeed.uploadSubtext(theme),
-      uploadError: highlightsFeed.uploadError,
-      previewContainer: highlightsFeed.previewContainer(theme),
-      removeButton: highlightsFeed.removeButton(theme),
-      videoPlaceholder: highlightsFeed.videoPlaceholder,
-      videoIcon: highlightsFeed.videoIcon(theme),
-      videoText: highlightsFeed.videoText(theme),
-      formField: highlightsFeed.formField(theme),
-      getItemTypeColor: (type: string, mediaType?: string) =>
-        highlightsFeed.getItemTypeColor(type, mediaType, theme),
     },
 
     tournamentRounds: {
@@ -475,27 +377,6 @@ export const useStyles = () => {
         deleteButton: tournamentRounds.roundsTab.deleteButton(theme),
         noSelection: tournamentRounds.roundsTab.noSelection,
         noSelectionText: tournamentRounds.roundsTab.noSelectionText(theme),
-      },
-
-      group: {
-        container: tournamentRounds.group.container(theme),
-        header: tournamentRounds.group.header(theme),
-        headerContent: tournamentRounds.group.headerContent,
-        title: tournamentRounds.group.title,
-        playerCount: tournamentRounds.group.playerCount,
-        chips: tournamentRounds.group.chips,
-        timeChip: tournamentRounds.group.timeChip(theme),
-        holeChip: tournamentRounds.group.holeChip(theme),
-        playerChips: tournamentRounds.group.playerChips,
-        playerChip: tournamentRounds.group.playerChip(theme),
-      },
-
-      ungrouped: {
-        container: tournamentRounds.ungrouped.container,
-        header: tournamentRounds.ungrouped.header(theme),
-        playerList: tournamentRounds.ungrouped.playerList(theme),
-        playerItem: tournamentRounds.ungrouped.playerItem(theme),
-        playerName: tournamentRounds.ungrouped.playerName,
       },
 
       header: {
@@ -544,7 +425,6 @@ export const useStyles = () => {
       editButton: tournamentTeams.editButton(theme),
       deleteButton: tournamentTeams.deleteButton(theme),
 
-      // dialogPaper: tournamentTeams.dialogPaper(theme),
       dialogTitle: tournamentTeams.dialogTitle(theme),
       dialogActions: tournamentTeams.dialogActions(theme),
 

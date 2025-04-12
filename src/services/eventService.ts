@@ -426,6 +426,7 @@ const eventService = {
       createdBy: userId,
       createdAt: new Date().toISOString(),
       tournaments: [],
+      rounds: [],
       players: [currentUser], // Add the creator as the first player
       invitations: data.inviteFriends || [], // Add selected friends to invitations
       status: status,
@@ -436,7 +437,6 @@ const eventService = {
       },
     };
 
-    // Create event wrapper
     const newEvent: Event = {
       id: newTour.id, // Same ID for simplicity
       type: "tour",
