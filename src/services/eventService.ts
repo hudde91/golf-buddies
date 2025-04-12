@@ -73,7 +73,7 @@ export const useGetEventById = (eventId: string) => {
     queryKey: ["event", eventId],
     queryFn: async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/events/${eventId}`);
+        const response = await axios.get(`${API_BASE_URL}/event/${eventId}`);
         return response.data;
       } catch (error) {
         console.warn("API fetch failed, falling back to local storage");
@@ -100,7 +100,7 @@ export const useGetUserEvents = (userId: string) => {
     queryFn: async () => {
       try {
         const response = await axios.get(
-          `${API_BASE_URL}/users/${userId}/events`
+          `${API_BASE_URL}/event/${userId}/events`
         );
         return response.data;
       } catch (error) {
@@ -430,6 +430,10 @@ const eventService = {
       players: [currentUser], // Add the creator as the first player
       invitations: data.inviteFriends || [], // Add selected friends to invitations
       status: status,
+      isTeamEvent: data.isTeamEvent || false, // Add team event flag
+      scoringType: data.isTeamEvent
+        ? data.scoringType || "individual"
+        : "individual",
       pointsSystem: {
         win: 100,
         topFinish: { 1: 100, 2: 80, 3: 60, 4: 40, 5: 20 },
@@ -2657,6 +2661,279 @@ const eventService = {
       })
       .sort((a, b) => a.score - b.score); // Sort by score (lower is better)
   },
+};
+
+export const addTeamToTour = (
+  tourId: string,
+  teamData: TeamFormData
+): Event | null => {
+  const events = eventService.getAllEvents();
+  const event = events.find((e) => e.id === tourId && e.type === "tour");
+
+  if (!event) return null;
+
+  const tour = event.data as Tour;
+
+  // Create new team
+  const newTeam: Team = {
+    id: uuidv4(),
+    name: teamData.name,
+    color: teamData.color,
+    logo: teamData.logo,
+    captain: teamData.captain,
+  };
+
+  // Add team to tour
+  const updatedTour = {
+    ...tour,
+    teams: [...(tour.teams || []), newTeam],
+  };
+
+  // Update event
+  events[events.findIndex((e) => e.id === tourId)] = {
+    ...event,
+    data: updatedTour,
+  };
+
+  localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
+  return event;
+};
+
+// Update a team in a tour
+export const updateTourTeam = (
+  tourId: string,
+  teamId: string,
+  teamData: Partial<Team>
+): Event | null => {
+  const events = eventService.getAllEvents();
+  const event = events.find((e) => e.id === tourId && e.type === "tour");
+
+  if (!event) return null;
+
+  const tour = event.data as Tour;
+
+  // Ensure teams array exists
+  if (!tour.teams) return event;
+
+  // Find and update the team
+  const teamIndex = tour.teams.findIndex((t) => t.id === teamId);
+  if (teamIndex === -1) return event;
+
+  const updatedTeams = [...tour.teams];
+  updatedTeams[teamIndex] = {
+    ...updatedTeams[teamIndex],
+    ...teamData,
+  };
+
+  const updatedTour = {
+    ...tour,
+    teams: updatedTeams,
+  };
+
+  // Update event
+  events[events.findIndex((e) => e.id === tourId)] = {
+    ...event,
+    data: updatedTour,
+  };
+
+  localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
+  return event;
+};
+
+// Delete a team from a tour
+export const deleteTourTeam = (
+  tourId: string,
+  teamId: string
+): Event | null => {
+  const events = eventService.getAllEvents();
+  const event = events.find((e) => e.id === tourId && e.type === "tour");
+
+  if (!event) return null;
+
+  const tour = event.data as Tour;
+
+  // Ensure teams array exists
+  if (!tour.teams) return event;
+
+  // Remove the team
+  const updatedTeams = tour.teams.filter((t) => t.id !== teamId);
+
+  // Update player team associations
+  const updatedPlayers = tour.players
+    ? tour.players.map((player) => {
+        if (player.teamId === teamId) {
+          return { ...player, teamId: undefined };
+        }
+        return player;
+      })
+    : [];
+
+  const updatedTour = {
+    ...tour,
+    teams: updatedTeams,
+    players: updatedPlayers,
+  };
+
+  // Update event
+  events[events.findIndex((e) => e.id === tourId)] = {
+    ...event,
+    data: updatedTour,
+  };
+
+  localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
+  return event;
+};
+
+// Assign a player to a team in a tour
+export const assignPlayerToTourTeam = (
+  tourId: string,
+  playerId: string,
+  teamId?: string
+): Event | null => {
+  const events = eventService.getAllEvents();
+  const event = events.find((e) => e.id === tourId && e.type === "tour");
+
+  if (!event) return null;
+
+  const tour = event.data as Tour;
+
+  if (!tour.players) return event;
+
+  // Update player's team
+  const updatedPlayers = tour.players.map((player) => {
+    if (player.id === playerId) {
+      return { ...player, teamId };
+    }
+    return player;
+  });
+
+  // If the player was a captain and is being removed from their team, update the team
+  if (!teamId && tour.teams) {
+    const captainTeam = tour.teams.find((t) => t.captain === playerId);
+    if (captainTeam) {
+      // Update the team to remove the captain
+      tour.teams = tour.teams.map((t) => {
+        if (t.id === captainTeam.id) {
+          return { ...t, captain: undefined };
+        }
+        return t;
+      });
+    }
+  }
+
+  const updatedTour = {
+    ...tour,
+    players: updatedPlayers,
+  };
+
+  // Update event
+  events[events.findIndex((e) => e.id === tourId)] = {
+    ...event,
+    data: updatedTour,
+  };
+
+  localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
+  return event;
+};
+
+// Get tour by ID (helper function)
+export const getTourById = (tourId: string): Tour | null => {
+  const event = eventService.getEventByIdSync(tourId);
+  return event && event.type === "tour" ? (event.data as Tour) : null;
+};
+
+// Get team leaderboard for a tour
+export const getTourTeamLeaderboard = (
+  tourId: string
+): {
+  teamId: string;
+  teamName: string;
+  teamColor: string;
+  playerCount: number;
+  totalPoints: number;
+  roundTotals: { [roundId: string]: number };
+  tournamentResults: { [tournamentId: string]: number };
+}[] => {
+  const tour = getTourById(tourId);
+  if (!tour || !tour.teams || tour.teams.length === 0) return [];
+
+  // Get individual leaderboard to aggregate points by team
+  const individualLeaderboard = eventService.getTourLeaderboard(tourId);
+
+  // Map to store team data
+  const teamData: {
+    [teamId: string]: {
+      teamName: string;
+      teamColor: string;
+      playerCount: number;
+      totalPoints: number;
+      roundTotals: { [roundId: string]: number };
+      tournamentResults: { [tournamentId: string]: number };
+    };
+  } = {};
+
+  // Initialize team data
+  tour.teams.forEach((team) => {
+    teamData[team.id] = {
+      teamName: team.name,
+      teamColor: team.color,
+      playerCount: 0,
+      totalPoints: 0,
+      roundTotals: {},
+      tournamentResults: {},
+    };
+  });
+
+  // Count players per team
+  (tour.players || []).forEach((player) => {
+    if (player.teamId && teamData[player.teamId]) {
+      teamData[player.teamId].playerCount++;
+    }
+  });
+
+  // Aggregate individual points by team
+  individualLeaderboard.forEach((playerData) => {
+    if (playerData.teamId && teamData[playerData.teamId]) {
+      // Add to team total points
+      teamData[playerData.teamId].totalPoints += playerData.totalPoints;
+
+      // Aggregate tournament results
+      Object.entries(playerData.tournamentResults).forEach(
+        ([tournamentId, result]) => {
+          const tournamentPoints = result.points || 0;
+          if (!teamData[playerData.teamId!].tournamentResults[tournamentId]) {
+            teamData[playerData.teamId!].tournamentResults[tournamentId] = 0;
+          }
+          teamData[playerData.teamId!].tournamentResults[tournamentId] +=
+            tournamentPoints;
+        }
+      );
+
+      // Aggregate round results
+      Object.entries(playerData.roundResults || {}).forEach(
+        ([roundId, result]) => {
+          const roundPoints = result.points || 0;
+          if (!teamData[playerData.teamId!].roundTotals[roundId]) {
+            teamData[playerData.teamId!].roundTotals[roundId] = 0;
+          }
+          teamData[playerData.teamId!].roundTotals[roundId] += roundPoints;
+        }
+      );
+    }
+  });
+
+  // Convert to array and sort by total points
+  return Object.entries(teamData)
+    .map(([teamId, data]) => ({
+      teamId,
+      teamName: data.teamName,
+      teamColor: data.teamColor,
+      playerCount: data.playerCount,
+      totalPoints: data.totalPoints,
+      roundTotals: data.roundTotals,
+      tournamentResults: data.tournamentResults,
+    }))
+    .sort((a, b) => b.totalPoints - a.totalPoints);
 };
 
 export default eventService;

@@ -23,8 +23,9 @@ interface FeatureProps {
 const Home: React.FC = () => {
   const styles = useStyles();
 
-  //  const { data } = useGetUserEvents("2uHNrS8Ei3sitQFeEwt8EKsg6Qo");
-  // console.log("Response from useGetUserEvents:", data);
+  const { data } = useGetUserEvents("2uHNrS8Ei3sitQFeEwt8EKsg6Qo");
+
+  console.log("Response from useGetUserEvents:", data);
 
   return (
     <Box sx={styles.layout.page.withBackground}>

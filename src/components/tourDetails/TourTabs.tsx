@@ -1,7 +1,8 @@
 import React from "react";
 import { Box, Tabs, Tab } from "@mui/material";
-import { PlayerGroup, Tour } from "../../types/event";
+import { PlayerGroup, Team, TeamFormData, Tour } from "../../types/event";
 import TournamentsTab from "./TournamentsTab";
+import TeamLeaderboardTab from "./TeamLeaderboardTab";
 import RoundsTab from "./RoundsTab";
 import LeaderboardTab from "./LeaderboardTab";
 import PlayersTab from "./PlayersTab";
@@ -14,6 +15,7 @@ interface TourTabsProps {
   leaderboard: any[];
   isCreator: boolean;
   selectedRoundId: string | null;
+  teamLeaderboard: any[];
   onTabChange: (event: React.SyntheticEvent, newValue: number) => void;
   onAddTournament: () => void;
   onAddRound: () => void;
@@ -22,6 +24,10 @@ interface TourTabsProps {
   onDeleteRound: (roundId: string) => void;
   onSelectRound: (roundId: string) => void;
   onUpdatePlayerGroups: (roundId: string, playerGroups: PlayerGroup[]) => void;
+  onAddTeam: (teamData: TeamFormData) => void;
+  onUpdateTeam: (teamId: string, teamData: Partial<Team>) => void;
+  onDeleteTeam: (teamId: string) => void;
+  onAssignPlayer: (playerId: string, teamId?: string) => void;
 }
 
 const TourTabs: React.FC<TourTabsProps> = ({
@@ -30,6 +36,7 @@ const TourTabs: React.FC<TourTabsProps> = ({
   leaderboard,
   isCreator,
   selectedRoundId,
+  teamLeaderboard,
   onTabChange,
   onAddTournament,
   onAddRound,
@@ -38,6 +45,10 @@ const TourTabs: React.FC<TourTabsProps> = ({
   onDeleteRound,
   onUpdatePlayerGroups,
   onSelectRound,
+  onDeleteTeam,
+  onUpdateTeam,
+  onAddTeam,
+  onAssignPlayer,
 }) => {
   const styles = useStyles();
 
@@ -59,7 +70,10 @@ const TourTabs: React.FC<TourTabsProps> = ({
           <Tab label="Tournaments" />
           <Tab label="Leaderboard" />
           <Tab label="Players" />
-          {tour.teams && tour.teams.length > 0 && <Tab label="Teams" />}
+          {tour.isTeamEvent && <Tab label="Teams" />}
+          {/* {tour.teams && tour.teams.length > 0 && (
+            <Tab label="Team Leaderboard" />
+          )} */}
         </Tabs>
       </Box>
 
@@ -109,7 +123,11 @@ const TourTabs: React.FC<TourTabsProps> = ({
         aria-labelledby="tour-tab-2"
       >
         {tabValue === 2 && (
-          <LeaderboardTab tour={tour} leaderboard={leaderboard} />
+          <LeaderboardTab
+            tour={tour}
+            leaderboard={leaderboard}
+            teamLeaderboard={teamLeaderboard}
+          />
         )}
       </div>
 
@@ -124,16 +142,37 @@ const TourTabs: React.FC<TourTabsProps> = ({
       </div>
 
       {/* Tab Panel for Teams (if applicable) */}
-      {tour.teams && tour.teams.length > 0 && (
+      {tour.isTeamEvent && (
         <div
           role="tabpanel"
           hidden={tabValue !== 4}
           id="tour-tabpanel-4"
           aria-labelledby="tour-tab-4"
         >
-          {tabValue === 4 && <TeamsTab tour={tour} />}
+          {tabValue === 4 && (
+            <TeamsTab
+              tour={tour}
+              isCreator={isCreator}
+              onAddTeam={onAddTeam}
+              onUpdateTeam={onUpdateTeam}
+              onDeleteTeam={onDeleteTeam}
+              onAssignPlayer={onAssignPlayer}
+            />
+          )}
         </div>
       )}
+      {/* {tour.isTeamEvent && (
+        <div
+          role="tabpanel"
+          hidden={tabValue !== 5} // Assuming this is the next tab index
+          id="tour-tabpanel-5"
+          aria-labelledby="tour-tab-5"
+        >
+          {tabValue === 5 && (
+            <TeamLeaderboardTab tour={tour} teamLeaderboard={teamLeaderboard} />
+          )}
+        </div>
+      )} */}
     </Box>
   );
 };

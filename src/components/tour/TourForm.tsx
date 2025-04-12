@@ -9,6 +9,14 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
+  FormControlLabel,
+  Switch,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  SelectChangeEvent,
+  Alert,
   useTheme,
   alpha,
 } from "@mui/material";
@@ -29,6 +37,13 @@ interface TourFormProps {
   initialData?: Partial<TourFormData>;
 }
 
+// Scoring types options (same as in TournamentForm)
+const scoringTypes = [
+  { value: "individual", label: "Individual" },
+  { value: "team", label: "Team Only" },
+  { value: "both", label: "Both Individual & Team" },
+];
+
 const TourForm: React.FC<TourFormProps> = ({
   onSubmit,
   onCancel,
@@ -48,6 +63,8 @@ const TourForm: React.FC<TourFormProps> = ({
         .toISOString()
         .split("T")[0],
     description: initialData?.description || "",
+    isTeamEvent: initialData?.isTeamEvent || false,
+    scoringType: initialData?.scoringType || "individual",
   });
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -65,7 +82,9 @@ const TourForm: React.FC<TourFormProps> = ({
   }, [user]);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e:
+      | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+      | SelectChangeEvent
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -78,6 +97,18 @@ const TourForm: React.FC<TourFormProps> = ({
         return newErrors;
       });
     }
+  };
+
+  const handleSwitchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: checked,
+      // If team event is turned off, reset to individual scoring
+      ...(name === "isTeamEvent" && !checked
+        ? { scoringType: "individual" }
+        : {}),
+    }));
   };
 
   const handleDateChange = (name: string, date: Date | null) => {
@@ -192,6 +223,76 @@ const TourForm: React.FC<TourFormProps> = ({
                 }}
               />
             </LocalizationProvider>
+          </Grid>
+
+          {/* Team Settings */}
+          <Grid item xs={12}>
+            <Box
+              sx={{
+                ...styles.card.glass,
+                p: 2,
+                mb: 2,
+              }}
+            >
+              <Typography
+                variant="subtitle1"
+                gutterBottom
+                sx={styles.text.body.primary}
+              >
+                Team Settings
+              </Typography>
+
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={formData.isTeamEvent}
+                    onChange={handleSwitchChange}
+                    name="isTeamEvent"
+                    color="primary"
+                  />
+                }
+                label="Team Event (enables team leaderboards)"
+                sx={{ color: "white", mb: 1 }}
+              />
+
+              {formData.isTeamEvent && (
+                <Box sx={{ mt: 2 }}>
+                  <FormControl fullWidth>
+                    <InputLabel id="scoring-type-label" sx={{ color: "white" }}>
+                      Scoring Type
+                    </InputLabel>
+                    <Select
+                      labelId="scoring-type-label"
+                      name="scoringType"
+                      value={formData.scoringType}
+                      label="Scoring Type"
+                      onChange={handleChange}
+                      sx={styles.inputs.select}
+                      MenuProps={{
+                        PaperProps: {
+                          sx: styles.inputs.menuPaper,
+                        },
+                      }}
+                    >
+                      {scoringTypes.map((type) => (
+                        <MenuItem
+                          key={type.value}
+                          value={type.value}
+                          sx={styles.inputs.menuItem}
+                        >
+                          {type.label}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+
+                  <Alert severity="info" sx={styles.feedback.alert.info}>
+                    Team events allow you to group players into teams and track
+                    both individual and team scores across events.
+                  </Alert>
+                </Box>
+              )}
+            </Box>
           </Grid>
 
           <Grid item xs={12}>

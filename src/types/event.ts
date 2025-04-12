@@ -103,6 +103,8 @@ export interface Tour {
   players?: Player[];
   teams?: Team[]; // Optional shared teams across tournaments
   invitations?: string[];
+  isTeamEvent?: boolean;
+  scoringType?: "individual" | "team" | "both";
   status: "upcoming" | "active" | "completed";
   pointsSystem?: {
     // Optional points system for tour rankings
@@ -153,6 +155,8 @@ export interface TourFormData {
   startDate: string;
   endDate: string;
   description: string;
+  isTeamEvent?: boolean;
+  scoringType?: "individual" | "team" | "both";
   inviteFriends?: string[];
 }
 

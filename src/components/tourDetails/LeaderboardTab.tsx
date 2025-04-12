@@ -11,15 +11,18 @@ import {
 import { Leaderboard as LeaderboardIcon } from "@mui/icons-material";
 import { Tour } from "../../types/event";
 import { useStyles } from "../../styles/hooks/useStyles";
+import TeamLeaderboardTab from "./TeamLeaderboardTab";
 
 interface LeaderboardTabProps {
   tour: Tour;
   leaderboard: any[];
+  teamLeaderboard: any[];
 }
 
 const LeaderboardTab: React.FC<LeaderboardTabProps> = ({
   tour,
   leaderboard,
+  teamLeaderboard,
 }) => {
   const styles = useStyles();
   const theme = useTheme();
@@ -160,6 +163,7 @@ const LeaderboardTab: React.FC<LeaderboardTabProps> = ({
           })}
         </Paper>
       )}
+      <TeamLeaderboardTab tour={tour} teamLeaderboard={teamLeaderboard} />
     </Box>
   );
 };
