@@ -13,8 +13,16 @@ import {
 } from "@mui/material";
 import { ArrowBack as ArrowBackIcon } from "@mui/icons-material";
 import eventService from "../services/eventService";
-import { Event, Tour, TournamentFormData, Player } from "../types/event";
+import {
+  Event,
+  Tour,
+  TournamentFormData,
+  Player,
+  RoundFormData,
+  PlayerGroup,
+} from "../types/event";
 import TournamentForm from "../components/tournament/TournamentForm";
+import RoundForm from "../components/round/RoundForm";
 import TourForm from "../components/tour/TourForm";
 import LoadingState from "../components/tournament/LoadingState";
 import TourHeader from "../components/tour/TourHeader";
@@ -23,6 +31,7 @@ import { colors, useStyles } from "../styles";
 import MobileTourBottomNavigation from "../components/tourDetails/MobileTourBottomNavigation";
 import SharedPlayerCard from "../components/SharedPlayerCard";
 import PlayerProfileDialog from "../components/tournamentDetails/playersTab/PlayerProfileDialog";
+import friendsService from "../services/friendsService";
 
 const TourDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -38,31 +47,93 @@ const TourDetails: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [tabValue, setTabValue] = useState(0);
   const [openAddTournament, setOpenAddTournament] = useState(false);
+  const [openAddRound, setOpenAddRound] = useState(false); // New state for add round dialog
   const [openEditTour, setOpenEditTour] = useState(false);
   const [isCreator, setIsCreator] = useState(false);
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
   const [profileDialogOpen, setProfileDialogOpen] = useState(false);
+  const [friends, setFriends] = useState<any[]>([]);
+
+  const [selectedRoundId, setSelectedRoundId] = useState<string | null>(
+    tour?.rounds && tour.rounds.length > 0 ? tour.rounds[0].id : null
+  );
+
+  const handleSelectRound = (roundId: string) => {
+    setSelectedRoundId(roundId);
+  };
+
+  // useEffect(() => {
+  //   if (!isLoaded || !user || !id) return;
+
+  //   const fetchData = async () => {
+  //     setIsLoading(true);
+  //     const fetchedEvent = await eventService.getEventById(id);
+
+  //     if (fetchedEvent && fetchedEvent.type === "tour") {
+  //       setEvent(fetchedEvent);
+
+  //       // Initialize rounds array if it doesn't exist (backward compatibility)
+  //       const tourData = fetchedEvent.data as Tour;
+  //       if (!tourData.rounds) {
+  //         tourData.rounds = [];
+  //       }
+
+  //       setTour(tourData);
+  //       setIsCreator(tourData.createdBy === user.id);
+
+  //       const tourLeaderboard = eventService.getTourLeaderboard(id);
+  //       setLeaderboard(tourLeaderboard);
+  //     } else {
+  //       // If it's not a tour, redirect to events page
+  //       navigate("/events");
+  //     }
+
+  //     setIsLoading(false);
+  //   };
+
+  //   fetchData();
+  // }, [id, user, isLoaded, navigate]);
 
   useEffect(() => {
     if (!isLoaded || !user || !id) return;
 
-    const fetchData = () => {
+    const fetchData = async () => {
       setIsLoading(true);
-      const fetchedEvent = eventService.getEventById(id);
+      try {
+        // Fetch tour data
+        const fetchedEvent = await eventService.getEventById(id);
 
-      if (fetchedEvent && fetchedEvent.type === "tour") {
-        setEvent(fetchedEvent);
-        setTour(fetchedEvent.data as Tour);
-        setIsCreator(fetchedEvent.data.createdBy === user.id);
+        if (fetchedEvent && fetchedEvent.type === "tour") {
+          setEvent(fetchedEvent);
 
-        const tourLeaderboard = eventService.getTourLeaderboard(id);
-        setLeaderboard(tourLeaderboard);
-      } else {
-        // If it's not a tour, redirect to events page
+          const tourData = fetchedEvent.data as Tour;
+          if (!tourData.rounds) {
+            tourData.rounds = [];
+          }
+
+          setTour(tourData);
+          setIsCreator(tourData.createdBy === user.id);
+
+          const tourLeaderboard = eventService.getTourLeaderboard(id);
+          setLeaderboard(tourLeaderboard);
+
+          try {
+            const fetchedFriends = await friendsService.getFriends(user.id);
+            setFriends(fetchedFriends || []);
+          } catch (friendsError) {
+            console.error("Error fetching friends:", friendsError);
+            setFriends([]);
+          }
+        } else {
+          navigate("/events");
+        }
+
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching tour data:", error);
         navigate("/events");
+        setIsLoading(false);
       }
-
-      setIsLoading(false);
     };
 
     fetchData();
@@ -76,8 +147,16 @@ const TourDetails: React.FC = () => {
     setOpenAddTournament(true);
   };
 
+  const handleAddRound = () => {
+    setOpenAddRound(true);
+  };
+
   const handleAddTournamentClose = () => {
     setOpenAddTournament(false);
+  };
+
+  const handleAddRoundClose = () => {
+    setOpenAddRound(false);
   };
 
   const handleEditTour = () => {
@@ -93,9 +172,10 @@ const TourDetails: React.FC = () => {
 
     const currentUser: Player = {
       id: user.id,
-      name: user.fullName || "Unknown User",
+      name: `${user.firstName} ${user.lastName}`.trim() || "Unknown User",
       email: user.primaryEmailAddress?.emailAddress || "",
-      avatarUrl: user.imageUrl || undefined,
+      avatarUrl: user.imageUrl || "",
+      teamId: "",
     };
 
     const updatedEvent = eventService.addTournamentToTour(
@@ -110,6 +190,28 @@ const TourDetails: React.FC = () => {
     }
 
     setOpenAddTournament(false);
+  };
+
+  const handleRoundFormSubmit = (data: RoundFormData) => {
+    if (!user || !tour) return;
+    debugger;
+    const currentUser: Player = {
+      id: user.id,
+      name: `${user.firstName} ${user.lastName}`.trim() || "Unknown User",
+      email: user.primaryEmailAddress?.emailAddress || "",
+      avatarUrl: user.imageUrl || "",
+      teamId: "",
+    };
+
+    // Add a new function to your event service to handle adding a round to a tour
+    const updatedEvent = eventService.addRoundToTour(id!, data, currentUser);
+
+    if (updatedEvent) {
+      setEvent(updatedEvent);
+      setTour(updatedEvent.data as Tour);
+    }
+
+    setOpenAddRound(false);
   };
 
   const handleEditTourSubmit = (data: any) => {
@@ -154,6 +256,35 @@ const TourDetails: React.FC = () => {
     return <LoadingState />;
   }
 
+  const handleDeleteRound = (roundId: string) => {
+    if (
+      window.confirm(
+        "Are you sure you want to delete this round? This action cannot be undone."
+      )
+    ) {
+      const updatedEvent = eventService.deleteRoundFromTour(id!, roundId);
+      if (updatedEvent) {
+        setEvent(updatedEvent);
+        setTour(updatedEvent.data as Tour);
+      }
+    }
+  };
+
+  const handleUpdatePlayerGroups = (
+    roundId: string,
+    playerGroups: PlayerGroup[]
+  ) => {
+    const updatedEvent = eventService.updateTourRoundPlayerGroups(
+      id!,
+      roundId,
+      playerGroups
+    );
+    if (updatedEvent) {
+      setEvent(updatedEvent);
+      setTour(updatedEvent.data as Tour);
+    }
+  };
+
   if (!tour) {
     return (
       <Container maxWidth="lg">
@@ -173,6 +304,7 @@ const TourDetails: React.FC = () => {
   }
 
   // Calculate counts for badge indicators in mobile nav
+  const roundCount = tour.rounds?.length || 0;
   const tournamentCount = tour.tournaments.length || 0;
   const playerCount = tour.players?.length || 0;
   const teamCount = tour.teams?.length || 0;
@@ -211,11 +343,20 @@ const TourDetails: React.FC = () => {
             tabValue={tabValue}
             leaderboard={leaderboard}
             isCreator={isCreator}
+            selectedRoundId={selectedRoundId}
             onTabChange={handleTabChange}
             onAddTournament={handleAddTournament}
+            onAddRound={handleAddRound}
+            onDeleteRound={handleDeleteRound}
+            onUpdatePlayerGroups={handleUpdatePlayerGroups}
             navigateToTournament={(tournamentId) =>
               navigate(`/tournaments/${tournamentId}`)
             }
+            onSelectRound={handleSelectRound}
+            navigateToRound={(roundId) => {
+              debugger;
+              navigate(`/rounds/${roundId}`);
+            }}
           />
         ) : (
           <Box sx={styles.card.glass}>
@@ -225,9 +366,95 @@ const TourDetails: React.FC = () => {
               id="tour-tabpanel-0"
               aria-labelledby="tour-tab-0"
             >
-              {/* TODO: Instead of adding a tournament here, the user should be able to add a round connected to this Tour. Should display RoundForm instead of TournamentForm. Do the service that creates the round needs to take in the id of the Tour in order to connect them? */}
-
               {tabValue === 0 && (
+                <Box sx={styles.tabs.panel}>
+                  <Box sx={styles.headers.tour.headerContainer}>
+                    <Typography
+                      variant="h6"
+                      sx={styles.headers.tour.sectionTitle}
+                    >
+                      Rounds in this Tour
+                    </Typography>
+                    {isCreator && (
+                      <Button
+                        variant="contained"
+                        sx={styles.button.primary}
+                        onClick={handleAddRound}
+                      >
+                        Add Round
+                      </Button>
+                    )}
+                  </Box>
+
+                  {!tour.rounds || tour.rounds.length === 0 ? (
+                    <Box sx={styles.feedback.emptyState.container}>
+                      <Typography
+                        variant="h6"
+                        sx={styles.feedback.emptyState.title}
+                      >
+                        No Rounds Added Yet
+                      </Typography>
+                      {isCreator && (
+                        <Button
+                          variant="contained"
+                          sx={styles.button.primary}
+                          onClick={handleAddRound}
+                        >
+                          Add First Round
+                        </Button>
+                      )}
+                    </Box>
+                  ) : (
+                    tour.rounds.map((round) => (
+                      <Box
+                        key={round.id}
+                        sx={{
+                          mb: 2,
+                          p: 2,
+                          borderRadius: 2,
+                          bgcolor: alpha(theme.palette.common.black, 0.3),
+                          border: `1px solid ${alpha(
+                            theme.palette.common.white,
+                            0.1
+                          )}`,
+                        }}
+                        onClick={() => {
+                          debugger;
+                          navigate(`/rounds/${round.id}`);
+                        }}
+                      >
+                        <Typography variant="h6" sx={{ color: "white", mb: 1 }}>
+                          {round.name}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: alpha(theme.palette.common.white, 0.7),
+                            mb: 1,
+                          }}
+                        >
+                          Status: {round.status || "Upcoming"}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: alpha(theme.palette.common.white, 0.7) }}
+                        >
+                          Players: {Object.keys(round.scores).length}
+                        </Typography>
+                      </Box>
+                    ))
+                  )}
+                </Box>
+              )}
+            </div>
+
+            <div
+              role="tabpanel"
+              hidden={tabValue !== 1}
+              id="tour-tabpanel-1"
+              aria-labelledby="tour-tab-1"
+            >
+              {tabValue === 1 && (
                 <Box sx={styles.tabs.panel}>
                   <Box sx={styles.headers.tour.headerContainer}>
                     <Typography
@@ -239,11 +466,10 @@ const TourDetails: React.FC = () => {
                     {isCreator && (
                       <Button
                         variant="contained"
-                        startIcon={<ArrowBackIcon />}
                         sx={styles.button.primary}
                         onClick={handleAddTournament}
                       >
-                        Add
+                        Add Tournament
                       </Button>
                     )}
                   </Box>
@@ -267,7 +493,7 @@ const TourDetails: React.FC = () => {
                       )}
                     </Box>
                   ) : (
-                    tour.tournaments.map((tournament: any) => (
+                    tour.tournaments.map((tournament) => (
                       <Box
                         key={tournament.id}
                         sx={{
@@ -311,11 +537,11 @@ const TourDetails: React.FC = () => {
 
             <div
               role="tabpanel"
-              hidden={tabValue !== 1}
-              id="tour-tabpanel-1"
-              aria-labelledby="tour-tab-1"
+              hidden={tabValue !== 2}
+              id="tour-tabpanel-2"
+              aria-labelledby="tour-tab-2"
             >
-              {tabValue === 1 && (
+              {tabValue === 2 && (
                 <Box sx={styles.tabs.panel}>
                   <Typography
                     variant="h6"
@@ -333,8 +559,8 @@ const TourDetails: React.FC = () => {
                         No Leaderboard Data
                       </Typography>
                       <Typography sx={styles.feedback.emptyState.description}>
-                        Leaderboard data will appear when tournaments have been
-                        completed.
+                        Leaderboard data will appear when tournaments and rounds
+                        have been completed.
                       </Typography>
                     </Box>
                   ) : (
@@ -395,11 +621,11 @@ const TourDetails: React.FC = () => {
 
             <div
               role="tabpanel"
-              hidden={tabValue !== 2}
-              id="tour-tabpanel-2"
-              aria-labelledby="tour-tab-2"
+              hidden={tabValue !== 3}
+              id="tour-tabpanel-3"
+              aria-labelledby="tour-tab-3"
             >
-              {tabValue === 2 && (
+              {tabValue === 3 && (
                 <Box sx={styles.tabs.panel}>
                   <Typography
                     variant="h6"
@@ -417,8 +643,8 @@ const TourDetails: React.FC = () => {
                         No Players Yet
                       </Typography>
                       <Typography sx={styles.feedback.emptyState.description}>
-                        Players will be added when they join tournaments in this
-                        tour.
+                        Players will be added when they join tournaments or
+                        rounds in this tour.
                       </Typography>
                     </Box>
                   ) : (
@@ -442,11 +668,11 @@ const TourDetails: React.FC = () => {
             {hasTeams && (
               <div
                 role="tabpanel"
-                hidden={tabValue !== 3}
-                id="tour-tabpanel-3"
-                aria-labelledby="tour-tab-3"
+                hidden={tabValue !== 4}
+                id="tour-tabpanel-4"
+                aria-labelledby="tour-tab-4"
               >
-                {tabValue === 3 && (
+                {tabValue === 4 && (
                   <Box sx={styles.tabs.panel}>
                     <Typography
                       variant="h6"
@@ -562,6 +788,7 @@ const TourDetails: React.FC = () => {
           tournamentCount={tournamentCount}
           playerCount={playerCount}
           teamCount={teamCount}
+          roundCount={roundCount}
           onTabChange={handleTabChange}
         />
       )}
@@ -586,6 +813,29 @@ const TourDetails: React.FC = () => {
         />
       </Dialog>
 
+      <Dialog
+        open={openAddRound}
+        onClose={handleAddRoundClose}
+        maxWidth="md"
+        fullWidth
+        PaperProps={{
+          sx: {
+            backgroundColor: alpha(theme.palette.common.black, 0.7),
+            backdropFilter: "blur(20px)",
+            border: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
+            borderRadius: 2,
+          },
+        }}
+      >
+        <RoundForm
+          onSubmit={handleRoundFormSubmit}
+          onCancel={handleAddRoundClose}
+          friends={friends}
+          loadingFriends={isLoading}
+        />
+      </Dialog>
+
+      {/* Edit Tour Dialog */}
       <Dialog
         open={openEditTour}
         onClose={handleEditTourClose}
@@ -615,6 +865,8 @@ const TourDetails: React.FC = () => {
           }
         />
       </Dialog>
+
+      {/* Player Profile Dialog */}
       <PlayerProfileDialog
         open={profileDialogOpen}
         player={selectedPlayer}

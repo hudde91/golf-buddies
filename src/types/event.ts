@@ -99,7 +99,8 @@ export interface Tour {
   endDate: string;
   createdBy: string;
   createdAt: string;
-  tournaments: Tournament[]; // TODO: Replace this with Round[] instead of Tournament[]
+  tournaments: Tournament[]; // Keep for backward compatibility
+  rounds: Round[];
   players?: Player[];
   teams?: Team[]; // Optional shared teams across tournaments
   invitations?: string[];
@@ -114,8 +115,8 @@ export interface Tour {
 
 export interface Event {
   id: string;
-  type: "tournament" | "tour" | "round"; // Added "round" type
-  data: Tournament | Tour | Round; // Added Round as possible data type
+  type: "tournament" | "tour" | "round";
+  data: Tournament | Tour | Round;
 }
 
 export interface TournamentFormData {
@@ -133,12 +134,12 @@ export interface RoundFormData {
   name: string;
   date: string;
   courseName?: string;
-  location?: string; // Added to support being a standalone event
-  description?: string; // Added to support being a standalone event
+  location?: string;
+  description?: string;
   holes: number;
   par?: number;
   format: string;
-  inviteFriends?: string[]; // Added to support being a standalone event
+  inviteFriends?: string[];
 }
 
 export interface TeamFormData {

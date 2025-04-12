@@ -6,102 +6,102 @@ import {
   Badge,
 } from "@mui/material";
 import {
+  EmojiEvents as TournamentIcon,
   Leaderboard as LeaderboardIcon,
-  Event as RoundsIcon,
-  Group as PlayersIcon,
-  People as TeamsIcon,
-  EmojiEvents as HighlightsIcon,
+  People as PeopleIcon,
+  Groups as TeamsIcon,
+  SportsGolf as RoundIcon,
 } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
-import { useStyles } from "../../styles";
 
-interface MobileBottomNavigationProps {
-  tournamentId: string;
+interface MobileTourBottomNavigationProps {
   activeTab: number;
+  hasTeams: boolean;
+  tournamentCount: number;
+  roundCount: number; // Add roundCount
+  playerCount: number;
   teamCount: number;
-  roundCount: number;
-  isTeamEvent: boolean;
+  onTabChange: (event: React.SyntheticEvent, newValue: number) => void;
 }
 
-const MobileBottomNavigation: React.FC<MobileBottomNavigationProps> = ({
-  tournamentId,
+const MobileTourBottomNavigation: React.FC<MobileTourBottomNavigationProps> = ({
   activeTab,
-  teamCount,
+  hasTeams,
+  tournamentCount,
   roundCount,
-  isTeamEvent,
+  playerCount,
+  teamCount,
+  onTabChange,
 }) => {
-  const navigate = useNavigate();
-  const styles = useStyles();
-
-  const handleNavigationChange = (
-    event: React.SyntheticEvent,
-    newValue: number
-  ) => {
-    let tabName = "";
-
-    switch (newValue) {
-      case 0:
-        tabName = "leaderboard";
-        break;
-      case 1:
-        tabName = "rounds";
-        break;
-      case 2:
-        tabName = "players";
-        break;
-      case 3:
-        tabName = isTeamEvent ? "teams" : "highlights";
-        break;
-      case 4:
-        tabName = "highlights";
-        break;
-      default:
-        tabName = "leaderboard";
-    }
-
-    navigate(`/tournaments/${tournamentId}?tab=${tabName}`);
-  };
-
   return (
-    <Paper sx={styles.bottomNavigation.container}>
+    <Paper
+      sx={{
+        position: "fixed",
+        bottom: 0,
+        left: 0,
+        right: 0,
+        zIndex: 1000,
+        backgroundColor: "rgba(0,0,0,0.7)",
+        backdropFilter: "blur(10px)",
+        borderTop: "1px solid rgba(255,255,255,0.1)",
+      }}
+      elevation={3}
+    >
       <BottomNavigation
         value={activeTab}
-        onChange={handleNavigationChange}
+        onChange={onTabChange}
         showLabels
+        sx={{
+          backgroundColor: "transparent",
+          color: "white",
+          "& .MuiBottomNavigationAction-root": {
+            color: "rgba(255,255,255,0.5)",
+            "&.Mui-selected": {
+              color: "white",
+            },
+          },
+        }}
       >
-        <BottomNavigationAction
-          label="Leaderboard"
-          icon={<LeaderboardIcon sx={styles.bottomNavigation.action} />}
-        />
         <BottomNavigationAction
           label="Rounds"
           icon={
-            <Badge badgeContent={roundCount} color="primary" max={99}>
-              <RoundsIcon />
+            <Badge badgeContent={roundCount} color="primary">
+              <RoundIcon />
             </Badge>
           }
-          sx={styles.bottomNavigation.action}
         />
-        <BottomNavigationAction label="Players" icon={<PlayersIcon />} />
-        {isTeamEvent && (
+        <BottomNavigationAction
+          label="Tournaments"
+          icon={
+            <Badge badgeContent={tournamentCount} color="primary">
+              <TournamentIcon />
+            </Badge>
+          }
+        />
+        <BottomNavigationAction
+          label="Leaderboard"
+          icon={<LeaderboardIcon />}
+        />
+        <BottomNavigationAction
+          label="Players"
+          icon={
+            <Badge badgeContent={playerCount} color="primary">
+              <PeopleIcon />
+            </Badge>
+          }
+        />
+        {hasTeams && (
           <BottomNavigationAction
             label="Teams"
             icon={
-              <Badge badgeContent={teamCount} color="primary" max={99}>
+              <Badge badgeContent={teamCount} color="primary">
                 <TeamsIcon />
               </Badge>
             }
-            sx={styles.bottomNavigation.action}
           />
         )}
-        <BottomNavigationAction
-          label="Highlights"
-          icon={<HighlightsIcon />}
-          sx={styles.bottomNavigation.action}
-        />
       </BottomNavigation>
     </Paper>
   );
 };
 
-export default MobileBottomNavigation;
+export default MobileTourBottomNavigation;

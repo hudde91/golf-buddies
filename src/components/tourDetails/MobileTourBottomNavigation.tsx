@@ -6,17 +6,18 @@ import {
   Badge,
 } from "@mui/material";
 import {
-  EmojiEvents as TournamentsIcon,
+  EmojiEvents as TournamentIcon,
   Leaderboard as LeaderboardIcon,
-  Group as PlayersIcon,
-  People as TeamsIcon,
+  People as PeopleIcon,
+  Groups as TeamsIcon,
+  SportsGolf as RoundIcon,
 } from "@mui/icons-material";
-import { useStyles } from "../../styles";
 
 interface MobileTourBottomNavigationProps {
   activeTab: number;
   hasTeams: boolean;
   tournamentCount: number;
+  roundCount: number;
   playerCount: number;
   teamCount: number;
   onTabChange: (event: React.SyntheticEvent, newValue: number) => void;
@@ -26,11 +27,17 @@ const MobileTourBottomNavigation: React.FC<MobileTourBottomNavigationProps> = ({
   activeTab,
   hasTeams,
   tournamentCount,
+  roundCount,
   playerCount,
   teamCount,
   onTabChange,
 }) => {
-  const styles = useStyles();
+  // Define the indices to match the desktop tab order
+  const ROUNDS_TAB = 0;
+  const TOURNAMENTS_TAB = 1;
+  const LEADERBOARD_TAB = 2;
+  const PLAYERS_TAB = 3;
+  const TEAMS_TAB = 4;
 
   return (
     <Paper
@@ -40,9 +47,9 @@ const MobileTourBottomNavigation: React.FC<MobileTourBottomNavigationProps> = ({
         left: 0,
         right: 0,
         zIndex: 1000,
-        backgroundColor: "rgba(0, 0, 0, 0.9)",
+        backgroundColor: "rgba(0,0,0,0.7)",
         backdropFilter: "blur(10px)",
-        borderTop: "1px solid rgba(255, 255, 255, 0.1)",
+        borderTop: "1px solid rgba(255,255,255,0.1)",
       }}
       elevation={3}
     >
@@ -52,47 +59,53 @@ const MobileTourBottomNavigation: React.FC<MobileTourBottomNavigationProps> = ({
         showLabels
         sx={{
           backgroundColor: "transparent",
+          color: "white",
           "& .MuiBottomNavigationAction-root": {
-            color: "rgba(255, 255, 255, 0.5)",
-            minWidth: 0,
-            maxWidth: "none",
+            color: "rgba(255,255,255,0.5)",
             "&.Mui-selected": {
               color: "white",
-            },
-          },
-          "& .MuiBottomNavigationAction-label": {
-            fontSize: "0.625rem",
-            "&.Mui-selected": {
-              fontSize: "0.675rem",
             },
           },
         }}
       >
         <BottomNavigationAction
-          label="Tournaments"
+          label="Rounds"
+          value={ROUNDS_TAB}
           icon={
-            <Badge badgeContent={tournamentCount} color="primary" max={99}>
-              <TournamentsIcon />
+            <Badge badgeContent={roundCount} color="primary">
+              <RoundIcon />
+            </Badge>
+          }
+        />
+        <BottomNavigationAction
+          label="Tournaments"
+          value={TOURNAMENTS_TAB}
+          icon={
+            <Badge badgeContent={tournamentCount} color="primary">
+              <TournamentIcon />
             </Badge>
           }
         />
         <BottomNavigationAction
           label="Leaderboard"
+          value={LEADERBOARD_TAB}
           icon={<LeaderboardIcon />}
         />
         <BottomNavigationAction
           label="Players"
+          value={PLAYERS_TAB}
           icon={
-            <Badge badgeContent={playerCount} color="primary" max={99}>
-              <PlayersIcon />
+            <Badge badgeContent={playerCount} color="primary">
+              <PeopleIcon />
             </Badge>
           }
         />
         {hasTeams && (
           <BottomNavigationAction
             label="Teams"
+            value={TEAMS_TAB}
             icon={
-              <Badge badgeContent={teamCount} color="primary" max={99}>
+              <Badge badgeContent={teamCount} color="primary">
                 <TeamsIcon />
               </Badge>
             }

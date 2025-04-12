@@ -69,20 +69,25 @@ const RoundDetails: React.FC = () => {
   useEffect(() => {
     if (!id || !isLoaded || !user) return;
 
-    const fetchRound = () => {
+    const fetchRound = async () => {
       setLoading(true);
-      const roundData = eventService.getRoundById(id);
+      try {
+        const roundData = await eventService.getRoundById(id);
 
-      if (roundData) {
-        setRound(roundData);
-        setIsCreator(roundData.createdBy === user.id);
-      } else {
-        // Round not found - navigate back to rounds list
-        navigate("/rounds");
+        if (roundData) {
+          setRound(roundData);
+        } else {
+          navigate("/events");
+        }
+      } catch (error) {
+        console.error("Error fetching round data:", error);
+        navigate("/events");
+      } finally {
+        setLoading(false);
       }
-
-      setLoading(false);
     };
+
+    fetchRound();
 
     const fetchFriends = async () => {
       setLoadingFriends(true);

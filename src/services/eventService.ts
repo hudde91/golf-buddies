@@ -232,6 +232,52 @@ const updateTournamentInEvents = (
   return updatedEvents;
 };
 
+// Helper function to calculate a leaderboard for a single round
+const getRoundLeaderboard = (
+  round: Round
+): {
+  playerId: string;
+  playerName: string;
+  teamId?: string;
+  teamName?: string;
+  score: number;
+}[] => {
+  // Get player details
+  const playerDetails: {
+    [playerId: string]: { name: string; teamId?: string; teamName?: string };
+  } = {};
+  (round.players || []).forEach((player) => {
+    const team = player.teamId ? { id: player.teamId, name: "" } : undefined;
+    playerDetails[player.id] = {
+      name: player.name,
+      teamId: player.teamId,
+      teamName: team?.name,
+    };
+  });
+
+  // Calculate scores for each player
+  return Object.entries(round.scores)
+    .map(([playerId, holeScores]) => {
+      const totalScore = holeScores.reduce(
+        (sum, hole) => sum + (hole.score || 0),
+        0
+      );
+
+      const playerDetail = playerDetails[playerId] || {
+        name: "Unknown Player",
+      };
+
+      return {
+        playerId,
+        playerName: playerDetail.name,
+        teamId: playerDetail.teamId,
+        teamName: playerDetail.teamName,
+        score: totalScore,
+      };
+    })
+    .sort((a, b) => a.score - b.score); // Sort by score (lower is better)
+};
+
 const eventService = {
   // Get all events
   getAllEvents: (): Event[] => {
@@ -401,6 +447,96 @@ const eventService = {
     localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
 
     return newEvent;
+  },
+
+  addRoundToTour: (
+    tourId: string,
+    roundData: RoundFormData,
+    currentUser: Player
+  ): Event | null => {
+    const event = eventService.getEventByIdSync(tourId);
+    if (!event || event.type !== "tour") return null;
+
+    const tour = event.data as Tour;
+
+    // Create scores object with empty scores for all players
+    const scores: { [playerId: string]: HoleScore[] } = {};
+    (tour.players || []).forEach((player) => {
+      const holeScores: HoleScore[] = [];
+      for (let i = 1; i <= roundData.holes; i++) {
+        holeScores.push({
+          hole: i,
+          par: roundData.par
+            ? Math.floor(roundData.par / roundData.holes)
+            : undefined,
+        });
+      }
+      scores[player.id] = holeScores;
+    });
+
+    // Determine status based on the date
+    const today = new Date().toISOString().split("T")[0];
+    const status =
+      roundData.date === today
+        ? "active"
+        : roundData.date < today
+        ? "completed"
+        : "upcoming";
+
+    // Create the new round
+    const newRound: Round = {
+      id: uuidv4(),
+      name: roundData.name,
+      date: roundData.date,
+      courseDetails: {
+        name: roundData.courseName,
+        holes: roundData.holes,
+        par: roundData.par,
+      },
+      format: roundData.format,
+      scores,
+      createdBy: currentUser.id,
+      createdAt: new Date().toISOString(),
+      players: tour.players || [currentUser],
+      location: roundData.location || "",
+      description: roundData.description || "",
+      status,
+      invitations: roundData.inviteFriends || [],
+      playerGroups: [
+        {
+          id: uuidv4(),
+          name: roundData.name,
+          playerIds: [currentUser.id],
+        },
+      ],
+    };
+
+    // Initialize rounds array if it doesn't exist (for backward compatibility)
+    const tourRounds = tour.rounds || [];
+
+    // Update the tour
+    const updatedTour: Tour = {
+      ...tour,
+      rounds: [...tourRounds, newRound],
+    };
+
+    // Update overall tour status based on round dates if needed
+    if (roundData.date < tour.startDate) {
+      updatedTour.startDate = roundData.date;
+    }
+    if (roundData.date > tour.endDate) {
+      updatedTour.endDate = roundData.date;
+    }
+    updatedTour.status = getEventStatus(
+      updatedTour.startDate,
+      updatedTour.endDate
+    );
+
+    // Update event in storage
+    return eventService.updateEvent(tourId, {
+      type: "tour",
+      data: updatedTour,
+    });
   },
 
   // Update the addTournamentToTour method to include friend invitations
@@ -1595,7 +1731,7 @@ const eventService = {
       .sort((a, b) => a.total - b.total);
   },
 
-  // Calculate tour leaderboard
+  // Calculate tour leaderboard including both tournaments and rounds
   getTourLeaderboard: (
     tourId: string
   ): {
@@ -1606,9 +1742,12 @@ const eventService = {
     tournamentResults: {
       [tournamentId: string]: { position: number; points: number };
     };
+    roundResults: {
+      [roundId: string]: { position: number; points: number };
+    };
     totalPoints: number;
   }[] => {
-    const event = eventService.getEventById(tourId);
+    const event = eventService.getEventByIdSync(tourId);
     if (!event || event.type !== "tour") return [];
 
     const tour = event.data as Tour;
@@ -1619,6 +1758,9 @@ const eventService = {
         teamName?: string;
         tournamentResults: {
           [tournamentId: string]: { position: number; points: number };
+        };
+        roundResults: {
+          [roundId: string]: { position: number; points: number };
         };
         totalPoints: number;
       };
@@ -1651,6 +1793,7 @@ const eventService = {
             teamId: result.teamId,
             teamName: result.teamName,
             tournamentResults: {},
+            roundResults: {},
             totalPoints: 0,
           };
         }
@@ -1664,6 +1807,54 @@ const eventService = {
       });
     });
 
+    // Process each round (if they exist)
+    if (tour.rounds && tour.rounds.length > 0) {
+      tour.rounds.forEach((round) => {
+        // Calculate round leaderboard
+        const roundLeaderboard = getRoundLeaderboard(round);
+
+        // Award points based on position
+        roundLeaderboard.forEach((result, index) => {
+          const position = index + 1;
+          let points = 0;
+
+          if (position === 1) {
+            points = tour.pointsSystem?.win || 100;
+          } else if (
+            tour.pointsSystem?.topFinish &&
+            tour.pointsSystem.topFinish[position]
+          ) {
+            points = tour.pointsSystem.topFinish[position];
+          } else {
+            points = tour.pointsSystem?.participation || 10;
+          }
+
+          if (!playerResults[result.playerId]) {
+            // Get player name and team from round data
+            const player = (tour.players || []).find(
+              (p) => p.id === result.playerId
+            );
+
+            playerResults[result.playerId] = {
+              playerName: player?.name || result.playerName || "Unknown Player",
+              teamId: player?.teamId || result.teamId,
+              teamName: result.teamName,
+              tournamentResults: {},
+              roundResults: {},
+              totalPoints: 0,
+            };
+          }
+
+          playerResults[result.playerId].roundResults[round.id] = {
+            position,
+            points,
+          };
+
+          playerResults[result.playerId].totalPoints += points;
+        });
+      });
+    }
+
     return Object.entries(playerResults)
       .map(([playerId, data]) => ({
         playerId,
@@ -1671,9 +1862,132 @@ const eventService = {
         teamId: data.teamId,
         teamName: data.teamName,
         tournamentResults: data.tournamentResults,
+        roundResults: data.roundResults,
         totalPoints: data.totalPoints,
       }))
       .sort((a, b) => b.totalPoints - a.totalPoints);
+  },
+
+  // Delete a round from a tour
+  deleteRoundFromTour: (tourId: string, roundId: string): Event | null => {
+    const event = eventService.getEventByIdSync(tourId);
+    if (!event || event.type !== "tour") return null;
+
+    const tour = event.data as Tour;
+
+    // Ensure the rounds array exists
+    if (!tour.rounds) {
+      return event; // Nothing to delete
+    }
+
+    // Remove the round
+    const updatedRounds = tour.rounds.filter((r) => r.id !== roundId);
+
+    // Update the tour
+    const updatedTour = {
+      ...tour,
+      rounds: updatedRounds,
+    };
+
+    // Update overall tour dates if needed (if the deleted round was the earliest or latest)
+    if (updatedRounds.length > 0) {
+      // Sort the remaining rounds by date
+      const sortedRounds = [...updatedRounds].sort(
+        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+      );
+
+      // Update start date if needed
+      if (sortedRounds[0].date !== tour.startDate) {
+        updatedTour.startDate = sortedRounds[0].date;
+      }
+
+      // Update end date if needed
+      if (sortedRounds[sortedRounds.length - 1].date !== tour.endDate) {
+        updatedTour.endDate = sortedRounds[sortedRounds.length - 1].date;
+      }
+    }
+
+    // Update event in storage
+    return eventService.updateEvent(tourId, {
+      type: "tour",
+      data: updatedTour,
+    });
+  },
+
+  // Update player groups for a round in a tour
+  updateTourRoundPlayerGroups: (
+    tourId: string,
+    roundId: string,
+    playerGroups: PlayerGroup[]
+  ): Event | null => {
+    const event = eventService.getEventByIdSync(tourId);
+    if (!event || event.type !== "tour") return null;
+
+    const tour = event.data as Tour;
+
+    // Ensure the rounds array exists
+    if (!tour.rounds) {
+      return null; // No rounds to update
+    }
+
+    // Find the round index
+    const roundIndex = tour.rounds.findIndex((r) => r.id === roundId);
+    if (roundIndex === -1) return null;
+
+    // Create updated rounds array
+    const updatedRounds = [...tour.rounds];
+    updatedRounds[roundIndex] = {
+      ...updatedRounds[roundIndex],
+      playerGroups: playerGroups,
+    };
+
+    // Update the tour
+    const updatedTour = {
+      ...tour,
+      rounds: updatedRounds,
+    };
+
+    // Update event in storage
+    return eventService.updateEvent(tourId, {
+      type: "tour",
+      data: updatedTour,
+    });
+  },
+
+  getRoundById: (id: string): Round | null => {
+    const events = eventService.getAllEvents();
+
+    // First, try to find as a standalone round event
+    const roundEvent = events.find((e) => e.type === "round" && e.id === id);
+    if (roundEvent) {
+      return roundEvent.data as Round;
+    }
+
+    // Next, check for round in tournaments
+    for (const event of events) {
+      if (event.type === "tournament") {
+        const tournament = event.data as Tournament;
+        const round = tournament.rounds.find((r) => r.id === id);
+        if (round) {
+          return round;
+        }
+      }
+    }
+
+    // Finally, check for round in tours
+    for (const event of events) {
+      if (event.type === "tour") {
+        const tour = event.data as Tour;
+        if (tour.rounds) {
+          const round = tour.rounds.find((r) => r.id === id);
+          if (round) {
+            return round;
+          }
+        }
+      }
+    }
+
+    return null;
   },
 
   // Calculate team tournament leaderboard
@@ -2055,36 +2369,36 @@ const eventService = {
   },
 
   // Get a round by ID
-  getRoundById: (id: string): Round | null => {
-    const events = eventService.getAllEvents();
+  // getRoundById: (id: string): Round | null => {
+  //   const events = eventService.getAllEvents();
 
-    // First, try to find as a standalone round event
-    const roundEvent = events.find((e) => e.type === "round" && e.id === id);
-    if (roundEvent) {
-      return roundEvent.data as Round;
-    }
+  //   // First, try to find as a standalone round event
+  //   const roundEvent = events.find((e) => e.type === "round" && e.id === id);
+  //   if (roundEvent) {
+  //     return roundEvent.data as Round;
+  //   }
 
-    // Next, try to find it as a round within a tournament
-    for (const event of events) {
-      if (event.type === "tournament") {
-        const tournament = event.data as Tournament;
-        const round = tournament.rounds.find((r) => r.id === id);
-        if (round) {
-          return round;
-        }
-      } else if (event.type === "tour") {
-        const tour = event.data as Tour;
-        for (const tournament of tour.tournaments) {
-          const round = tournament.rounds.find((r) => r.id === id);
-          if (round) {
-            return round;
-          }
-        }
-      }
-    }
+  //   // Next, try to find it as a round within a tournament
+  //   for (const event of events) {
+  //     if (event.type === "tournament") {
+  //       const tournament = event.data as Tournament;
+  //       const round = tournament.rounds.find((r) => r.id === id);
+  //       if (round) {
+  //         return round;
+  //       }
+  //     } else if (event.type === "tour") {
+  //       const tour = event.data as Tour;
+  //       for (const tournament of tour.tournaments) {
+  //         const round = tournament.rounds.find((r) => r.id === id);
+  //         if (round) {
+  //           return round;
+  //         }
+  //       }
+  //     }
+  //   }
 
-    return null;
-  },
+  //   return null;
+  // },
 
   // Update a standalone round event
   updateRoundEvent: (id: string, data: Partial<Round>): Round | null => {
