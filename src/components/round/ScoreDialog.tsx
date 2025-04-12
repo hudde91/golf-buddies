@@ -6,7 +6,6 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Button,
   Chip,
   Avatar,
   IconButton,
@@ -22,7 +21,6 @@ import {
   GolfCourse as GolfCourseIcon,
 } from "@mui/icons-material";
 import { Player } from "../../types/event";
-import { useStyles } from "../../styles/hooks/useStyles";
 import { getScoreToParColor } from "./scoringUtils";
 import { useTheme } from "@mui/material/styles";
 
@@ -52,7 +50,6 @@ const ScoreDialog: React.FC<ScoreDialogProps> = ({
   onSave,
   totalHoles = 18,
 }) => {
-  const styles = useStyles();
   const theme = useTheme();
   const [scores, setScores] = useState<Record<string, number>>({});
   const [currentHole, setCurrentHole] = useState<number>(hole);

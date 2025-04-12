@@ -114,7 +114,7 @@ export const tournamentPlayers = {
     boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
   }),
 
-  getInfoIconContainer: (color: string) => (theme: Theme) => ({
+  getInfoIconContainer: (color: string) => ({
     width: 40,
     height: 40,
     bgcolor: alpha(color, 0.15),
@@ -157,13 +157,13 @@ export const tournamentPlayers = {
 
   // Chip styles
   chips: {
-    getTeamChip: (color: string) => (theme: Theme) => ({
+    getTeamChip: (color: string) => ({
       backgroundColor: alpha(color, 0.15),
       color: color,
       border: `1px solid ${alpha(color, 0.3)}`,
     }),
 
-    getCaptainChip: (color: string) => (theme: Theme) => ({
+    getCaptainChip: (color: string) => ({
       backgroundColor: alpha(color, 0.1),
       color: color,
       borderColor: alpha(color, 0.3),

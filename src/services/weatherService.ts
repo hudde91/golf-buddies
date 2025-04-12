@@ -10,15 +10,15 @@ export interface Weather {
 }
 
 export const fetchWeather = async (
-  location: string,
-  date: string
+  location: string
+  // date: string
 ): Promise<Weather> => {
   // Simulate API call delay
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
   // Parse the location (assuming format: "CourseName, City, Country")
   const locationParts = location.split(", ");
-  const city = locationParts.length > 1 ? locationParts[1] : "";
+  // const city = locationParts.length > 1 ? locationParts[1] : "";
   const country = locationParts.length > 2 ? locationParts[2] : "";
 
   // Mock weather data

@@ -371,7 +371,7 @@ const RoundForm: React.FC<RoundFormProps> = ({
                 onOpen={() => setOpen(true)}
                 onClose={() => setOpen(false)}
                 value={selectedClub}
-                onChange={(event, newValue) => {
+                onChange={(_event, newValue) => {
                   setSelectedClub(newValue);
                   if (newValue) {
                     const clubFullName = `${newValue.name}, ${newValue.city}, ${newValue.country}`;
@@ -389,7 +389,7 @@ const RoundForm: React.FC<RoundFormProps> = ({
                   }
                 }}
                 inputValue={inputValue}
-                onInputChange={(event, newInputValue) => {
+                onInputChange={(_event, newInputValue) => {
                   setInputValue(newInputValue);
                 }}
                 getOptionLabel={(option) =>

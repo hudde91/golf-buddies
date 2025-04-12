@@ -1,8 +1,6 @@
-import React, { useEffect } from "react";
-import { SignUp, useSignUp, useClerk } from "@clerk/clerk-react";
+import React from "react";
+import { SignUp } from "@clerk/clerk-react";
 import { Box, Container, Typography, Paper } from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import { useCreateUser } from "../services/profileService";
 
 const SignUpPage: React.FC = () => {
   // const navigate = useNavigate();

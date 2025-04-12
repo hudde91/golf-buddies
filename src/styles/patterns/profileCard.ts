@@ -1,4 +1,3 @@
-// src/styles/patterns/profileCard.ts
 import { Theme } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import { card } from "../components/card";
@@ -53,8 +52,8 @@ export const profileCard = {
   }),
 
   typography: {
-    heading: (theme: Theme) => ({
-      ...text.heading.profile(theme),
+    heading: () => ({
+      ...text.heading.profile(),
       fontSize: { xs: "2rem", sm: "2.5rem", md: "3rem" },
     }),
     subtitle: (theme: Theme) => ({
@@ -93,114 +92,6 @@ export const profileCard = {
       "&:hover": {
         bgcolor: theme.palette.primary.dark,
       },
-    }),
-  },
-
-  slider: {
-    height: 8,
-    borderRadius: 4,
-    "& .MuiSlider-track": {
-      border: "none",
-    },
-    "& .MuiSlider-thumb": {
-      height: 16,
-      width: 16,
-      backgroundColor: (theme: Theme) => theme.palette.primary.main,
-      border: (theme: Theme) => `2px solid ${theme.palette.primary.main}`,
-    },
-  },
-
-  achievements: {
-    container: (theme: Theme) => ({
-      mb: 3,
-    }),
-    title: (theme: Theme) => ({
-      fontSize: "1.125rem",
-      fontWeight: 600,
-      mb: 2,
-      color: "white",
-    }),
-    list: (theme: Theme) => ({
-      display: "flex",
-      flexDirection: "column",
-      gap: 1.5,
-    }),
-    emptyState: (theme: Theme) => ({
-      textAlign: "center",
-      p: 4,
-      color: alpha(theme.palette.common.white, 0.5),
-    }),
-    item: (theme: Theme) => ({
-      display: "flex",
-      alignItems: "center",
-      p: 2,
-      borderRadius: 1,
-      boxShadow: theme.shadows[1],
-    }),
-    getItemBackground: (theme: Theme, position: number) => {
-      if (position === 1) {
-        return {
-          bgcolor: alpha(theme.palette.warning.main, 0.1),
-          borderLeft: `4px solid ${theme.palette.warning.main}`,
-        };
-      } else if (position === 2) {
-        return {
-          bgcolor: alpha(theme.palette.grey[400], 0.1),
-          borderLeft: `4px solid ${theme.palette.grey[400]}`,
-        };
-      } else if (position === 3) {
-        return {
-          bgcolor: alpha(theme.palette.brown[300], 0.1),
-          borderLeft: `4px solid ${theme.palette.brown[300]}`,
-        };
-      } else {
-        return {
-          bgcolor: alpha(theme.palette.common.black, 0.2),
-          borderLeft: `4px solid ${alpha(theme.palette.common.white, 0.1)}`,
-        };
-      }
-    },
-    positionBadge: {
-      base: (theme: Theme) => ({
-        width: 30,
-        height: 30,
-        fontSize: 14,
-        fontWeight: "bold",
-        mr: 1,
-      }),
-      first: (theme: Theme) => ({
-        bgcolor: theme.palette.warning.main,
-        color: theme.palette.warning.contrastText,
-      }),
-      second: (theme: Theme) => ({
-        bgcolor: theme.palette.grey[400],
-        color: theme.palette.getContrastText(theme.palette.grey[400]),
-      }),
-      third: (theme: Theme) => ({
-        bgcolor: theme.palette.brown[300],
-        color: "#FFFFFF",
-      }),
-    },
-    iconContainer: (theme: Theme) => ({
-      minWidth: 40,
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-    }),
-    textContainer: (theme: Theme) => ({
-      display: "flex",
-      flexDirection: "column",
-    }),
-    displayText: (theme: Theme) => ({
-      fontWeight: 500,
-      color: theme.palette.text.primary,
-    }),
-    dateText: (theme: Theme) => ({
-      fontSize: 13,
-      color: theme.palette.text.secondary,
-    }),
-    divider: (theme: Theme) => ({
-      my: 1,
     }),
   },
 };

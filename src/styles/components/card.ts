@@ -4,14 +4,14 @@ import { alpha } from "@mui/material/styles";
 
 export const card = {
   // Base card style
-  base: (theme: Theme) => ({
+  base: () => ({
     borderRadius: 2,
     transition: "all 0.2s ease",
   }),
 
   // Glass effect card (blurred transparent background)
   glass: (theme: Theme) => ({
-    ...card.base(theme),
+    ...card.base(),
     backgroundColor: alpha(theme.palette.common.black, 0.4),
     backdropFilter: "blur(10px)",
     border: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,

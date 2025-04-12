@@ -80,7 +80,10 @@ const PlayerScorecard: React.FC<PlayerScorecardProps> = ({
 
   const [selectedRound, setSelectedRound] = useState(0);
 
-  const handleRoundChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleRoundChange = (
+    _event: React.SyntheticEvent,
+    newValue: number
+  ) => {
     setSelectedRound(newValue);
   };
 
@@ -89,10 +92,6 @@ const PlayerScorecard: React.FC<PlayerScorecardProps> = ({
     const roundTotal = calculateTotal(player.id, round);
     return total + roundTotal;
   }, 0);
-
-  const playerTeam = player.teamId
-    ? tournament.teams.find((t) => t.id === player.teamId)
-    : null;
 
   const getRoundSections = (round: Round) => {
     const holeCount = round.courseDetails?.holes || 18;
@@ -367,8 +366,8 @@ const PlayerScorecard: React.FC<PlayerScorecardProps> = ({
                                       scoreClass
                                     ),
                                     border: isCurrentHole
-                                      ? `2px solid ${theme.palette.primary.main}`
-                                      : undefined,
+                                      ? (`2px solid ${theme.palette.primary.main}` as any)
+                                      : "",
                                   }}
                                 >
                                   {score === undefined ? "-" : score}

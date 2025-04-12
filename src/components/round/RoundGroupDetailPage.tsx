@@ -88,7 +88,7 @@ const RoundGroupDetailPage: React.FC = () => {
   // Get the players in the group
   const groupPlayers =
     (group?.playerIds
-      .map((playerId) => round?.players.find((p) => p.id === playerId))
+      .map((playerId) => round?.players!.find((p) => p.id === playerId))
       .filter(Boolean) as Player[]) || [];
 
   const {
@@ -98,13 +98,11 @@ const RoundGroupDetailPage: React.FC = () => {
     setDialogHole,
     expandedPlayerIds,
     scoreDialogOpen,
-    setScoreDialogOpen,
     holePickerOpen,
     togglePlayerExpanded,
     openScoreDialog,
     handleCloseScoreDialog,
     setHolePickerOpen,
-    navigateHole,
   } = useGroupScoring({
     round:
       round ||

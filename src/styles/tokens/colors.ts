@@ -24,9 +24,9 @@ export const colors = {
   },
   text: {
     primary: baseColors.white,
-    secondary: (theme: Theme) => alpha(baseColors.white, 0.8),
-    subtle: (theme: Theme) => alpha(baseColors.white, 0.7),
-    muted: (theme: Theme) => alpha(baseColors.white, 0.5),
+    secondary: () => alpha(baseColors.white, 0.8),
+    subtle: () => alpha(baseColors.white, 0.7),
+    muted: () => alpha(baseColors.white, 0.5),
   },
   background: {
     main: "linear-gradient(135deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.2) 100%)",
@@ -58,5 +58,5 @@ export const colors = {
 };
 
 // Function to get color with opacity
-export const withAlpha = (color: string, opacity: number) => (theme: Theme) =>
+export const withAlpha = (color: string, opacity: number) => () =>
   alpha(color, opacity);

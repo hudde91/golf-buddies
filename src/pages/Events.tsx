@@ -105,7 +105,7 @@ const Events: React.FC = () => {
   }, [userEvents]);
 
   // Event handlers
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
 

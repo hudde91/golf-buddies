@@ -1,7 +1,6 @@
 import React from "react";
 import { Box, Typography, Paper, Avatar, Chip, alpha } from "@mui/material";
 import { GolfCourse as GolfIcon } from "@mui/icons-material";
-import { useStyles } from "../styles";
 import { Player, Tournament, Tour } from "../types/event";
 
 interface SharedPlayerCardProps {
@@ -17,11 +16,6 @@ const SharedPlayerCard: React.FC<SharedPlayerCardProps> = ({
   onClick,
   renderPlayerExtra,
 }) => {
-  const styles = useStyles();
-
-  // Determine if we're dealing with a tournament or tour
-  const isTournament = "rounds" in event;
-
   // Get player's team if applicable
   const playerTeam =
     player.teamId && event.teams
@@ -128,9 +122,9 @@ const SharedPlayerCard: React.FC<SharedPlayerCardProps> = ({
               label="Captain"
               size="small"
               sx={{
-                bgcolor: (theme) => alpha(playerTeam.color, 0.1),
+                bgcolor: () => alpha(playerTeam.color, 0.1),
                 color: playerTeam.color,
-                borderColor: (theme) => alpha(playerTeam.color, 0.3),
+                borderColor: () => alpha(playerTeam.color, 0.3),
                 height: 24,
                 border: "1px solid",
               }}
@@ -142,7 +136,7 @@ const SharedPlayerCard: React.FC<SharedPlayerCardProps> = ({
               size="small"
               label={playerTeam.name}
               sx={{
-                bgcolor: (theme) => alpha(playerTeam.color, 0.1),
+                bgcolor: () => alpha(playerTeam.color, 0.1),
                 color: playerTeam.color,
                 border: `1px solid ${alpha(playerTeam.color, 0.3)}`,
                 height: 24,

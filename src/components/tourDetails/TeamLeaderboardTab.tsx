@@ -11,25 +11,20 @@ import {
   TableRow,
   Avatar,
   Chip,
-  useMediaQuery,
 } from "@mui/material";
-import { Tour } from "../../types/event";
 import { useStyles } from "../../styles/hooks/useStyles";
 import { useTheme } from "@mui/material";
 import { Leaderboard as LeaderboardIcon } from "@mui/icons-material";
 
 interface TeamLeaderboardTabProps {
-  tour: Tour;
   teamLeaderboard: any[];
 }
 
 const TeamLeaderboardTab: React.FC<TeamLeaderboardTabProps> = ({
-  tour,
   teamLeaderboard,
 }) => {
   const styles = useStyles();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   if (teamLeaderboard.length === 0) {
     return (

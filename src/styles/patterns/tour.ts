@@ -1,4 +1,3 @@
-// src/styles/components/tour.ts
 import { Theme } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import { getStatusColor } from "../../components/util";
@@ -185,32 +184,11 @@ export const tour = {
     height: "100%",
   }),
 
-  teamHeader: (color: string) => (theme: Theme) => ({
-    backgroundColor: alpha(color, 0.15),
-    borderBottom: `1px solid ${alpha(color, 0.3)}`,
-    p: 2,
-  }),
-
-  teamContent: {
-    p: 2,
-  },
-
   // Typography styles
   typography: {
     title: {
       color: "white",
       fontWeight: 600,
     },
-
-    subtitle: (theme: Theme) => ({
-      color: theme.palette.primary.light,
-      fontWeight: 500,
-      mb: 1,
-    }),
-
-    muted: (theme: Theme) => ({
-      color: alpha(theme.palette.common.white, 0.6),
-      fontStyle: "italic",
-    }),
   },
 };

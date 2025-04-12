@@ -252,7 +252,7 @@ const FriendsSelectionDialog: React.FC<FriendsSelectionDialogProps> = ({
                     />
 
                     <Avatar
-                      src={friend.avatarUrl}
+                      src={""}
                       alt={friend.name}
                       sx={{
                         width: 48,
@@ -276,7 +276,7 @@ const FriendsSelectionDialog: React.FC<FriendsSelectionDialogProps> = ({
                         {friend.name}
                       </Typography>
 
-                      {friend.handicap !== undefined && (
+                      {/* {friend.handicap !== undefined && (
                         <Typography
                           variant="body2"
                           sx={{
@@ -286,7 +286,7 @@ const FriendsSelectionDialog: React.FC<FriendsSelectionDialogProps> = ({
                         >
                           Handicap: {friend.handicap}
                         </Typography>
-                      )}
+                      )} */}
                     </Box>
 
                     {selectedFriends.includes(friend.id) && (
@@ -465,7 +465,7 @@ const FriendsSelectionDialog: React.FC<FriendsSelectionDialogProps> = ({
                     />
 
                     <Avatar
-                      src={friend.avatarUrl}
+                      src={""}
                       alt={friend.name}
                       sx={{
                         width: 48,
@@ -489,7 +489,7 @@ const FriendsSelectionDialog: React.FC<FriendsSelectionDialogProps> = ({
                         {friend.name}
                       </Typography>
 
-                      {friend.handicap !== undefined && (
+                      {/* {friend.handicap !== undefined && (
                         <Typography
                           variant="body2"
                           sx={{
@@ -499,7 +499,7 @@ const FriendsSelectionDialog: React.FC<FriendsSelectionDialogProps> = ({
                         >
                           Handicap: {friend.handicap}
                         </Typography>
-                      )}
+                      )} */}
                     </Box>
 
                     {selectedFriends.includes(friend.id) && (

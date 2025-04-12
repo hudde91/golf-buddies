@@ -1,11 +1,12 @@
 // src/styles/patterns/mobile.ts
 import { Theme } from "@mui/material";
 import { alpha } from "@mui/material/styles";
+import { card } from "../components";
 
 export const mobilePatterns = {
   // Existing patterns
   container: {
-    fullWidth: (theme: Theme) => ({
+    fullWidth: () => ({
       width: "100%",
       px: { xs: 0, sm: 2, md: 3 },
     }),
@@ -40,7 +41,7 @@ export const mobilePatterns = {
   },
 
   button: {
-    touchable: (theme: Theme) => ({
+    touchable: () => ({
       py: { xs: 1.5, sm: 1 },
       minHeight: { xs: 48, sm: "auto" },
       borderRadius: { xs: 4, sm: 4 },
@@ -206,36 +207,10 @@ export const mobilePatterns = {
     },
   },
 
-  friends: {
-    listItem: {
-      responsive: (theme: Theme) => ({
-        flexDirection: { xs: "column", sm: "row" },
-        alignItems: { xs: "flex-start", sm: "center" },
-        py: { xs: 2, sm: 1 },
-        "& .MuiListItemText-root": {
-          mb: { xs: 2, sm: 0 },
-        },
-      }),
-      actionsContainer: {
-        display: "flex",
-        justifyContent: { xs: "flex-start", sm: "flex-end" },
-        width: { xs: "100%", sm: "auto" },
-        ml: { xs: 9, sm: 0 },
-        mt: { xs: 1, sm: 0 },
-      },
-    },
-    actionButton: {
-      mr: 1,
-      borderRadius: 2,
-      py: { xs: 1, sm: 0.5 },
-      minWidth: { xs: 100, sm: "auto" },
-    },
-  },
-
   events: {
     card: {
       responsive: (theme: Theme) => ({
-        ...theme.card.event(theme),
+        ...card.event(theme),
         width: { xs: "100%", sm: "auto" },
         height: { xs: "auto", sm: "100%" },
         minHeight: { xs: "auto", sm: "280px" },

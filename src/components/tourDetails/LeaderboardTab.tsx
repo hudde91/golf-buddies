@@ -163,7 +163,7 @@ const LeaderboardTab: React.FC<LeaderboardTabProps> = ({
           })}
         </Paper>
       )}
-      <TeamLeaderboardTab tour={tour} teamLeaderboard={teamLeaderboard} />
+      <TeamLeaderboardTab teamLeaderboard={teamLeaderboard} />
     </Box>
   );
 };

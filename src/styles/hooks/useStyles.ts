@@ -20,12 +20,10 @@ import {
 import {
   infoItem,
   statusIndicator,
-  playerCard,
   profileCard,
   tournamentCard,
   tournamentLeaderboard,
   tournamentScorecard,
-  highlightsFeed,
   bottomNavigation,
 } from "../patterns";
 import { getStatusColor } from "../patterns/tournamentCard";
@@ -43,7 +41,7 @@ export const useStyles = () => {
   return {
     // Card components
     card: {
-      base: card.base(theme),
+      base: card.base(),
       glass: card.glass(theme),
       interactive: card.interactive(theme),
       event: card.event(theme),
@@ -67,7 +65,7 @@ export const useStyles = () => {
     // Mobile patterns
     mobile: {
       container: {
-        fullWidth: mobilePatterns.container.fullWidth(theme),
+        fullWidth: mobilePatterns.container.fullWidth(),
         edgeToEdge: mobilePatterns.container.edgeToEdge,
       },
       card: {
@@ -75,7 +73,7 @@ export const useStyles = () => {
         touchFeedback: mobilePatterns.card.touchFeedback,
       },
       button: {
-        touchable: mobilePatterns.button.touchable(theme),
+        touchable: mobilePatterns.button.touchable(),
         fullWidthMobile: mobilePatterns.button.fullWidthMobile,
         touchFeedback: mobilePatterns.button.touchFeedback,
       },
@@ -164,7 +162,7 @@ export const useStyles = () => {
         page: text.heading.page,
         section: text.heading.section,
         card: text.heading.card,
-        profile: text.heading.profile(theme),
+        profile: text.heading.profile(),
         dialog: text.heading.dialog,
       },
       body: {
@@ -204,7 +202,7 @@ export const useStyles = () => {
       base: icon.base(theme),
       size: icon.size,
       container: {
-        base: icon.container.base(theme),
+        base: icon.container.base(),
         primary: icon.container.primary(theme),
         secondary: icon.container.secondary(theme),
         feature: icon.container.feature(theme),
@@ -217,13 +215,13 @@ export const useStyles = () => {
     infoItem: {
       base: infoItem.base(theme),
       event: infoItem.event,
-      profile: infoItem.profile(theme),
+      profile: infoItem.profile(),
       container: infoItem.container,
     },
 
     getStatusChip: (status: string) => {
       const color = getStatusColor(status, theme);
-      return statusIndicator.chip(color, theme);
+      return statusIndicator.chip(color);
     },
 
     divider: {
@@ -241,12 +239,12 @@ export const useStyles = () => {
     chips: {
       status: {
         active: chips.status.active(theme),
-        custom: (color: string) => chips.status.custom(theme, color),
+        custom: (color: string) => chips.status.custom(color),
       },
       eventType: {
         tournament: chips.eventType.tournament(theme),
         tour: chips.eventType.tour(theme),
-        custom: (color: string) => chips.eventType.custom(theme, color),
+        custom: (color: string) => chips.eventType.custom(color),
       },
     },
 
@@ -327,7 +325,7 @@ export const useStyles = () => {
       formField: profileCard.formField(theme),
       avatar: profileCard.avatar(theme),
       typography: {
-        heading: profileCard.typography.heading(theme),
+        heading: profileCard.typography.heading(),
         subtitle: profileCard.typography.subtitle(theme),
         body: profileCard.typography.body(theme),
         muted: profileCard.typography.muted(theme),
@@ -336,17 +334,11 @@ export const useStyles = () => {
         edit: profileCard.buttons.edit(theme),
         save: profileCard.buttons.save(theme),
       },
-      slider: profileCard.slider,
-      achievements: profileCard.achievements,
     },
 
     tournamentCard: {
       container: tournamentCard.container(theme),
       media: tournamentCard.media,
-      statusChip: (status: string) => {
-        const color = getStatusColor(status, theme);
-        return tournamentCard.statusChip(color, theme);
-      },
       divider: tournamentCard.divider(theme),
       infoItem: tournamentCard.infoItem(theme),
       emptyState: tournamentCard.emptyState(theme),
@@ -453,8 +445,7 @@ export const useStyles = () => {
       // Functions that need parameters
       getTeamCard: (color: string) => tournamentTeams.teamCard(color)(theme),
       getTeamAvatar: (color: string) => tournamentTeams.teamAvatar(color),
-      getCaptainChip: (color: string) =>
-        tournamentTeams.captainChip(color)(theme),
+      getCaptainChip: (color: string) => tournamentTeams.captainChip(color),
       getCaptainBadge: (color: string) => tournamentTeams.captainBadge(color),
       getCaptainLabel: (color: string) => tournamentTeams.captainLabel(color),
       getPlayerName: (isCaptain: boolean) =>
@@ -515,10 +506,9 @@ export const useStyles = () => {
       // Functions with params
       getItemTypeColor: (type: string, mediaType?: string) =>
         tournamentHighlights.getItemTypeColor(type, mediaType),
-      getTypeChip: (color: string) =>
-        tournamentHighlights.typeChip(color)(theme),
-      getAvatarStyle: (type: string, color: string) =>
-        tournamentHighlights.avatarStyle(type, color),
+      getTypeChip: (color: string) => tournamentHighlights.typeChip(color),
+      getAvatarStyle: (color: string) =>
+        tournamentHighlights.avatarStyle(color),
     },
 
     tournamentPlayers: {
@@ -551,15 +541,15 @@ export const useStyles = () => {
       getProfileAvatar: (teamColor?: string) =>
         tournamentPlayers.getProfileAvatar(teamColor)(theme),
       getInfoIconContainer: (color: string) =>
-        tournamentPlayers.getInfoIconContainer(color)(theme),
+        tournamentPlayers.getInfoIconContainer(color),
       getInfoItemTitle: (color: string) =>
         tournamentPlayers.playerTypography.getInfoItemTitle(color),
 
       chips: {
         getTeamChip: (color: string) =>
-          tournamentPlayers.chips.getTeamChip(color)(theme),
+          tournamentPlayers.chips.getTeamChip(color),
         getCaptainChip: (color: string) =>
-          tournamentPlayers.chips.getCaptainChip(color)(theme),
+          tournamentPlayers.chips.getCaptainChip(color),
       },
     },
 
@@ -588,14 +578,12 @@ export const useStyles = () => {
       captainChip: tournamentLeaderboard.captainChip(theme),
 
       // Functions
-      getTableRowStyle: (index: number) =>
-        tournamentLeaderboard.getTableRowStyle(index)(theme),
+      getTableRowStyle: () => tournamentLeaderboard.getTableRowStyle()(theme),
       getPlayerAvatar: (teamColor?: string) =>
         tournamentLeaderboard.getPlayerAvatar(teamColor)(theme),
       getTeamAvatar: (color: string) =>
         tournamentLeaderboard.getTeamAvatar(color),
-      getTeamChip: (color: string) =>
-        tournamentLeaderboard.getTeamChip(color)(theme),
+      getTeamChip: (color: string) => tournamentLeaderboard.getTeamChip(color),
       formatScoreToPar: (score: number, par: number) =>
         tournamentLeaderboard.formatScoreToPar(score, par),
       getScoreVsParColor: (scoreToPar: string) =>
@@ -635,36 +623,28 @@ export const useStyles = () => {
       divider: tour.divider(theme),
 
       teamCard: tour.teamCard(theme),
-      teamContent: tour.teamContent,
 
       typography: {
         title: tour.typography.title,
-        subtitle: tour.typography.subtitle(theme),
-        muted: tour.typography.muted(theme),
       },
 
       // Functions that need parameters
       getStatusChip: (status: string) => tour.header.statusChip(status)(theme),
       getTourChip: tour.header.tourChip(theme),
-      getTeamHeader: (color: string) => tour.teamHeader(color)(theme),
     },
 
     friends: {
-      dialog: friends.dialog,
       tabs: friends.tabs,
       list: {
         ...friends.list,
-        responsive: friends.list.responsive(theme),
+        responsive: friends.list.responsive(),
         actionsContainer: friends.list.actionsContainer,
       },
-      search: friends.search,
       empty: friends.empty,
-      actions: friends.actions,
       buttons: {
         ...friends.buttons,
         actionButton: friends.buttons.actionButton,
       },
-      badge: friends.badge,
     },
   };
 };

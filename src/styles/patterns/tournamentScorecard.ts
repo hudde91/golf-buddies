@@ -163,7 +163,7 @@ export const tournamentScorecard = {
           height: { xs: "20px", sm: "26px" },
           borderRadius: "50%",
           border: "1px solid #d32f2f",
-        },
+        } as any,
         "&::after": {
           content: '""',
           position: "absolute",
@@ -171,7 +171,7 @@ export const tournamentScorecard = {
           height: { xs: "26px", sm: "32px" },
           borderRadius: "50%",
           border: "1px solid #d32f2f",
-        },
+        } as any,
       }),
       ...(scoreClass === "birdie" && {
         "&::before": {
@@ -181,7 +181,7 @@ export const tournamentScorecard = {
           height: { xs: "22px", sm: "28px" },
           borderRadius: "50%",
           border: "1px solid #d32f2f",
-        },
+        } as any,
       }),
       ...(scoreClass === "bogey" && {
         "&::before": {
@@ -190,7 +190,7 @@ export const tournamentScorecard = {
           width: { xs: "22px", sm: "28px" },
           height: { xs: "22px", sm: "28px" },
           border: "1px solid #757575",
-        },
+        } as any,
       }),
       ...(scoreClass === "double-bogey" && {
         "&::before": {
@@ -199,14 +199,14 @@ export const tournamentScorecard = {
           width: { xs: "20px", sm: "26px" },
           height: { xs: "20px", sm: "26px" },
           border: "1px solid #757575",
-        },
+        } as any,
         "&::after": {
           content: '""',
           position: "absolute",
           width: { xs: "26px", sm: "32px" },
           height: { xs: "26px", sm: "32px" },
           border: "1px solid #757575",
-        },
+        } as any,
       }),
       color: alpha(theme.palette.common.white, 0.9),
     }),

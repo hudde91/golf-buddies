@@ -8,7 +8,7 @@ export const button = {
     textTransform: "none",
     borderRadius: { xs: 24, sm: 8 },
     minHeight: { xs: "44px", sm: "36px" },
-    touchable: (theme: Theme) => ({
+    touchable: () => ({
       py: { xs: 1.5, sm: 1 },
       minHeight: { xs: 48, sm: "auto" },
       borderRadius: { xs: 4, sm: 4 },

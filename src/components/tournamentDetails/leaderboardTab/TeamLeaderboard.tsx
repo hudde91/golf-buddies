@@ -138,7 +138,7 @@ const TeamLeaderboard: React.FC<TeamLeaderboardProps> = ({ tournament }) => {
               return (
                 <TableRow
                   key={`leaderboard-${team.teamId}`}
-                  sx={styles.tournamentLeaderboard.getTableRowStyle(index)}
+                  sx={styles.tournamentLeaderboard.getTableRowStyle()}
                 >
                   <TableCell sx={styles.tournamentLeaderboard.centeredDataCell}>
                     {position}

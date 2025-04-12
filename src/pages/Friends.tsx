@@ -76,7 +76,7 @@ const Friends: React.FC = () => {
     setPendingFriends(pendingList);
   };
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
 
@@ -229,9 +229,9 @@ const Friends: React.FC = () => {
               ))}
             </List>
           ) : (
-            <Box sx={styles.friends.empty.container(theme)}>
+            <Box sx={styles.friends.empty.container()}>
               <PersonIcon sx={styles.friends.empty.icon(theme)} />
-              <Typography variant="h6" sx={styles.friends.empty.title(theme)}>
+              <Typography variant="h6" sx={styles.friends.empty.title()}>
                 No Friends Yet
               </Typography>
               <Typography sx={styles.friends.empty.description(theme)}>

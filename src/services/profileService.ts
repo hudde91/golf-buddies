@@ -1,7 +1,7 @@
 import { UserProfile, Achievement } from "../types";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const API_BASE_URL =
   "https://golf-buddies-epfddeddfqdhbtgy.westeurope-01.azurewebsites.net/api";
@@ -129,7 +129,7 @@ export const useUpdateProfile = () => {
       );
       return response.data;
     },
-    onSuccess: (data, variables) => {
+    onSuccess: (_data, variables) => {
       // Invalidate and refetch the profile query after a successful update
       queryClient.invalidateQueries({
         queryKey: ["userProfile", variables.userId],

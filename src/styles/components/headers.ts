@@ -1,9 +1,7 @@
-// src/styles/components/headers.ts
 import { Theme } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 
 export const headers = {
-  // Base page header
   page: {
     container: {
       mb: 4,

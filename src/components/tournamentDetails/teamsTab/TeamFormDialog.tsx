@@ -52,9 +52,11 @@ const TeamFormDialog: React.FC<TeamFormDialogProps> = ({
   const styles = useStyles();
 
   const handleTeamFormChange = (
-    e: React.ChangeEvent<HTMLInputElement> | SelectChangeEvent
+    e:
+      | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+      | SelectChangeEvent
   ) => {
-    const { name, value } = e.target;
+    const { name, value } = e.target as HTMLInputElement;
     setTeamForm((prev) => ({
       ...prev,
       [name]: value,

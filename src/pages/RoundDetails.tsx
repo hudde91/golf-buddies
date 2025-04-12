@@ -59,7 +59,7 @@ const RoundDetails: React.FC = () => {
 
   const [round, setRound] = useState<Round | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isCreator, setIsCreator] = useState(false);
+
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openFriendsDialog, setOpenFriendsDialog] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -172,8 +172,6 @@ const RoundDetails: React.FC = () => {
           id: friend?.id || "",
           name: friend?.name || "",
           email: friend?.email || "",
-          avatarUrl: friend?.avatarUrl,
-          handicap: friend?.handicap,
         };
       })
       .filter((player) => player.id !== "");
@@ -182,7 +180,7 @@ const RoundDetails: React.FC = () => {
     const existingPlayers = round.players || [];
 
     // Update the existing group with new player IDs
-    const updatedGroups = round.playerGroups.map((group) => {
+    const updatedGroups = round.playerGroups!.map((group) => {
       if (group.id === groupId) {
         return {
           ...group,
@@ -217,8 +215,6 @@ const RoundDetails: React.FC = () => {
           id: friend?.id || "",
           name: friend?.name || "",
           email: friend?.email || "",
-          avatarUrl: friend?.avatarUrl,
-          handicap: friend?.handicap,
         };
       })
       .filter((player) => player.id !== "");
@@ -234,7 +230,7 @@ const RoundDetails: React.FC = () => {
     const updatedRound = {
       ...round,
       players: [...(round.players || []), ...newPlayers],
-      playerGroups: [...round.playerGroups, newGroup],
+      playerGroups: [...round.playerGroups!, newGroup],
     };
 
     // In a real app, you would call an API to update the round
@@ -334,39 +330,37 @@ const RoundDetails: React.FC = () => {
             )}
           </Box>
 
-          {isCreator && (
-            <Box
-              sx={{
-                display: "flex",
-                mt: { xs: 1, sm: 0 },
-                flexDirection: { xs: "column", sm: "row" },
-                width: { xs: "100%", sm: "auto" },
-                gap: 1,
-              }}
+          <Box
+            sx={{
+              display: "flex",
+              mt: { xs: 1, sm: 0 },
+              flexDirection: { xs: "column", sm: "row" },
+              width: { xs: "100%", sm: "auto" },
+              gap: 1,
+            }}
+          >
+            <Button
+              color="error"
+              startIcon={<DeleteIcon />}
+              onClick={handleDeleteRound}
+              fullWidth={isMobile}
+              size={isMobile ? "small" : "medium"}
+              variant="outlined"
+              sx={styles.button.danger}
             >
-              <Button
-                color="error"
-                startIcon={<DeleteIcon />}
-                onClick={handleDeleteRound}
-                fullWidth={isMobile}
-                size={isMobile ? "small" : "medium"}
-                variant="outlined"
-                sx={styles.button.danger}
-              >
-                Delete
-              </Button>
-              <Button
-                color="primary"
-                startIcon={<EditIcon />}
-                onClick={handleEditRound}
-                fullWidth={isMobile}
-                size={isMobile ? "small" : "medium"}
-                sx={styles.button.primary}
-              >
-                Edit
-              </Button>
-            </Box>
-          )}
+              Delete
+            </Button>
+            <Button
+              color="primary"
+              startIcon={<EditIcon />}
+              onClick={handleEditRound}
+              fullWidth={isMobile}
+              size={isMobile ? "small" : "medium"}
+              sx={styles.button.primary}
+            >
+              Edit
+            </Button>
+          </Box>
         </Box>
 
         <Paper sx={styles.card.glass}>
@@ -456,17 +450,15 @@ const RoundDetails: React.FC = () => {
               mb: 2,
             }}
           >
-            {isCreator && (
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<PersonAddIcon />}
-                onClick={handleOpenFriendsDialog}
-                sx={styles.button.primary}
-              >
-                Add Players
-              </Button>
-            )}
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<PersonAddIcon />}
+              onClick={handleOpenFriendsDialog}
+              sx={styles.button.primary}
+            >
+              Add Players
+            </Button>
           </Box>
 
           <Grid container spacing={2}>

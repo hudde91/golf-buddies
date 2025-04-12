@@ -1473,7 +1473,7 @@ const eventService = {
       // If not found as a direct event, try to find as a tournament within a tour
       const result = findTournamentInEvents(events, eventId);
       if (result) {
-        const { tournament, parentEventIndex, tournamentIndex } = result;
+        const { tournament } = result;
 
         // Check if the invitation exists
         if (!tournament.invitations.includes(userEmail)) return false;
@@ -2136,8 +2136,6 @@ const eventService = {
     let hasChanges = false;
 
     events.forEach((event, index) => {
-      let statusChanged = false;
-
       if (event.type === "tournament") {
         const tournament = event.data as Tournament;
         const newStatus = getEventStatus(
@@ -2150,7 +2148,6 @@ const eventService = {
             ...tournament,
             status: newStatus,
           };
-          statusChanged = true;
           hasChanges = true;
 
           // If the event just became completed, process achievements
@@ -2172,7 +2169,7 @@ const eventService = {
             ...tour,
             status: newStatus,
           };
-          statusChanged = true;
+
           hasChanges = true;
 
           // If the event just became completed, process achievements
@@ -2238,7 +2235,6 @@ const eventService = {
     }
   },
   getCurrentUser: async (): Promise<Player | null> => {
-    // If using Clerk
     try {
       const user = await window.Clerk?.user;
       if (!user) return null;

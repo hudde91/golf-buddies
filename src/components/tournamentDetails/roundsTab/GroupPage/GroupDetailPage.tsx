@@ -24,8 +24,6 @@ import {
   Flag as FlagIcon,
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon,
-  NavigateNext as NavigateNextIcon,
-  NavigateBefore as NavigateBeforeIcon,
   GolfCourse as GolfCourseIcon,
 } from "@mui/icons-material";
 import { useGroupScoring } from "../../../../hooks/useScoreUpdater";
@@ -78,13 +76,11 @@ const GroupDetailPage: React.FC<GroupDetailPageProps> = ({
     setDialogHole,
     expandedPlayerIds,
     scoreDialogOpen,
-    setScoreDialogOpen,
     holePickerOpen,
     togglePlayerExpanded,
     openScoreDialog,
     handleCloseScoreDialog,
     setHolePickerOpen,
-    navigateHole,
   } = useGroupScoring({
     round,
     groupPlayers,

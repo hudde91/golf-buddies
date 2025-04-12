@@ -2,7 +2,6 @@ import React from "react";
 import { Box, Tabs, Tab } from "@mui/material";
 import { PlayerGroup, Team, TeamFormData, Tour } from "../../types/event";
 import TournamentsTab from "./TournamentsTab";
-import TeamLeaderboardTab from "./TeamLeaderboardTab";
 import RoundsTab from "./RoundsTab";
 import LeaderboardTab from "./LeaderboardTab";
 import PlayersTab from "./PlayersTab";

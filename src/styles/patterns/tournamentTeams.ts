@@ -83,7 +83,7 @@ export const tournamentTeams = {
     color: alpha(theme.palette.common.white, 0.7),
   }),
 
-  captainChip: (color: string) => (theme: Theme) => ({
+  captainChip: (color: string) => () => ({
     backgroundColor: alpha(color, 0.1),
     color: color,
     borderColor: alpha(color, 0.5),

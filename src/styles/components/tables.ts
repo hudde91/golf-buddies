@@ -1,4 +1,3 @@
-// src/styles/components/tables.ts
 import { Theme } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 

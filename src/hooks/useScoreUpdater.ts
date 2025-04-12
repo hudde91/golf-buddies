@@ -1,5 +1,4 @@
-// src/hooks/useGroupScoring.ts
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Round, Player } from "../types/event";
 import { findFirstIncompleteHole } from "../components/round/scoringUtils";
 

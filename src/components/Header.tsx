@@ -24,13 +24,7 @@ import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import PersonIcon from "@mui/icons-material/Person";
 import PeopleIcon from "@mui/icons-material/People";
 import HomeIcon from "@mui/icons-material/Home";
-import {
-  SignedIn,
-  SignedOut,
-  UserButton,
-  useUser,
-  useAuth,
-} from "@clerk/clerk-react";
+import { SignedIn, SignedOut, UserButton, useUser } from "@clerk/clerk-react";
 import tournamentService from "../services/eventService";
 import friendsService from "../services/friendsService";
 import { useStyles } from "../styles";
@@ -64,27 +58,26 @@ function ElevationScroll(props: ElevationScrollProps) {
 
 const Header: React.FC = () => {
   const { user, isLoaded } = useUser();
-  const { signOut } = useAuth();
   const theme = useTheme();
   const styles = useStyles();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const isXsScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const location = useLocation();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [userMenuAnchorEl, setUserMenuAnchorEl] = useState<null | HTMLElement>(
-    null
-  );
+
   const [pendingInvitations, setPendingInvitations] = useState<number>(0);
   const [pendingFriendRequests, setPendingFriendRequests] = useState<number>(0);
   const open = Boolean(anchorEl);
-  const userMenuOpen = Boolean(userMenuAnchorEl);
 
   useEffect(() => {
     if (user && isLoaded) {
       // Check for pending tournament invitations
       const userEmail = user.primaryEmailAddress?.emailAddress || "";
       const invitations = tournamentService.getUserInvitations(userEmail);
-      setPendingInvitations(invitations.length);
+      setPendingInvitations(
+        invitations.tours.length +
+          invitations.tournaments.length +
+          invitations.rounds.length
+      );
 
       // Check for pending friend requests
       const pendingFriends = friendsService.getPendingFriends(user.id);
@@ -98,19 +91,6 @@ const Header: React.FC = () => {
 
   const handleClose = () => {
     setAnchorEl(null);
-  };
-
-  const handleUserMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setUserMenuAnchorEl(event.currentTarget);
-  };
-
-  const handleUserMenuClose = () => {
-    setUserMenuAnchorEl(null);
-  };
-
-  const handleSignOut = async () => {
-    await signOut();
-    handleUserMenuClose();
   };
 
   const isActive = (path: string) => {
@@ -141,7 +121,7 @@ const Header: React.FC = () => {
                 textDecoration: "none",
                 display: "flex",
                 alignItems: "center",
-                ...styles.mobile.typography.adaptive.h5,
+                // ...styles.mobile.typography.adaptive.h5,
               }}
             >
               <EmojiEventsIcon sx={{ mr: 1, fontSize: 28 }} />

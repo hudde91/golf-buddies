@@ -7,7 +7,6 @@ export { divider } from "./divider";
 export { feedback } from "./feedback";
 export { headers } from "./headers";
 export { icon } from "./icon";
-export { infoItems } from "./infoItems";
 export { layout } from "./layout";
 export { tabs } from "./tabs";
 export { text } from "./text";

@@ -16,8 +16,6 @@ import {
 interface MobileTourBottomNavigationProps {
   activeTab: number;
   hasTeams: boolean;
-  tournamentCount: number;
-  roundCount: number; // Add roundCount
   playerCount: number;
   teamCount: number;
   onTabChange: (event: React.SyntheticEvent, newValue: number) => void;
@@ -26,8 +24,6 @@ interface MobileTourBottomNavigationProps {
 const MobileTourBottomNavigation: React.FC<MobileTourBottomNavigationProps> = ({
   activeTab,
   hasTeams,
-  tournamentCount,
-  roundCount,
   playerCount,
   teamCount,
   onTabChange,
@@ -61,22 +57,8 @@ const MobileTourBottomNavigation: React.FC<MobileTourBottomNavigationProps> = ({
           },
         }}
       >
-        <BottomNavigationAction
-          label="Rounds"
-          icon={
-            <Badge badgeContent={roundCount} color="primary">
-              <RoundIcon />
-            </Badge>
-          }
-        />
-        <BottomNavigationAction
-          label="Tournaments"
-          icon={
-            <Badge badgeContent={tournamentCount} color="primary">
-              <TournamentIcon />
-            </Badge>
-          }
-        />
+        <BottomNavigationAction label="Rounds" icon={<RoundIcon />} />
+        <BottomNavigationAction label="Tournaments" icon={<TournamentIcon />} />
         <BottomNavigationAction
           label="Leaderboard"
           icon={<LeaderboardIcon />}

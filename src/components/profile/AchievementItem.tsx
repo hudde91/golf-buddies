@@ -17,7 +17,6 @@ const AchievementItem: React.FC<{ achievement: Achievement }> = ({
     <Paper
       elevation={0}
       sx={{
-        p: 2,
         mb: 2,
         ...styles.card.glass,
         display: "flex",

@@ -85,8 +85,8 @@ const RoundsTab: React.FC<RoundsTabProps> = ({
         setWeather((prev) => ({ ...prev, loading: true, error: null }));
         try {
           const result = await fetchWeather(
-            selectedRound?.courseDetails.name,
-            selectedRound?.date
+            selectedRound?.courseDetails.name
+            // selectedRound?.date
           );
           setWeather(result);
         } catch (error) {

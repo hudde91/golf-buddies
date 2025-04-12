@@ -1,4 +1,3 @@
-// src/styles/components/text.ts
 import { Theme } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 
@@ -42,7 +41,7 @@ export const text = {
       mb: 1,
     },
 
-    profile: (theme: Theme) => ({
+    profile: () => ({
       color: "white",
       fontWeight: 600,
       textShadow: "0 2px 4px rgba(0,0,0,0.2)",

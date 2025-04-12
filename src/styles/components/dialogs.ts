@@ -33,7 +33,7 @@ export const dialogs = {
     margin: {
       xs: 0, // No margin on mobile (fullscreen)
       sm: undefined, // Default margin on desktop
-    },
+    } as any,
     maxHeight: {
       xs: "100vh", // Full height of viewport on mobile
       sm: "90vh", // 90% of viewport height on desktop
@@ -41,7 +41,7 @@ export const dialogs = {
     width: {
       xs: "100%", // Full width on mobile
       sm: undefined, // Default width on desktop
-    },
+    } as any,
     height: {
       xs: "100vh", // Full height on mobile
       sm: "auto", // Auto height on desktop

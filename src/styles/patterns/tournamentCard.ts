@@ -42,17 +42,6 @@ export const tournamentCard = {
     },
   },
 
-  statusChip: (color: string, theme: Theme) => ({
-    display: "inline-block",
-    backgroundColor: alpha(color, 0.2),
-    color: color,
-    fontWeight: "medium",
-    borderRadius: 1,
-    fontSize: "0.75rem",
-    px: 1,
-    py: 0.5,
-  }),
-
   divider: (theme: Theme) => ({
     my: 1.5,
     borderColor: alpha(theme.palette.common.white, 0.1),

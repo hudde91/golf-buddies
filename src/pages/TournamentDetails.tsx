@@ -162,7 +162,7 @@ const TournamentDetail: React.FC = () => {
     setTabValue(getInitialTabValue());
   }, [location.search]);
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
 
     // Update URL with the tab parameter
@@ -593,11 +593,11 @@ const TournamentDetail: React.FC = () => {
 
       {isMobile && tournament && (
         <MobileBottomNavigation
-          tournamentId={tournament.id}
           activeTab={tabValue}
           teamCount={tournament.teams.length}
-          roundCount={tournament.rounds.length}
-          isTeamEvent={tournament.isTeamEvent}
+          hasTeams={tournament.isTeamEvent}
+          playerCount={tournament.players.length}
+          onTabChange={handleTabChange}
         />
       )}
 

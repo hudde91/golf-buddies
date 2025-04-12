@@ -60,14 +60,6 @@ const HighlightItem: React.FC<HighlightItemProps> = ({ item, tournament }) => {
     return mediaType === "image" ? <ImageIcon /> : <VideoIcon />;
   };
 
-  const getItemType = (): string => {
-    if (item.type === "highlight") {
-      return (item.data as Highlight).mediaType;
-    } else {
-      return (item.data as ShoutOut).type;
-    }
-  };
-
   const renderShoutOutContent = (shoutOutData: ShoutOut) => {
     const itemColor = styles.tournamentHighlights.getItemTypeColor(
       shoutOutData.type
@@ -203,8 +195,6 @@ const HighlightItem: React.FC<HighlightItemProps> = ({ item, tournament }) => {
     );
   };
 
-  // Get appropriate styling for item type
-  const itemType = getItemType();
   const itemColor = styles.tournamentHighlights.getItemTypeColor(
     item.type === "highlight" ? "highlight" : (item.data as ShoutOut).type,
     item.type === "highlight" ? (item.data as Highlight).mediaType : undefined
@@ -213,9 +203,7 @@ const HighlightItem: React.FC<HighlightItemProps> = ({ item, tournament }) => {
   return (
     <ListItem alignItems="flex-start" sx={styles.tournamentHighlights.feedItem}>
       <ListItemAvatar>
-        <Avatar
-          sx={styles.tournamentHighlights.getAvatarStyle(item.type, itemColor)}
-        >
+        <Avatar sx={styles.tournamentHighlights.getAvatarStyle(itemColor)}>
           {item.type === "highlight"
             ? getHighlightIcon((item.data as Highlight).mediaType)
             : getShoutOutIcon((item.data as ShoutOut).type)}

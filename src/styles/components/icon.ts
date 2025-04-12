@@ -1,4 +1,3 @@
-// src/styles/components/icon.ts
 import { Theme } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 
@@ -26,7 +25,7 @@ export const icon = {
 
   // Icon with container
   container: {
-    base: (theme: Theme) => ({
+    base: () => ({
       display: "flex",
       alignItems: "center",
       justifyContent: "center",

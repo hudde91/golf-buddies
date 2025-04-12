@@ -12,7 +12,7 @@ import PeopleIcon from "@mui/icons-material/People";
 import AnalyticsIcon from "@mui/icons-material/Analytics";
 
 import { useStyles } from "../styles/hooks/useStyles";
-import { useGetUserEvents } from "../services/eventService";
+// import { useGetUserEvents } from "../services/eventService";
 
 interface FeatureProps {
   icon: React.ReactNode;

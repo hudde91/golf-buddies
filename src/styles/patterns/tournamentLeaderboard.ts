@@ -28,7 +28,7 @@ export const tournamentLeaderboard = {
     border: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
   }),
 
-  getTableRowStyle: (index: number) => (theme: Theme) => ({
+  getTableRowStyle: () => (theme: Theme) => ({
     "&:nth-of-type(odd)": {
       backgroundColor: alpha(theme.palette.common.black, 0.2),
     },
@@ -133,7 +133,7 @@ export const tournamentLeaderboard = {
     border: `1px solid ${alpha(theme.palette.primary.light, 0.3)}`,
   }),
 
-  getTeamChip: (color: string) => (theme: Theme) => ({
+  getTeamChip: (color: string) => () => ({
     backgroundColor: alpha(color, 0.15),
     color: color,
     border: `1px solid ${alpha(color, 0.3)}`,

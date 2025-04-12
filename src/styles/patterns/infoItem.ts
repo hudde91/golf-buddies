@@ -3,7 +3,6 @@ import { Theme } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 
 export const infoItem = {
-  // Standard info item with icon and text
   base: (theme: Theme) => ({
     display: "flex",
     alignItems: "center",
@@ -25,7 +24,7 @@ export const infoItem = {
   },
 
   // Profile info with label and value
-  profile: (theme: Theme) => ({
+  profile: () => ({
     display: "flex",
     alignItems: "flex-start",
     mb: 2.5,

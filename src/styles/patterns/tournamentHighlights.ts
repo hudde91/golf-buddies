@@ -93,7 +93,7 @@ export const tournamentHighlights = {
     fontWeight: 500,
   },
 
-  typeChip: (color: string) => (theme: Theme) => ({
+  typeChip: (color: string) => () => ({
     backgroundColor: alpha(color, 0.1),
     color: color,
     fontWeight: "medium",
@@ -150,7 +150,7 @@ export const tournamentHighlights = {
   }),
 
   // Avatar styles
-  avatarStyle: (type: string, color: string) => ({
+  avatarStyle: (color: string) => ({
     bgcolor: alpha(color, 0.2),
     color: color,
   }),

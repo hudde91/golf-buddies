@@ -1,4 +1,3 @@
-// src/styles/components/feedback.ts
 import { Theme } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 
@@ -35,7 +34,6 @@ export const feedback = {
     },
   },
 
-  // Loading states
   loading: {
     container: {
       display: "flex",
@@ -107,32 +105,32 @@ export const feedback = {
 
   // Alerts and notifications
   alert: {
-    container: (theme: Theme) => ({
+    container: () => ({
       borderRadius: 1,
       p: 2,
       mb: 2,
     }),
 
     success: (theme: Theme) => ({
-      ...feedback.alert.container(theme),
+      ...feedback.alert.container(),
       backgroundColor: alpha(theme.palette.success.main, 0.1),
       borderLeft: `4px solid ${theme.palette.success.main}`,
     }),
 
     error: (theme: Theme) => ({
-      ...feedback.alert.container(theme),
+      ...feedback.alert.container(),
       backgroundColor: alpha(theme.palette.error.main, 0.1),
       borderLeft: `4px solid ${theme.palette.error.main}`,
     }),
 
     warning: (theme: Theme) => ({
-      ...feedback.alert.container(theme),
+      ...feedback.alert.container(),
       backgroundColor: alpha(theme.palette.warning.main, 0.1),
       borderLeft: `4px solid ${theme.palette.warning.main}`,
     }),
 
     info: (theme: Theme) => ({
-      ...feedback.alert.container(theme),
+      ...feedback.alert.container(),
       backgroundColor: alpha(theme.palette.info.main, 0.1),
       borderLeft: `4px solid ${theme.palette.info.main}`,
     }),

@@ -10,7 +10,7 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
 import { useStyles } from "../../styles/hooks/useStyles";
-import { baseColors, colors } from "../../styles";
+import { baseColors } from "../../styles";
 
 interface ProfileHeaderProps {
   fullName: string;

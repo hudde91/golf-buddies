@@ -40,9 +40,7 @@ const Settings: React.FC = () => {
 
   const [backgroundImage, setBackgroundImage] = useState<string>("");
   const [customBackground, setCustomBackground] = useState<boolean>(false);
-  const [uploadedBackground, setUploadedBackground] = useState<string | null>(
-    null
-  );
+
   const [backgroundPreviewUrl, setBackgroundPreviewUrl] = useState<string>("");
 
   const backgroundPresets = BackgroundService.getPresets();
@@ -73,7 +71,7 @@ const Settings: React.FC = () => {
     setSplashText(text);
   };
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
 
@@ -85,7 +83,6 @@ const Settings: React.FC = () => {
       const reader = new FileReader();
       reader.onloadend = () => {
         const result = reader.result as string;
-        setUploadedBackground(result);
         setBackgroundImage(result);
         setBackgroundPreviewUrl(result);
       };
@@ -96,7 +93,6 @@ const Settings: React.FC = () => {
   const handleBackgroundPresetSelect = (presetUrl: string) => {
     setBackgroundImage(presetUrl);
     setBackgroundPreviewUrl(presetUrl);
-    setUploadedBackground(null);
   };
 
   const handleBackgroundToggle = (

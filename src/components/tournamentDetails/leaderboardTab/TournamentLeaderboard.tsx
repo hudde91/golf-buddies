@@ -13,10 +13,7 @@ import {
   Chip,
   useMediaQuery,
   Collapse,
-  IconButton,
 } from "@mui/material";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { Tournament } from "../../../types/event";
 import tournamentService from "../../../services/eventService";
 import { useStyles } from "../../../styles/hooks/useStyles";
@@ -167,7 +164,7 @@ const TournamentLeaderboard: React.FC<TournamentLeaderboardProps> = ({
                 <React.Fragment key={`leaderboard-${player.playerId}`}>
                   <TableRow
                     sx={{
-                      ...styles.tournamentLeaderboard.getTableRowStyle(index),
+                      ...styles.tournamentLeaderboard.getTableRowStyle(),
                       cursor: "pointer",
                       "&:hover": {
                         backgroundColor: theme.palette.action.hover,
@@ -179,32 +176,7 @@ const TournamentLeaderboard: React.FC<TournamentLeaderboardProps> = ({
                       sx={styles.tournamentLeaderboard.centeredDataCell}
                     >
                       <Box sx={{ display: "flex", alignItems: "center" }}>
-                        {/* <IconButton
-                          aria-label="expand row"
-                          size="small"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleToggleExpand(player.playerId);
-                          }}
-                          sx={{ mr: 1 }}
-                        >
-                          {isExpanded ? (
-                            <KeyboardArrowUpIcon />
-                          ) : (
-                            <KeyboardArrowDownIcon />
-                          )}
-                        </IconButton> */}
-                        <Box component="span">
-                          {position}
-                          {/* {index === 0 && tournament.status === "completed" && (
-                            <Chip
-                              label="Winner"
-                              color="primary"
-                              size="small"
-                              sx={styles.tournamentLeaderboard.winnerChip}
-                            />
-                          )} */}
-                        </Box>
+                        <Box component="span">{position}</Box>
                       </Box>
                     </TableCell>
                     <TableCell sx={styles.tournamentLeaderboard.dataCell}>

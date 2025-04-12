@@ -1,6 +1,5 @@
-// src/components/tourDetails/TeamsTab.tsx (updated version)
 import React from "react";
-import { Box, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import { Tour } from "../../types/event";
 import { useStyles } from "../../styles/hooks/useStyles";
 import TeamManagement from "../tournamentDetails/teamsTab/TeamManagement";

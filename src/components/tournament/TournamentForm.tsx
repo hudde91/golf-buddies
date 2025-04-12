@@ -17,7 +17,6 @@ import {
   Typography,
   Alert,
   useMediaQuery,
-  Divider,
   Accordion,
   AccordionSummary,
   AccordionDetails,
