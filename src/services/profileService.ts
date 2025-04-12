@@ -97,37 +97,43 @@ export const useCreateUser = () => {
   return useMutation({
     mutationFn: async (params: CreateUserParams) => {
       try {
-        // Attempt to fetch the user first to check if they already exist
-        // try {
-        //   const checkResponse = await axios.get(`${API_BASE_URL}/user`);
-        //   console.log("User already exists in backend, skipping creation");
-        //   // If the user exists, return the existing user data
-        //   return checkResponse.data;
-        // } catch (error) {
-        //   // If the GET request fails with 404, user doesn't exist yet, proceed with creation
-        //   console.log("User does not exist in backend, creating new user");
-        // }
+        // You could add a check here to see if user already exists
 
-        // Create the user if they don't exist yet
         const response = await axios.post(
           `${API_BASE_URL}/user/createUser`,
           params
         );
-
-        // Also save profile data to localStorage if provided (for backward compatibility)
-        if (params.profileData) {
-          profileService.saveProfile(params.userId, params.profileData);
-        }
-
         return response.data;
       } catch (error) {
         console.error("Error creating user:", error);
-        // If API fails but profileData was provided, still save to localStorage
-        if (params.profileData) {
-          profileService.saveProfile(params.userId, params.profileData);
-        }
         throw error;
       }
+    },
+  });
+};
+
+export const useUpdateProfile = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      userId,
+      profileData,
+    }: {
+      userId: string;
+      profileData: Partial<UserProfile>;
+    }) => {
+      const response = await axios.put(
+        `${API_BASE_URL}/user/${userId}/profile`,
+        profileData
+      );
+      return response.data;
+    },
+    onSuccess: (data, variables) => {
+      // Invalidate and refetch the profile query after a successful update
+      queryClient.invalidateQueries({
+        queryKey: ["userProfile", variables.userId],
+      });
     },
   });
 };

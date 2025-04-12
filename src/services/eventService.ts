@@ -48,24 +48,24 @@ const API_BASE_URL =
 // };
 
 // Enhanced getEventById with fallback to local storage
-export const getEventById = async (id: string): Promise<Event | null> => {
-  try {
-    // Try to get from API first
-    const response = await axios.get(`${API_BASE_URL}/events/${id}`);
-    return response.data;
-  } catch (error) {
-    console.warn("API fetch failed, falling back to local storage:", error);
+// export const getEventById = async (id: string): Promise<Event | null> => {
+//   try {
+//     // Try to get from API first
+//     const response = await axios.get(`${API_BASE_URL}/events/${id}`);
+//     return response.data;
+//   } catch (error) {
+//     console.warn("API fetch failed, falling back to local storage:", error);
 
-    // Fall back to local storage
-    try {
-      const events = eventService.getAllEvents();
-      return events.find((e) => e.id === id) || null;
-    } catch (fallbackError) {
-      console.error("Local storage fallback also failed:", fallbackError);
-      return null;
-    }
-  }
-};
+//     // Fall back to local storage
+//     try {
+//       const events = eventService.getAllEvents();
+//       return events.find((e) => e.id === id) || null;
+//     } catch (fallbackError) {
+//       console.error("Local storage fallback also failed:", fallbackError);
+//       return null;
+//     }
+//   }
+// };
 
 // Enhanced useGetEventById hook with fallback
 export const useGetEventById = (eventId: string) => {

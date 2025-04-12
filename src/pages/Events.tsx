@@ -36,7 +36,7 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import UpdateIcon from "@mui/icons-material/Update";
 
-import eventService from "../services/eventService";
+import eventService, { useGetUserEvents } from "../services/eventService";
 import friendsService, { Friend } from "../services/friendsService";
 import { Event, Tournament, Player, Tour, Round } from "../types/event";
 import TournamentForm from "../components/tournament/TournamentForm";
@@ -53,6 +53,13 @@ const Events: React.FC = () => {
   const styles = useStyles();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  // Get user events from the backend with React Query
+  const {
+    data: userEvents,
+    isLoading: isEventsLoading,
+    refetch: refetchEvents,
+  } = useGetUserEvents(user?.id || "");
 
   const [events, setEvents] = useState<Event[]>([]);
   const [invitations, setInvitations] = useState<Tournament[]>([]);
@@ -72,9 +79,6 @@ const Events: React.FC = () => {
     const fetchData = async () => {
       setIsLoading(true);
 
-      // Get user's events and invitations
-      const userEvents = eventService.getUserEvents(user.id);
-
       // Get all invitations (tournaments, tours, rounds)
       const userInvitationsAll = eventService.getUserInvitations(
         user.primaryEmailAddress?.emailAddress || ""
@@ -83,7 +87,6 @@ const Events: React.FC = () => {
       // Load friends for round creation
       const userFriends = friendsService.getAcceptedFriends(user.id);
 
-      setEvents(userEvents);
       setInvitations(userInvitationsAll.tournaments);
       setRoundInvitations(userInvitationsAll.rounds || []);
       setFriends(userFriends);
@@ -93,6 +96,13 @@ const Events: React.FC = () => {
 
     fetchData();
   }, [user, isLoaded]);
+
+  // Update local state when userEvents data changes
+  useEffect(() => {
+    if (userEvents) {
+      setEvents(userEvents);
+    }
+  }, [userEvents]);
 
   // Event handlers
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -126,6 +136,9 @@ const Events: React.FC = () => {
     setEvents([...events, newEvent]);
     setOpenNewEvent(false);
     setEventType(null);
+
+    // Refresh events from server
+    refetchEvents();
   };
 
   const handleTourSubmit = (tourData: any) => {
@@ -139,6 +152,9 @@ const Events: React.FC = () => {
     setEvents([...events, newEvent]);
     setOpenNewEvent(false);
     setEventType(null);
+
+    // Refresh events from server
+    refetchEvents();
   };
 
   const handleRoundSubmit = (roundData: any) => {
@@ -155,6 +171,9 @@ const Events: React.FC = () => {
     setEvents([...events, newEvent]);
     setOpenNewEvent(false);
     setEventType(null);
+
+    // Refresh events from server
+    refetchEvents();
 
     // Optionally navigate to the new round
     navigate(`/rounds/${newEvent.id}`);
@@ -193,6 +212,9 @@ const Events: React.FC = () => {
       if (!events.some((e) => e.id === acceptedEvent.id)) {
         setEvents([...events, acceptedEvent]);
       }
+
+      // Refresh events from server
+      refetchEvents();
     }
   };
 
@@ -234,6 +256,9 @@ const Events: React.FC = () => {
       if (!events.some((e) => e.id === acceptedEvent.id)) {
         setEvents([...events, acceptedEvent]);
       }
+
+      // Refresh events from server
+      refetchEvents();
     }
   };
 
@@ -250,7 +275,7 @@ const Events: React.FC = () => {
     setRoundInvitations(updatedInvitations);
   };
 
-  if (isLoading || !isLoaded) {
+  if (isLoading || isEventsLoading || !isLoaded) {
     return <LoadingState />;
   }
 
