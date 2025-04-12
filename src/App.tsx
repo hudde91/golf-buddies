@@ -1,5 +1,3 @@
-import { useParams } from "react-router-dom";
-import eventService, { useGetEventById } from "./services/eventService";
 import React, { useState, useEffect } from "react";
 import {
   BrowserRouter as Router,
@@ -24,7 +22,6 @@ import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import Events from "./pages/Events";
 import TournamentDetails from "./pages/TournamentDetails";
-import TourDetails from "./pages/TourDetails";
 import SignInPage from "./pages/SignInPage";
 import SignUpPage from "./pages/SignUpPage";
 import NotFound from "./pages/NotFound";
@@ -38,6 +35,7 @@ import RoundDetails from "./pages/RoundDetails";
 import RoundGroupDetailPage from "./components/round/RoundGroupDetailPage";
 import { QueryProvider } from "./QueryProvider";
 import EventDetailsRouter from "./components/EventDetailsRouter";
+import SignUpHandler from "./components/SignUpHandler";
 
 const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || "";
 
@@ -122,7 +120,12 @@ const App: React.FC = () => {
   };
 
   return (
-    <ClerkProvider publishableKey={clerkPubKey}>
+    <ClerkProvider
+      publishableKey={clerkPubKey}
+      // No custom navigation or routes needed anymore
+      afterSignInUrl="/events"
+      afterSignUpUrl="/events"
+    >
       <QueryProvider>
         <AppThemeProvider>
           <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -142,6 +145,8 @@ const App: React.FC = () => {
                     <Loading />
                   </ClerkLoading>
                   <ClerkLoaded>
+                    {/* Add the SignUpHandler here to listen for auth state changes */}
+                    <SignUpHandler />
                     <Layout>
                       <Routes>
                         <Route path="/" element={<Home />} />
@@ -229,6 +234,7 @@ const App: React.FC = () => {
 
                         <Route path="/sign-in" element={<SignInPage />} />
                         <Route path="/sign-up" element={<SignUpPage />} />
+                        {/* We can remove the verify routes as they're no longer needed */}
                         <Route path="*" element={<NotFound />} />
                       </Routes>
                     </Layout>
