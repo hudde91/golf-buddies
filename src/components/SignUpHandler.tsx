@@ -1,53 +1,57 @@
 import React, { useEffect, useRef } from "react";
 import { useAuth, useUser } from "@clerk/clerk-react";
 import { useCreateUser } from "../services/profileService";
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
 const API_BASE_URL =
   "https://golf-buddies-epfddeddfqdhbtgy.westeurope-01.azurewebsites.net/api";
 
-// This component doesn't render anything visible
-// It just listens for auth state changes and calls our backend
 const SignUpHandler: React.FC = () => {
   const { userId, isLoaded, isSignedIn } = useAuth();
   const { user, isLoaded: isUserLoaded } = useUser();
   const createUserMutation = useCreateUser();
   const processingRef = useRef(false);
 
+  // Query to check if user exists in our backend
+  const { data: backendUser, isError } = useQuery({
+    queryKey: ["backendUser", userId],
+    queryFn: async () => {
+      if (!userId) return null;
+      const response = await axios.get(
+        `${API_BASE_URL}/user?clerkId=${userId}`
+      );
+      return response.data;
+    },
+    // Only enable this query if we have a userId and the user is signed in
+    enabled: !!userId && isSignedIn === true,
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    retry: (failureCount, error) => {
+      if (axios.isAxiosError(error) && error.response?.status === 404) {
+        return false;
+      }
+      return failureCount < 2;
+    },
+  });
+
   useEffect(() => {
-    // Only run if user is signed in, user data is loaded, and we aren't already processing
     if (
       isLoaded &&
       isUserLoaded &&
       isSignedIn &&
       userId &&
       user &&
-      !processingRef.current
+      !processingRef.current &&
+      isError // This means user doesn't exist in backend
     ) {
-      // Set processing flag to prevent duplicate attempts
       processingRef.current = true;
 
-      const checkUserAndCreate = async () => {
+      const createUserInBackend = async () => {
         try {
-          // First check if user already exists in our backend using the correct endpoint
-          try {
-            const response = await axios.get(
-              `${API_BASE_URL}/user?clerkId=${userId}`
-            );
-            if (response.status === 200 && response.data) {
-              // User exists in backend
-              const existingUser = response.data;
-              console.log("Existing user found:", existingUser);
-            }
-            console.log("User already exists in backend, no need to create");
-            return; // User exists, no need to create
-          } catch (error) {
-            // If we get here, it likely means user doesn't exist (404 error)
-            // Continue to create the user
-            console.log("User does not exist in backend, creating new user");
-          }
+          console.log("User does not exist in backend, creating new user");
 
-          // Create user in our backend
           await createUserMutation.mutateAsync({
             userId: user.id,
             email: user.primaryEmailAddress?.emailAddress,
@@ -58,23 +62,15 @@ const SignUpHandler: React.FC = () => {
 
           console.log("User successfully created in backend");
         } catch (error) {
-          console.error("Error during user check/create process:", error);
+          console.error("Error creating user in backend:", error);
         } finally {
-          // Reset processing flag when complete
           processingRef.current = false;
         }
       };
 
-      checkUserAndCreate();
+      createUserInBackend();
     }
-  }, [
-    isLoaded,
-    isUserLoaded,
-    isSignedIn,
-    userId,
-    user,
-    // createUserMutation removed from dependencies
-  ]);
+  }, [isLoaded, isUserLoaded, isSignedIn, userId, user, isError, backendUser]);
 
   return null;
 };

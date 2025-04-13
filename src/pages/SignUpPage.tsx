@@ -3,45 +3,6 @@ import { SignUp } from "@clerk/clerk-react";
 import { Box, Container, Typography, Paper } from "@mui/material";
 
 const SignUpPage: React.FC = () => {
-  // const navigate = useNavigate();
-  // const { isLoaded, signUp, setActive } = useSignUp();
-  // const { client } = useClerk();
-  // const createUserMutation = useCreateUser();
-
-  // Monitor the signUp.status to detect when sign-up is complete
-  // useEffect(() => {
-  //   if (!isLoaded) return;
-
-  //   const handleSignUpComplete = async () => {
-  //     // Check if the user has completed sign-up or has a user ID
-  //     if (
-  //       (signUp.status === "complete" || signUp.createdUserId) &&
-  //       signUp.createdUserId
-  //     ) {
-  //       try {
-  //         console.log("User created with Clerk, adding to our backend");
-  //         // Get user information from Clerk
-  //         const user = {
-  //           userId: signUp.createdUserId,
-  //           email: signUp.emailAddress,
-  //           firstName: signUp.firstName || "",
-  //           lastName: signUp.lastName || "",
-  //           clerkId: signUp.createdUserId,
-  //         };
-
-  //         // Call our backend service to create the user using React Query mutation
-  //         await createUserMutation.mutateAsync(user);
-
-  //         // No need to navigate here - Clerk will handle the redirect based on its configuration
-  //       } catch (error) {
-  //         console.error("Error handling signup:", error);
-  //       }
-  //     }
-  //   };
-
-  //   handleSignUpComplete();
-  // }, [isLoaded, signUp]);
-
   return (
     <Container maxWidth="sm">
       <Box

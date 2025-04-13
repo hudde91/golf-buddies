@@ -8,8 +8,12 @@ import {
   useTheme,
   alpha,
   Typography,
+  CircularProgress,
 } from "@mui/material";
-import profileService from "../services/profileService";
+import profileService, {
+  useGetUserByClerkId,
+  useUpdateUser,
+} from "../services/profileService";
 import { UserProfile, Achievement } from "../types";
 import ProfileHeader from "../components/profile/ProfileHeader";
 import BioSection from "../components/profile/BioSection";
@@ -22,10 +26,14 @@ const Profile: React.FC = () => {
   const theme = useTheme();
 
   const [editing, setEditing] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
+  const [snackbarMessage, setSnackbarMessage] = useState<string>(
+    "Profile updated successfully!"
+  );
+  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">(
+    "success"
+  );
 
-  const [profileImage, setProfileImage] = useState<string>("");
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [bio, setBio] = useState<string>("");
   const [achievements, setAchievements] = useState<Achievement[]>([]);
@@ -36,6 +44,16 @@ const Profile: React.FC = () => {
   const [question2, setQuestion2] = useState<string>("");
   const [question3, setQuestion3] = useState<string>("");
 
+  // Fetch user data from API
+  const {
+    data: userData,
+    isLoading,
+    isError,
+  } = useGetUserByClerkId(user?.id || "");
+
+  // Update user mutation
+  const updateUser = useUpdateUser();
+
   const questions = {
     handicap: "What is your handicap?",
     q1: "Which is your favorite club?",
@@ -44,24 +62,15 @@ const Profile: React.FC = () => {
   };
 
   useEffect(() => {
-    if (!user?.id) return;
-
-    const userData = profileService.getProfile(user.id);
-    setBio(userData.bio || "");
-
-    // Use profile image from service or fall back to Clerk image
-    setProfileImage(userData.profileImage || user.imageUrl || "");
-
-    setHandicapValue(userData.handicap);
-
-    setQuestion1(userData.question1 || "");
-    setQuestion2(userData.question2 || "");
-    setQuestion3(userData.question3 || "");
-
-    setAchievements(userData.achievements || []);
-
-    setIsLoading(false);
-  }, [user?.id, user?.imageUrl]);
+    if (userData) {
+      setBio(userData.bio || "");
+      setHandicapValue(userData.handicap || null);
+      setQuestion1(userData.question1 || "");
+      setQuestion2(userData.question2 || "");
+      setQuestion3(userData.question3 || "");
+      setAchievements(userData.achievements || []);
+    }
+  }, [userData]);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -76,6 +85,16 @@ const Profile: React.FC = () => {
 
   const handleEditToggle = () => {
     setEditing(!editing);
+
+    // If canceling edit, reset to original values
+    if (editing && userData) {
+      setBio(userData.bio || "");
+      setHandicapValue(userData.handicap || null);
+      setQuestion1(userData.question1 || "");
+      setQuestion2(userData.question2 || "");
+      setQuestion3(userData.question3 || "");
+      setUploadedImage(null);
+    }
   };
 
   const handleBioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -86,11 +105,13 @@ const Profile: React.FC = () => {
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const value = event.target.value;
-
     const numValue = parseFloat(value);
 
     if (!isNaN(numValue) && numValue >= -10 && numValue <= 54) {
       setHandicapValue(numValue);
+      setHandicapError("");
+    } else {
+      setHandicapError("Handicap must be between -10 and 54");
     }
   };
 
@@ -106,7 +127,7 @@ const Profile: React.FC = () => {
     setQuestion3(e.target.value);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!user?.id) return;
 
     if (editing && handicapValue === null) {
@@ -116,7 +137,8 @@ const Profile: React.FC = () => {
 
     const updatedProfile: Partial<UserProfile> = {
       bio,
-      question1: handicapValue !== null ? handicapValue.toString() : "",
+      handicap: handicapValue ?? undefined,
+      question1,
       question2,
       question3,
       achievements: achievements, // Make sure we preserve achievements when saving
@@ -124,12 +146,24 @@ const Profile: React.FC = () => {
 
     if (uploadedImage) {
       updatedProfile.profileImage = uploadedImage;
-      setProfileImage(uploadedImage);
     }
 
-    profileService.saveProfile(user.id, updatedProfile);
-    setEditing(false);
-    setSnackbarOpen(true);
+    try {
+      await updateUser.mutateAsync({
+        clerkId: user.id,
+        profileData: updatedProfile,
+      });
+
+      setEditing(false);
+      setSnackbarMessage("Profile updated successfully!");
+      setSnackbarSeverity("success");
+      setSnackbarOpen(true);
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      setSnackbarMessage("Error updating profile. Please try again.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+    }
   };
 
   const handleCloseSnackbar = () => {
@@ -157,8 +191,13 @@ const Profile: React.FC = () => {
                 backdropFilter: "blur(10px)",
                 padding: 3,
                 borderRadius: 2,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 2,
               }}
             >
+              <CircularProgress color="primary" />
               <Typography sx={{ color: "white", fontSize: "1.2rem" }}>
                 Loading profile...
               </Typography>
@@ -168,6 +207,42 @@ const Profile: React.FC = () => {
       </Box>
     );
   }
+
+  if (isError) {
+    return (
+      <Box
+        sx={{
+          background: colors.background.main,
+          minHeight: "calc(100vh - 64px)",
+          pt: 4,
+          pb: 6,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Container maxWidth="md">
+          <Box sx={{ textAlign: "center" }}>
+            <Box
+              sx={{
+                background: alpha(theme.palette.common.black, 0.3),
+                backdropFilter: "blur(10px)",
+                padding: 3,
+                borderRadius: 2,
+              }}
+            >
+              <Typography sx={{ color: "white", fontSize: "1.2rem" }}>
+                Error loading profile. Please refresh and try again.
+              </Typography>
+            </Box>
+          </Box>
+        </Container>
+      </Box>
+    );
+  }
+
+  const profileImage =
+    uploadedImage || userData?.profileImage || user?.imageUrl || "";
 
   return (
     <Box
@@ -231,10 +306,10 @@ const Profile: React.FC = () => {
       >
         <Alert
           onClose={handleCloseSnackbar}
-          severity="success"
+          severity={snackbarSeverity}
           sx={{ width: "100%", fontSize: "1.1rem" }}
         >
-          Profile updated successfully!
+          {snackbarMessage}
         </Alert>
       </Snackbar>
     </Box>
