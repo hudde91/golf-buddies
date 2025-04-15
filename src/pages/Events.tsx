@@ -21,6 +21,8 @@ import {
   useMediaQuery,
   useTheme,
   alpha,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import EventIcon from "@mui/icons-material/Event";
@@ -71,6 +73,8 @@ const Events: React.FC = () => {
   >(null);
   const [friends, setFriends] = useState<Friend[]>([]);
   const [loadingFriends, setLoadingFriends] = useState(true);
+  const [submitLoading, setSubmitLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isLoaded || !user) return;
@@ -121,8 +125,10 @@ const Events: React.FC = () => {
     setEventType(null);
   };
 
-  const handleTournamentSubmit = (tournamentData: any) => {
+  const handleTournamentSubmit = async (tournamentData: any) => {
     if (!user) return;
+    setSubmitLoading(true);
+    setErrorMessage(null);
 
     const currentUser: Player = {
       id: user.id,
@@ -130,35 +136,61 @@ const Events: React.FC = () => {
       email: user.primaryEmailAddress?.emailAddress || "",
       avatarUrl: user.imageUrl || undefined,
     };
-    // TODO: Add call to backend to creategameplay, it should take it in type (here it should be "tournament") and fallback to eventService.createTour if backend fails
-    const newEvent = eventService.createTournament(tournamentData, currentUser);
-    setEvents([...events, newEvent]);
-    setOpenNewEvent(false);
-    setEventType(null);
 
-    // Refresh events from server
-    refetchEvents();
+    try {
+      console.log("Creating tournament...");
+      const newEvent = await eventService.createTournament(
+        tournamentData,
+        currentUser
+      );
+      console.log("Tournament created:", newEvent);
+
+      setEvents((prev) => [...prev, newEvent]);
+      setOpenNewEvent(false);
+      setEventType(null);
+
+      // Refresh events from server
+      refetchEvents();
+    } catch (error) {
+      console.error("Failed to create tournament:", error);
+      setErrorMessage("Failed to create tournament. Please try again.");
+    } finally {
+      setSubmitLoading(false);
+    }
   };
 
-  const handleTourSubmit = (tourData: any) => {
+  const handleTourSubmit = async (tourData: any) => {
     if (!user) return;
+    setSubmitLoading(true);
+    setErrorMessage(null);
 
-    // TODO: Add call to backend to creategameplay, it should take it in type (here it should be "tour") and fallback to eventService.createTour if backend fails
-    const newEvent = eventService.createTour(
-      tourData,
-      user.id,
-      user.fullName || "Unknown User"
-    );
-    setEvents([...events, newEvent]);
-    setOpenNewEvent(false);
-    setEventType(null);
+    try {
+      console.log("Creating tour...");
+      const newEvent = await eventService.createTour(
+        tourData,
+        user.id,
+        user.fullName || "Unknown User"
+      );
+      console.log("Tour created:", newEvent);
 
-    // Refresh events from server
-    refetchEvents();
+      setEvents((prev) => [...prev, newEvent]);
+      setOpenNewEvent(false);
+      setEventType(null);
+
+      // Refresh events from server
+      refetchEvents();
+    } catch (error) {
+      console.error("Failed to create tour:", error);
+      setErrorMessage("Failed to create tour. Please try again.");
+    } finally {
+      setSubmitLoading(false);
+    }
   };
 
-  const handleRoundSubmit = (roundData: any) => {
+  const handleRoundSubmit = async (roundData: any) => {
     if (!user) return;
+    setSubmitLoading(true);
+    setErrorMessage(null);
 
     const currentUser: Player = {
       id: user.id,
@@ -166,17 +198,28 @@ const Events: React.FC = () => {
       email: user.primaryEmailAddress?.emailAddress || "",
       avatarUrl: user.imageUrl || undefined,
     };
-    // TODO: Add call to backend to creategameplay, it should take it in type (here it should be "round") and fallback to eventService.createTour if backend fails
-    const newEvent = eventService.createRound(roundData, currentUser);
-    setEvents([...events, newEvent]);
-    setOpenNewEvent(false);
-    setEventType(null);
 
-    // Refresh events from server
-    refetchEvents();
+    try {
+      console.log("Creating round...");
 
-    // Optionally navigate to the new round
-    navigate(`/rounds/${newEvent.id}`);
+      const newEvent = await eventService.createRound(roundData, currentUser);
+      console.log("Round created:", newEvent);
+
+      setEvents((prev) => [...prev, newEvent]);
+      setOpenNewEvent(false);
+      setEventType(null);
+
+      // Refresh events from server
+      refetchEvents();
+
+      // Optionally navigate to the new round
+      navigate(`/rounds/${newEvent.id}`);
+    } catch (error) {
+      console.error("Failed to create round:", error);
+      setErrorMessage("Failed to create round. Please try again.");
+    } finally {
+      setSubmitLoading(false);
+    }
   };
 
   const handleViewEvent = (eventId: string, eventType: string) => {
@@ -275,13 +318,16 @@ const Events: React.FC = () => {
     setRoundInvitations(updatedInvitations);
   };
 
+  const handleCloseError = () => {
+    setErrorMessage(null);
+  };
+
   if (isLoading || isEventsLoading || !isLoaded) {
     return <LoadingState />;
   }
 
   const renderEventCard = (event: Event) => {
     // Extract the common data based on event type
-
     const name = event.name;
     const description = event.description || "No description";
     const status = event.status!;
@@ -481,7 +527,7 @@ const Events: React.FC = () => {
             onClick={handleCreateEvent}
             sx={styles.button.create}
           >
-            Create Event
+            Create gameplay
           </Button>
         )}
       </Box>
@@ -527,7 +573,7 @@ const Events: React.FC = () => {
                 display: { xs: "none", sm: "block" },
               }}
             >
-              Create Event
+              Play golf
             </Button>
           </Box>
           <Box
@@ -681,7 +727,7 @@ const Events: React.FC = () => {
         <Box sx={{ position: "relative", height: "100%" }}>
           <Fab
             color="primary"
-            aria-label="create event"
+            aria-label="create gameplay"
             onClick={handleCreateEvent}
             sx={{
               position: "absolute",
@@ -818,6 +864,7 @@ const Events: React.FC = () => {
           <TournamentForm
             onSubmit={handleTournamentSubmit}
             onCancel={handleEventFormClose}
+            // isSubmitting={submitLoading}
           />
         ) : eventType === "round" ? (
           <RoundForm
@@ -825,14 +872,32 @@ const Events: React.FC = () => {
             onCancel={handleEventFormClose}
             friends={friends}
             loadingFriends={loadingFriends}
+            // isSubmitting={submitLoading}
           />
         ) : (
           <TourForm
             onSubmit={handleTourSubmit}
             onCancel={handleEventFormClose}
+            // isSubmitting={submitLoading}
           />
         )}
       </Dialog>
+
+      {/* Error Snackbar */}
+      <Snackbar
+        open={!!errorMessage}
+        autoHideDuration={6000}
+        onClose={handleCloseError}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleCloseError}
+          severity="error"
+          sx={{ width: "100%" }}
+        >
+          {errorMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

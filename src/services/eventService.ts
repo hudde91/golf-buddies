@@ -116,6 +116,37 @@ export const useGetUserEvents = (userId: string) => {
   });
 };
 
+const createGameplayAPI = async (
+  type: "tournament" | "tour" | "round",
+  data: any,
+  clerkId: string
+): Promise<any> => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/event/creategameplay?clerkId=${clerkId}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          type,
+          ...data,
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`API error with status: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error(`Error creating ${type} via API:`, error);
+    throw error;
+  }
+};
+
 // Available round formats
 export const roundFormats = [
   "Stroke Play",
@@ -352,105 +383,234 @@ const eventService = {
     return result ? result.tournament : null;
   },
 
-  createTournament: (
+  createTournament: async (
     data: TournamentFormData & { inviteFriends?: string[] },
     currentUser: Player
-  ): Event => {
-    const events = eventService.getAllEvents();
+  ): Promise<Event> => {
+    try {
+      // Try to create tournament via API first
+      const apiResponse = await createGameplayAPI(
+        "tournament",
+        {
+          ...data,
+          currentUser,
+        },
+        currentUser.id
+      );
 
-    // Create tournament
-    const status = getEventStatus(data.startDate, data.endDate);
+      return apiResponse;
+    } catch (error) {
+      console.warn(
+        "API tournament creation failed, falling back to local storage"
+      );
 
-    const newTournament: Tournament = {
-      id: uuidv4(),
-      name: data.name,
-      type: "tournament",
-      format: "Standard", // Default format
-      startDate: data.startDate,
-      endDate: data.endDate,
-      location: data.location,
-      description: data.description,
-      createdBy: currentUser.id,
-      createdAt: new Date().toISOString(),
-      players: [currentUser],
-      teams: [],
-      rounds: [],
-      invitations: data.inviteFriends || [], // Add selected friends to invitations
-      isTeamEvent: data.isTeamEvent,
-      scoringType: data.scoringType,
-      status,
-    };
+      // Fallback to local storage implementation
+      const events = eventService.getAllEvents();
 
-    // Create event wrapper
-    const newEvent: Event = {
-      ...newTournament,
-    };
+      // Create tournament
+      const status = getEventStatus(data.startDate, data.endDate);
 
-    events.push(newEvent);
-    localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
+      const newTournament: Tournament = {
+        id: uuidv4(),
+        name: data.name,
+        type: "tournament",
+        format: "Standard", // Default format
+        startDate: data.startDate,
+        endDate: data.endDate,
+        location: data.location,
+        description: data.description,
+        createdBy: currentUser.id,
+        createdAt: new Date().toISOString(),
+        players: [currentUser],
+        teams: [],
+        rounds: [],
+        invitations: data.inviteFriends || [], // Add selected friends to invitations
+        isTeamEvent: data.isTeamEvent,
+        scoringType: data.scoringType,
+        status,
+      };
 
-    return newEvent;
+      // Create event wrapper
+      const newEvent: Event = {
+        ...newTournament,
+      };
+
+      events.push(newEvent);
+      localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
+
+      return newEvent;
+    }
   },
 
   // Update the createTour method
-  createTour: (
+  createTour: async (
     data: TourFormData & { inviteFriends?: string[] },
     userId: string,
     userName: string
-  ): Event => {
-    const events = eventService.getAllEvents();
+  ): Promise<Event> => {
+    try {
+      // Try to create tour via API first
+      debugger;
+      const apiResponse = await createGameplayAPI(
+        "tour",
+        {
+          ...data,
+          userId,
+          userName,
+        },
+        userId
+      );
 
-    // Determine status
-    const status = getEventStatus(data.startDate, data.endDate);
+      return apiResponse;
+    } catch (error) {
+      console.warn("API tour creation failed, falling back to local storage");
 
-    // Create current user as player
-    const currentUser: Player = {
-      id: userId,
-      name: userName,
-      email: "", // We may need to add this from the user object if available
-      avatarUrl: "", // We may need to add this from the user object if available
-      teamId: "",
-      bio: "",
-      question1: "",
-      question2: "",
-      question3: "",
-      question4: "",
-    };
+      // Fallback to local storage implementation
+      const events = eventService.getAllEvents();
 
-    // Create tour
-    const newTour: Tour = {
-      id: uuidv4(),
-      name: data.name,
-      type: "tour",
-      startDate: data.startDate,
-      endDate: data.endDate,
-      description: data.description,
-      createdBy: userId,
-      createdAt: new Date().toISOString(),
-      tournaments: [],
-      rounds: [],
-      players: [currentUser], // Add the creator as the first player
-      invitations: data.inviteFriends || [], // Add selected friends to invitations
-      status: status,
-      isTeamEvent: data.isTeamEvent || false, // Add team event flag
-      scoringType: data.isTeamEvent
-        ? data.scoringType || "individual"
-        : "individual",
-      pointsSystem: {
-        win: 100,
-        topFinish: { 1: 100, 2: 80, 3: 60, 4: 40, 5: 20 },
-        participation: 10,
-      },
-    };
+      // Determine status
+      const status = getEventStatus(data.startDate, data.endDate);
 
-    const newEvent: Event = {
-      ...newTour,
-    };
+      // Create current user as player
+      const currentUser: Player = {
+        id: userId,
+        name: userName,
+        email: "", // We may need to add this from the user object if available
+        avatarUrl: "", // We may need to add this from the user object if available
+        teamId: "",
+        bio: "",
+        question1: "",
+        question2: "",
+        question3: "",
+        question4: "",
+      };
 
-    events.push(newEvent);
-    localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
+      // Create tour
+      const newTour: Tour = {
+        id: uuidv4(),
+        name: data.name,
+        type: "tour",
+        startDate: data.startDate,
+        endDate: data.endDate,
+        description: data.description,
+        createdBy: userId,
+        createdAt: new Date().toISOString(),
+        tournaments: [],
+        rounds: [],
+        players: [currentUser], // Add the creator as the first player
+        invitations: data.inviteFriends || [], // Add selected friends to invitations
+        status: status,
+        isTeamEvent: data.isTeamEvent || false, // Add team event flag
+        scoringType: data.isTeamEvent
+          ? data.scoringType || "individual"
+          : "individual",
+        pointsSystem: {
+          win: 100,
+          topFinish: { 1: 100, 2: 80, 3: 60, 4: 40, 5: 20 },
+          participation: 10,
+        },
+      };
 
-    return newEvent;
+      const newEvent: Event = {
+        ...newTour,
+      };
+
+      events.push(newEvent);
+      localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
+
+      return newEvent;
+    }
+  },
+
+  createRound: async (
+    data: RoundFormData & { inviteFriends?: string[] },
+    currentUser: Player
+  ): Promise<Event> => {
+    try {
+      // Try to create round via API first
+      console.log("Attempting to create round via API");
+      const apiResponse = await createGameplayAPI(
+        "round",
+        {
+          ...data,
+          currentUser,
+        },
+        currentUser.id
+      );
+
+      console.log("API round creation successful:", apiResponse);
+      return apiResponse;
+    } catch (error) {
+      console.warn(
+        "API round creation failed, falling back to local storage:",
+        error
+      );
+
+      // Fallback to local storage implementation
+      const events = eventService.getAllEvents();
+
+      // Determine status based on the date
+      const today = new Date().toISOString().split("T")[0];
+      const status =
+        data.date === today
+          ? "active"
+          : data.date < today
+          ? "completed"
+          : "upcoming";
+
+      // Initialize empty scores for the current user
+      const scores: { [playerId: string]: HoleScore[] } = {};
+      const holeScores: HoleScore[] = [];
+
+      for (let i = 1; i <= data.holes; i++) {
+        holeScores.push({
+          hole: i,
+          par: data.par ? Math.floor(data.par / data.holes) : undefined,
+        });
+      }
+
+      scores[currentUser.id] = holeScores;
+
+      // Create the new round
+      const newRound: Round = {
+        id: uuidv4(),
+        name: data.name,
+        type: "round",
+        date: data.date,
+        courseDetails: {
+          name: data.courseName,
+          holes: data.holes,
+          par: data.par,
+        },
+        format: data.format,
+        scores,
+        createdBy: currentUser.id,
+        createdAt: new Date().toISOString(),
+        players: [currentUser],
+        location: data.location || "Not specified",
+        description: data.description || "",
+        status,
+        invitations: data.inviteFriends || [],
+        playerGroups: [
+          {
+            id: uuidv4(),
+            name: data.name,
+            playerIds: [currentUser.id],
+          },
+        ],
+      };
+
+      // Create event wrapper
+      const newEvent: Event = {
+        ...newRound,
+      };
+
+      events.push(newEvent);
+      localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
+      console.log("Created round via local storage:", newEvent);
+
+      return newEvent;
+    }
   },
 
   addRoundToTour: (
@@ -2298,73 +2458,73 @@ const eventService = {
     return false;
   },
 
-  createRound: (
-    data: RoundFormData & { inviteFriends?: string[] },
-    currentUser: Player
-  ): Event => {
-    const events = eventService.getAllEvents();
+  // createRound: (
+  //   data: RoundFormData & { inviteFriends?: string[] },
+  //   currentUser: Player
+  // ): Event => {
+  //   const events = eventService.getAllEvents();
 
-    // Determine status based on the date
-    const today = new Date().toISOString().split("T")[0];
-    const status =
-      data.date === today
-        ? "active"
-        : data.date < today
-        ? "completed"
-        : "upcoming";
+  //   // Determine status based on the date
+  //   const today = new Date().toISOString().split("T")[0];
+  //   const status =
+  //     data.date === today
+  //       ? "active"
+  //       : data.date < today
+  //       ? "completed"
+  //       : "upcoming";
 
-    // Initialize empty scores for the current user
-    const scores: { [playerId: string]: HoleScore[] } = {};
-    const holeScores: HoleScore[] = [];
+  //   // Initialize empty scores for the current user
+  //   const scores: { [playerId: string]: HoleScore[] } = {};
+  //   const holeScores: HoleScore[] = [];
 
-    for (let i = 1; i <= data.holes; i++) {
-      holeScores.push({
-        hole: i,
-        par: data.par ? Math.floor(data.par / data.holes) : undefined,
-      });
-    }
+  //   for (let i = 1; i <= data.holes; i++) {
+  //     holeScores.push({
+  //       hole: i,
+  //       par: data.par ? Math.floor(data.par / data.holes) : undefined,
+  //     });
+  //   }
 
-    scores[currentUser.id] = holeScores;
+  //   scores[currentUser.id] = holeScores;
 
-    // Create the new round
-    const newRound: Round = {
-      id: uuidv4(),
-      name: data.name,
-      type: "round",
-      date: data.date,
-      courseDetails: {
-        name: data.courseName,
-        holes: data.holes,
-        par: data.par,
-      },
-      format: data.format,
-      scores,
-      createdBy: currentUser.id,
-      createdAt: new Date().toISOString(),
-      players: [currentUser],
-      location: data.location || "Not specified",
-      description: data.description || "",
-      status,
-      invitations: data.inviteFriends || [],
-      playerGroups: [
-        {
-          id: uuidv4(),
-          name: data.name,
-          playerIds: [currentUser.id],
-        },
-      ],
-    };
+  //   // Create the new round
+  //   const newRound: Round = {
+  //     id: uuidv4(),
+  //     name: data.name,
+  //     type: "round",
+  //     date: data.date,
+  //     courseDetails: {
+  //       name: data.courseName,
+  //       holes: data.holes,
+  //       par: data.par,
+  //     },
+  //     format: data.format,
+  //     scores,
+  //     createdBy: currentUser.id,
+  //     createdAt: new Date().toISOString(),
+  //     players: [currentUser],
+  //     location: data.location || "Not specified",
+  //     description: data.description || "",
+  //     status,
+  //     invitations: data.inviteFriends || [],
+  //     playerGroups: [
+  //       {
+  //         id: uuidv4(),
+  //         name: data.name,
+  //         playerIds: [currentUser.id],
+  //       },
+  //     ],
+  //   };
 
-    // Create event wrapper
-    const newEvent: Event = {
-      ...newRound,
-    };
+  //   // Create event wrapper
+  //   const newEvent: Event = {
+  //     ...newRound,
+  //   };
 
-    events.push(newEvent);
-    localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
+  //   events.push(newEvent);
+  //   localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
 
-    return newEvent;
-  },
+  //   return newEvent;
+  // },
 
   // Get a round by ID
   // getRoundById: (id: string): Round | null => {
