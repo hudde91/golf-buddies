@@ -1,4 +1,3 @@
-// src/styles/hooks/useStyles.ts
 import { useTheme } from "@mui/material/styles";
 import {
   card,
@@ -34,6 +33,7 @@ import { tournamentHighlights } from "../patterns/tournamentHighlights";
 import { tour } from "../patterns/tour";
 import { mobilePatterns } from "../patterns/mobile";
 import { friends } from "../patterns/friends";
+import { course } from "../patterns/course";
 
 export const useStyles = () => {
   const theme = useTheme();
@@ -645,6 +645,38 @@ export const useStyles = () => {
         ...friends.buttons,
         actionButton: friends.buttons.actionButton,
       },
+    },
+    course: {
+      infoContainer: course.courseInfoContainer,
+      header: {
+        container: course.courseHeader.container,
+        title: course.courseHeader.title,
+        subtitle: course.courseHeader.subtitle(theme),
+      },
+      card: course.courseCard(theme),
+      infoItem: course.courseInfoItem,
+      icon: course.courseIcon,
+      selection: {
+        container: course.courseSelection.container,
+        addButton: course.courseSelection.addButton(theme),
+      },
+      form: {
+        sectionTitle: course.courseForm.sectionTitle(theme),
+        formField: course.courseForm.formField(theme),
+      },
+      rating: {
+        container: course.courseRating.container(theme),
+        label: course.courseRating.label,
+        value: course.courseRating.value(theme),
+      },
+      list: {
+        container: course.courseList.container(theme),
+        item: course.courseList.item(theme),
+        name: course.courseList.name,
+        details: course.courseList.details(theme),
+        ratings: course.courseList.ratings(theme),
+      },
+      chip: course.courseChip(theme),
     },
   };
 };

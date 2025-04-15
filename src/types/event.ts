@@ -133,12 +133,12 @@ export interface RoundFormData {
   name: string;
   date: string;
   courseName?: string;
-  location?: string;
   description?: string;
   holes: number;
   par?: number;
   format: string;
   inviteFriends?: string[];
+  slope?: number;
 }
 
 export interface TeamFormData {

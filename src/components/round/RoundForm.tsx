@@ -19,13 +19,22 @@ import {
   CircularProgress,
   alpha,
   useTheme,
+  Typography,
+  Divider,
 } from "@mui/material";
 import InfoIcon from "@mui/icons-material/Info";
+import AddIcon from "@mui/icons-material/Add";
 import { RoundFormData } from "../../types/event";
 import { roundFormats } from "../../services/eventService";
 import { useStyles } from "../../styles/hooks/useStyles";
 import FriendInviteList from "../FriendInviteList";
 import { Friend } from "../../services/friendsService";
+import CourseFormDialog from "./CourseFormDialog";
+import {
+  GolfCourse,
+  fetchGolfCourses,
+  createGolfCourse,
+} from "../../services/golfCourseService";
 
 interface RoundFormProps {
   onSubmit: (data: RoundFormData & { inviteFriends: string[] }) => void;
@@ -56,75 +65,6 @@ const formatDescriptions: Record<string, string> = {
     "Players compete for each hole. If a player wins a hole outright, they win the 'skin' for that hole.",
 };
 
-interface GolfClub {
-  id: string;
-  name: string;
-  address: string;
-  city: string;
-  country: string;
-  par?: number;
-}
-
-// Mock function to fetch golf clubs - replace with actual API call
-const fetchGolfClubs = async (query: string): Promise<GolfClub[]> => {
-  // Simulated delay to showcase loading state
-  await new Promise((resolve) => setTimeout(resolve, 500));
-
-  // Mock data for demonstration
-  const mockClubs: GolfClub[] = [
-    {
-      id: "1",
-      name: "Augusta National Golf Club",
-      address: "2604 Washington Rd",
-      city: "Augusta",
-      country: "USA",
-      par: 72,
-    },
-    {
-      id: "2",
-      name: "St Andrews Links (Old Course)",
-      address: "W Sands Rd",
-      city: "St Andrews",
-      country: "Scotland",
-      par: 72,
-    },
-    {
-      id: "3",
-      name: "Pebble Beach Golf Links",
-      address: "17 Mile Dr",
-      city: "Pebble Beach",
-      country: "USA",
-      par: 72,
-    },
-    {
-      id: "4",
-      name: "Royal Melbourne Golf Club",
-      address: "Cheltenham Rd",
-      city: "Black Rock",
-      country: "Australia",
-      par: 72,
-    },
-    {
-      id: "5",
-      name: "Muirfield",
-      address: "Duncur Rd",
-      city: "Gullane",
-      country: "Scotland",
-      par: 71,
-    },
-  ];
-
-  if (!query) return mockClubs;
-
-  // Filter based on query
-  return mockClubs.filter(
-    (club) =>
-      club.name.toLowerCase().includes(query.toLowerCase()) ||
-      club.city.toLowerCase().includes(query.toLowerCase()) ||
-      club.country.toLowerCase().includes(query.toLowerCase())
-  );
-};
-
 const RoundForm: React.FC<RoundFormProps> = ({
   onSubmit,
   onCancel,
@@ -141,11 +81,11 @@ const RoundForm: React.FC<RoundFormProps> = ({
     name: initialData.name || "",
     date: initialData.date || today,
     courseName: initialData.courseName || "",
-    location: initialData.location || "",
     description: initialData.description || "",
     holes: initialData.holes || 18,
     par: initialData.par || 72,
     format: initialData.format || roundFormats[0],
+    slope: initialData.slope || 113,
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -153,24 +93,26 @@ const RoundForm: React.FC<RoundFormProps> = ({
 
   // Golf club autocomplete states
   const [open, setOpen] = useState(false);
-  const [options, setOptions] = useState<GolfClub[]>([]);
+  const [options, setOptions] = useState<GolfCourse[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [loading, setLoading] = useState(false);
-  const [selectedClub, setSelectedClub] = useState<GolfClub | null>(null);
+  const [selectedClub, setSelectedClub] = useState<GolfCourse | null>(null);
+  const [courseDialogOpen, setCourseDialogOpen] = useState(false);
 
   // Load golf clubs when the input changes
   useEffect(() => {
     let active = true;
 
     setLoading(true);
-    fetchGolfClubs(inputValue)
+    fetchGolfCourses(inputValue)
       .then((results) => {
         if (active) {
           setOptions(results);
           setLoading(false);
         }
       })
-      .catch(() => {
+      .catch((error) => {
+        console.error("Error fetching golf courses:", error);
         if (active) {
           setOptions([]);
           setLoading(false);
@@ -186,29 +128,28 @@ const RoundForm: React.FC<RoundFormProps> = ({
   useEffect(() => {
     if (initialData.courseName) {
       setInputValue(initialData.courseName);
-      fetchGolfClubs("").then((clubs) => {
-        const matchedClub = clubs.find((club) => {
-          const clubFullName = `${club.name}, ${club.city}, ${club.country}`;
+      fetchGolfCourses("").then((courses) => {
+        const matchedCourse = courses.find((course) => {
+          const courseFullName = `${course.name}, ${course.city}, ${course.country}`;
           return (
-            clubFullName === initialData.courseName ||
-            club.name === initialData.courseName
+            courseFullName === initialData.courseName ||
+            course.name === initialData.courseName
           );
         });
 
-        if (matchedClub) {
-          setSelectedClub(matchedClub);
+        if (matchedCourse) {
+          setSelectedClub(matchedCourse);
 
-          // Set the par value if available from the club and not explicitly set in initialData
-          if (matchedClub.par && !initialData.par) {
-            setFormData((prev) => ({
-              ...prev,
-              par: matchedClub.par || prev.par,
-            }));
-          }
+          // Set the par and slope values if available from the course and not explicitly set in initialData
+          setFormData((prev) => ({
+            ...prev,
+            par: initialData.par || matchedCourse.par || prev.par,
+            slope: initialData.slope || matchedCourse.slope || prev.slope,
+          }));
         }
       });
     }
-  }, [initialData.courseName, initialData.par]);
+  }, [initialData.courseName, initialData.par, initialData.slope]);
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -229,8 +170,8 @@ const RoundForm: React.FC<RoundFormProps> = ({
       newErrors.holes = "Number of holes must be greater than 0";
     }
 
-    if (!formData.location) {
-      newErrors.location = "Location is required";
+    if (!formData.courseName) {
+      newErrors.courseName = "Golf course is required";
     }
 
     setErrors(newErrors);
@@ -245,7 +186,10 @@ const RoundForm: React.FC<RoundFormProps> = ({
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === "holes" || name === "par" ? Number(value) : value,
+      [name]:
+        name === "holes" || name === "par" || name === "slope"
+          ? Number(value)
+          : value,
     }));
 
     // Clear error when field is modified
@@ -270,6 +214,34 @@ const RoundForm: React.FC<RoundFormProps> = ({
 
   const handleFriendsChange = (emails: string[]) => {
     setSelectedFriends(emails);
+  };
+
+  const handleAddCourse = () => {
+    setCourseDialogOpen(true);
+  };
+
+  const handleCourseSubmit = async (courseData: Omit<GolfCourse, "id">) => {
+    try {
+      // Create the course via the service
+      const newCourse = await createGolfCourse(courseData);
+
+      // Add the new course to our options and select it
+      setOptions([...options, newCourse]);
+      setSelectedClub(newCourse);
+
+      // Update form data with the course details
+      setFormData((prev) => ({
+        ...prev,
+        courseName: `${newCourse.name}, ${newCourse.city}, ${newCourse.country}`,
+        par: newCourse.par || prev.par,
+        slope: newCourse.slope || prev.slope,
+      }));
+
+      setCourseDialogOpen(false);
+    } catch (error) {
+      console.error("Error creating course:", error);
+      // In a real application, you would show an error message to the user
+    }
   };
 
   return (
@@ -317,122 +289,204 @@ const RoundForm: React.FC<RoundFormProps> = ({
             </Grid>
 
             <Grid item xs={12}>
-              <TextField
-                name="location"
-                label="Location"
-                fullWidth
-                value={formData.location}
-                onChange={handleChange}
-                error={!!errors.location}
-                helperText={errors.location || "City, Country or Address"}
-                required
-                InputLabelProps={styles.tournamentCard.formStyles.labelProps(
-                  theme
-                )}
-                InputProps={styles.tournamentCard.formStyles.inputProps(theme)}
-              />
+              <Box sx={styles.course.selection.container}>
+                <Box sx={{ flex: 1 }}>
+                  <Autocomplete
+                    id="golf-club-autocomplete"
+                    open={open}
+                    onOpen={() => setOpen(true)}
+                    onClose={() => setOpen(false)}
+                    value={selectedClub}
+                    onChange={(_event, newValue) => {
+                      setSelectedClub(newValue);
+                      if (newValue) {
+                        const clubFullName = `${newValue.name}, ${newValue.city}, ${newValue.country}`;
+                        setFormData((prev) => ({
+                          ...prev,
+                          courseName: clubFullName,
+                          par: newValue.par || prev.par,
+                          slope: newValue.slope || prev.slope,
+                        }));
+                      } else {
+                        setFormData((prev) => ({
+                          ...prev,
+                          courseName: "",
+                        }));
+                      }
+                    }}
+                    inputValue={inputValue}
+                    onInputChange={(_event, newInputValue) => {
+                      setInputValue(newInputValue);
+                    }}
+                    getOptionLabel={(option) =>
+                      `${option.name}, ${option.city}, ${option.country}`
+                    }
+                    options={options}
+                    loading={loading}
+                    filterOptions={(x) => x} // We're handling filtering on the server side
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        name="courseName"
+                        label="Golf Course"
+                        helperText={
+                          errors.courseName ||
+                          "Select the golf course for this round"
+                        }
+                        error={!!errors.courseName}
+                        InputLabelProps={styles.tournamentCard.formStyles.labelProps(
+                          theme
+                        )}
+                        InputProps={{
+                          ...params.InputProps,
+                          ...styles.tournamentCard.formStyles.inputProps,
+                          endAdornment: (
+                            <React.Fragment>
+                              {loading ? (
+                                <CircularProgress color="inherit" size={20} />
+                              ) : null}
+                              {params.InputProps.endAdornment}
+                            </React.Fragment>
+                          ),
+                        }}
+                        sx={styles.course.form.formField}
+                      />
+                    )}
+                    renderOption={(props, option) => (
+                      <Box
+                        component="li"
+                        {...props}
+                        sx={styles.course.list.item}
+                      >
+                        <Box component="span" sx={styles.course.list.name}>
+                          {option.name}
+                        </Box>
+                        <Box component="span" sx={styles.course.list.details}>
+                          {option.city}, {option.country}{" "}
+                          {option.par ? `(Par ${option.par})` : ""}
+                        </Box>
+                        {option.slope && (
+                          <Box component="span" sx={styles.course.list.ratings}>
+                            <span>
+                              <strong>Slope:</strong> {option.slope}
+                            </span>
+                          </Box>
+                        )}
+                      </Box>
+                    )}
+                    ListboxProps={{
+                      style: {
+                        backgroundColor: alpha(theme.palette.common.black, 0.9),
+                        backgroundImage: "none",
+                        borderRadius: 4,
+                        boxShadow: theme.shadows[3],
+                        border: `1px solid ${alpha(
+                          theme.palette.common.white,
+                          0.1
+                        )}`,
+                      },
+                    }}
+                    noOptionsText={
+                      <Box component="span" sx={{ color: "white" }}>
+                        No golf courses found. Try a different search term or
+                        add a new course.
+                      </Box>
+                    }
+                  />
+                </Box>
+                <Button
+                  variant="outlined"
+                  onClick={handleAddCourse}
+                  title="Add New Course"
+                  sx={styles.course.selection.addButton}
+                >
+                  <AddIcon />
+                </Button>
+              </Box>
             </Grid>
 
             <Grid item xs={12}>
-              <Autocomplete
-                id="golf-club-autocomplete"
-                open={open}
-                onOpen={() => setOpen(true)}
-                onClose={() => setOpen(false)}
-                value={selectedClub}
-                onChange={(_event, newValue) => {
-                  setSelectedClub(newValue);
-                  if (newValue) {
-                    const clubFullName = `${newValue.name}, ${newValue.city}, ${newValue.country}`;
-                    setFormData((prev) => ({
-                      ...prev,
-                      courseName: clubFullName,
-                      // Optionally update par if available from the selected club
-                      ...(newValue.par ? { par: newValue.par } : {}),
-                    }));
-                  } else {
-                    setFormData((prev) => ({
-                      ...prev,
-                      courseName: "",
-                    }));
-                  }
-                }}
-                inputValue={inputValue}
-                onInputChange={(_event, newInputValue) => {
-                  setInputValue(newInputValue);
-                }}
-                getOptionLabel={(option) =>
-                  `${option.name}, ${option.city}, ${option.country}`
-                }
-                options={options}
-                loading={loading}
-                filterOptions={(x) => x} // We're handling filtering on the server side
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    name="courseName"
-                    label="Golf Course"
-                    helperText="Select the golf course for this round"
-                    InputLabelProps={styles.tournamentCard.formStyles.labelProps(
-                      theme
-                    )}
-                    InputProps={{
-                      ...params.InputProps,
-                      ...styles.tournamentCard.formStyles.inputProps,
-                      endAdornment: (
-                        <React.Fragment>
-                          {loading ? (
-                            <CircularProgress color="inherit" size={20} />
-                          ) : null}
-                          {params.InputProps.endAdornment}
-                        </React.Fragment>
-                      ),
-                    }}
-                  />
+              <Divider sx={styles.divider.standard} />
+              <Typography
+                variant="subtitle1"
+                sx={styles.course.form.sectionTitle}
+              >
+                Course Details
+              </Typography>
+            </Grid>
+
+            <Grid item xs={12} sm={4}>
+              <TextField
+                name="par"
+                label="Course Par"
+                type="number"
+                fullWidth
+                value={formData.par}
+                onChange={handleChange}
+                inputProps={{ min: 60, max: 80 }}
+                helperText="Standard par for the course"
+                InputLabelProps={styles.tournamentCard.formStyles.labelProps(
+                  theme
                 )}
-                renderOption={(props, option) => (
-                  <Box
-                    component="li"
-                    {...props}
-                    sx={{
-                      color: "white",
-                      backgroundColor: alpha(theme.palette.common.black, 0.7),
-                      "&:hover": {
-                        backgroundColor: alpha(theme.palette.primary.main, 0.1),
-                      },
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "flex-start",
-                      p: 1.5,
-                    }}
-                  >
-                    <Box component="span" sx={{ fontWeight: "medium" }}>
-                      {option.name}
-                    </Box>
-                    <Box component="span" sx={{ opacity: 0.7 }}>
-                      {option.city}, {option.country}{" "}
-                      {option.par ? `(Par ${option.par})` : ""}
-                    </Box>
-                  </Box>
-                )}
-                ListboxProps={{
-                  style: {
-                    backgroundColor: alpha(theme.palette.common.black, 0.9),
-                    backgroundImage: "none",
-                    borderRadius: 4,
-                    boxShadow: theme.shadows[3],
-                    border: `1px solid ${alpha(
-                      theme.palette.common.white,
-                      0.1
-                    )}`,
-                  },
+                InputProps={{
+                  ...styles.tournamentCard.formStyles.inputProps,
+                  inputProps: { min: 60, max: 80 },
                 }}
-                noOptionsText={
-                  <Box component="span" sx={{ color: "white" }}>
-                    No golf courses found. Try a different search term.
-                  </Box>
-                }
+                sx={styles.course.form.formField}
               />
+            </Grid>
+
+            <Grid item xs={12} sm={4}>
+              <TextField
+                name="slope"
+                label="Slope Rating"
+                type="number"
+                fullWidth
+                value={formData.slope}
+                onChange={handleChange}
+                helperText="Standard is 113 (55-155)"
+                InputLabelProps={styles.tournamentCard.formStyles.labelProps(
+                  theme
+                )}
+                InputProps={{
+                  ...styles.tournamentCard.formStyles.inputProps,
+                  inputProps: { min: 55, max: 155 },
+                }}
+                sx={styles.course.form.formField}
+              />
+            </Grid>
+
+            {selectedClub && (
+              <Grid item xs={12}>
+                <Box sx={styles.course.rating.container}>
+                  <Box sx={{ display: "flex", alignItems: "center" }}>
+                    <Typography variant="body2" sx={styles.course.rating.label}>
+                      Selected Course:
+                    </Typography>
+                    <Box component="span" sx={styles.course.chip}>
+                      {selectedClub.name}
+                    </Box>
+                  </Box>
+                  <Box sx={{ display: "flex", gap: 2 }}>
+                    <Typography variant="body2" sx={styles.text.body.muted}>
+                      <strong>Par:</strong> {formData.par}
+                    </Typography>
+                    <Typography variant="body2" sx={styles.text.body.muted}>
+                      <strong>Slope:</strong> {formData.slope}
+                    </Typography>
+                  </Box>
+                </Box>
+              </Grid>
+            )}
+
+            <Grid item xs={12}>
+              <Divider sx={styles.divider.standard} />
+              <Typography
+                variant="subtitle1"
+                sx={styles.course.form.sectionTitle}
+              >
+                Round Details
+              </Typography>
             </Grid>
 
             <Grid item xs={12}>
@@ -533,26 +587,6 @@ const RoundForm: React.FC<RoundFormProps> = ({
               </FormControl>
             </Grid>
 
-            <Grid item xs={12} sm={6}>
-              <TextField
-                name="par"
-                label="Course Par"
-                type="number"
-                fullWidth
-                value={formData.par}
-                onChange={handleChange}
-                inputProps={{ min: 30, max: 80 }}
-                helperText="Standard par for the course"
-                InputLabelProps={styles.tournamentCard.formStyles.labelProps(
-                  theme
-                )}
-                InputProps={{
-                  ...styles.tournamentCard.formStyles.inputProps,
-                  inputProps: { min: 30, max: 80 },
-                }}
-              />
-            </Grid>
-
             <Grid item xs={12}>
               <FriendInviteList
                 friends={friends}
@@ -596,6 +630,12 @@ const RoundForm: React.FC<RoundFormProps> = ({
           {initialData.name ? "Update Round" : "Create Round"}
         </Button>
       </DialogActions>
+
+      <CourseFormDialog
+        open={courseDialogOpen}
+        onClose={() => setCourseDialogOpen(false)}
+        onSubmit={handleCourseSubmit}
+      />
     </>
   );
 };
