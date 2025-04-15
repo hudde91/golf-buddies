@@ -25,9 +25,14 @@ import PersonIcon from "@mui/icons-material/Person";
 import PeopleIcon from "@mui/icons-material/People";
 import HomeIcon from "@mui/icons-material/Home";
 import { SignedIn, SignedOut, UserButton, useUser } from "@clerk/clerk-react";
-import tournamentService from "../services/eventService";
+import eventService from "../services/eventService";
 import friendsService from "../services/friendsService";
 import { useStyles } from "../styles";
+import { useEventsAPI } from "../EventsAPIProvider";
+
+// API base URL
+const API_BASE_URL =
+  "https://golf-buddies-epfddeddfqdhbtgy.westeurope-01.azurewebsites.net/api";
 
 interface ElevationScrollProps {
   children: React.ReactElement;
@@ -63,27 +68,80 @@ const Header: React.FC = () => {
   const isXsScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const location = useLocation();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const { refetchEvents } = useEventsAPI();
 
   const [pendingInvitations, setPendingInvitations] = useState<number>(0);
   const [pendingFriendRequests, setPendingFriendRequests] = useState<number>(0);
+  const [isLoadingInvitations, setIsLoadingInvitations] =
+    useState<boolean>(false);
   const open = Boolean(anchorEl);
 
-  useEffect(() => {
-    if (user && isLoaded) {
-      // Check for pending tournament invitations
-      const userEmail = user.primaryEmailAddress?.emailAddress || "";
-      const invitations = tournamentService.getUserInvitations(userEmail);
-      setPendingInvitations(
-        invitations.tours.length +
-          invitations.tournaments.length +
-          invitations.rounds.length
-      );
+  // Function to fetch invitations from API first, then fall back to local storage
+  const fetchUserInvitations = async (userEmail: string) => {
+    setIsLoadingInvitations(true);
+    // try {
+    // Try to get invitations from API first
+    // TODO: This is a placeholder URL, replace with your actual API endpoint once it is done
+    //   const response = await fetch(
+    //     `${API_BASE_URL}/invitations?email=${encodeURIComponent(userEmail)}`
+    //   );
 
-      // Check for pending friend requests
-      const pendingFriends = friendsService.getPendingFriends(user.id);
-      setPendingFriendRequests(pendingFriends.length);
-    }
-  }, [user, isLoaded, location]);
+    //   if (response.ok) {
+    //     const data = await response.json();
+    //     setIsLoadingInvitations(false);
+    //     return data;
+    //   } else {
+    //     throw new Error("Failed to fetch invitations from API");
+    //   }
+    // } catch (error) {
+    //   console.warn(
+    //     "Error fetching invitations from API, falling back to local storage",
+    //     error
+    //   );
+    // Fall back to local storage
+    const localInvitations = eventService.getUserInvitations(userEmail);
+    setIsLoadingInvitations(false);
+    return localInvitations;
+  };
+  // };
+
+  useEffect(() => {
+    const checkInvitations = async () => {
+      if (user && isLoaded) {
+        const userEmail = user.primaryEmailAddress?.emailAddress || "";
+
+        try {
+          const invitations = await fetchUserInvitations(userEmail);
+          setPendingInvitations(
+            invitations.tours.length +
+              invitations.tournaments.length +
+              invitations.rounds.length
+          );
+        } catch (error) {
+          console.error("Error fetching invitations:", error);
+          setPendingInvitations(0);
+        }
+
+        // Check for pending friend requests
+        try {
+          const pendingFriends = await friendsService.getPendingFriends(
+            user.id
+          );
+          setPendingFriendRequests(pendingFriends.length);
+        } catch (error) {
+          console.error("Error fetching friend requests:", error);
+          setPendingFriendRequests(0);
+        }
+      }
+    };
+
+    checkInvitations();
+
+    // Set up an interval to check for new invitations periodically
+    const intervalId = setInterval(checkInvitations, 60000); // Check every minute
+
+    return () => clearInterval(intervalId);
+  }, [user, isLoaded, location, refetchEvents]);
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);

@@ -2,7 +2,6 @@ import React, { useEffect, useRef } from "react";
 import { useAuth, useUser } from "@clerk/clerk-react";
 import { useCreateUser } from "../services/profileService";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 
 const API_BASE_URL =
   "https://golf-buddies-epfddeddfqdhbtgy.westeurope-01.azurewebsites.net/api";
@@ -18,10 +17,19 @@ const SignUpHandler: React.FC = () => {
     queryKey: ["backendUser", userId],
     queryFn: async () => {
       if (!userId) return null;
-      const response = await axios.get(
-        `${API_BASE_URL}/user?clerkId=${userId}`
-      );
-      return response.data;
+
+      const response = await fetch(`${API_BASE_URL}/user?clerkId=${userId}`);
+
+      // If the user doesn't exist (404), throw an error to trigger isError
+      if (response.status === 404) {
+        throw new Error("User not found");
+      }
+
+      if (!response.ok) {
+        throw new Error(`API error with status: ${response.status}`);
+      }
+
+      return await response.json();
     },
     // Only enable this query if we have a userId and the user is signed in
     enabled: !!userId && isSignedIn === true,
@@ -29,7 +37,8 @@ const SignUpHandler: React.FC = () => {
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     retry: (failureCount, error) => {
-      if (axios.isAxiosError(error) && error.response?.status === 404) {
+      // Don't retry if the user doesn't exist
+      if (error instanceof Error && error.message === "User not found") {
         return false;
       }
       return failureCount < 2;

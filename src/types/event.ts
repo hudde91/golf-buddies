@@ -38,8 +38,12 @@ export interface PlayerGroup {
   teeTime?: string; // Optional, for scheduled tee times
 }
 
-export interface Round {
+interface BaseEvent {
   id: string;
+  type: "tournament" | "tour" | "round";
+}
+
+export interface Round extends BaseEvent {
   name: string;
   date: string;
   courseDetails?: {
@@ -69,8 +73,7 @@ export interface Round {
   };
 }
 
-export interface Tournament {
-  id: string;
+export interface Tournament extends BaseEvent {
   name: string;
   format: string;
   startDate: string;
@@ -90,8 +93,7 @@ export interface Tournament {
   highlights?: Highlight[];
 }
 
-export interface Tour {
-  id: string;
+export interface Tour extends BaseEvent {
   name: string;
   description?: string;
   startDate: string;
@@ -114,11 +116,7 @@ export interface Tour {
   };
 }
 
-export interface Event {
-  id: string;
-  type: "tournament" | "tour" | "round";
-  data: Tournament | Tour | Round;
-}
+export type Event = Tournament | Tour | Round;
 
 export interface TournamentFormData {
   name: string;

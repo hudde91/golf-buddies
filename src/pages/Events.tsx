@@ -29,7 +29,6 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import PeopleIcon from "@mui/icons-material/People";
 import GolfCourseIcon from "@mui/icons-material/GolfCourse";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
-import SportsTennisIcon from "@mui/icons-material/SportsTennis";
 import HistoryIcon from "@mui/icons-material/History";
 import AddIcon from "@mui/icons-material/Add";
 import NotificationsIcon from "@mui/icons-material/Notifications";
@@ -131,7 +130,7 @@ const Events: React.FC = () => {
       email: user.primaryEmailAddress?.emailAddress || "",
       avatarUrl: user.imageUrl || undefined,
     };
-
+    // TODO: Add call to backend to creategameplay, it should take it in type (here it should be "tournament") and fallback to eventService.createTour if backend fails
     const newEvent = eventService.createTournament(tournamentData, currentUser);
     setEvents([...events, newEvent]);
     setOpenNewEvent(false);
@@ -144,6 +143,7 @@ const Events: React.FC = () => {
   const handleTourSubmit = (tourData: any) => {
     if (!user) return;
 
+    // TODO: Add call to backend to creategameplay, it should take it in type (here it should be "tour") and fallback to eventService.createTour if backend fails
     const newEvent = eventService.createTour(
       tourData,
       user.id,
@@ -166,7 +166,7 @@ const Events: React.FC = () => {
       email: user.primaryEmailAddress?.emailAddress || "",
       avatarUrl: user.imageUrl || undefined,
     };
-
+    // TODO: Add call to backend to creategameplay, it should take it in type (here it should be "round") and fallback to eventService.createTour if backend fails
     const newEvent = eventService.createRound(roundData, currentUser);
     setEvents([...events, newEvent]);
     setOpenNewEvent(false);
@@ -281,37 +281,37 @@ const Events: React.FC = () => {
 
   const renderEventCard = (event: Event) => {
     // Extract the common data based on event type
-    const eventData = event.data;
-    const name = eventData.name;
-    const description = eventData.description || "No description";
-    const status = eventData.status!;
+
+    const name = event.name;
+    const description = event.description || "No description";
+    const status = event.status!;
 
     // Get players array based on event type
     const players =
       event.type === "tournament"
-        ? (eventData as Tournament).players
+        ? event.players
         : event.type === "tour"
-        ? (eventData as Tour).players || []
-        : (eventData as Round).players || [];
+        ? event.players || []
+        : event.players || [];
 
     // Get date and location based on event type
     const date =
       event.type === "tournament"
-        ? (eventData as Tournament).startDate
+        ? (event as Tournament).startDate
         : event.type === "tour"
-        ? (eventData as Tour).startDate
-        : (eventData as Round).date;
+        ? (event as Tour).startDate
+        : (event as Round).date;
 
     const location =
       event.type === "tournament"
-        ? (eventData as Tournament).location
+        ? (event as Tournament).location
         : event.type === "round"
-        ? (eventData as Round).location
+        ? (event as Round).location
         : undefined;
 
     const eventSpecificDetails = () => {
       if (event.type === "round") {
-        const round = eventData as Round;
+        const round = event as Round;
         return (
           <>
             {round.format && (
@@ -341,7 +341,7 @@ const Events: React.FC = () => {
         case "tournament":
           return <EmojiEventsIcon fontSize="small" />;
         case "tour":
-          return <SportsTennisIcon fontSize="small" />;
+          return <EmojiEventsIcon fontSize="small" />;
         case "round":
           return <GolfCourseIcon fontSize="small" />;
         default:
@@ -492,15 +492,15 @@ const Events: React.FC = () => {
 
   // Filter events based on status
   const activeEvents = events.filter(
-    (event) => event.data.status?.toLowerCase() === "active"
+    (event) => event.status?.toLowerCase() === "active"
   );
 
   const upcomingEvents = events.filter(
-    (event) => event.data.status?.toLowerCase() === "upcoming"
+    (event) => event.status?.toLowerCase() === "upcoming"
   );
 
   const completedEvents = events.filter(
-    (event) => event.data.status?.toLowerCase() === "completed"
+    (event) => event.status?.toLowerCase() === "completed"
   );
 
   return (
@@ -789,7 +789,8 @@ const Events: React.FC = () => {
                 </Button>
                 <Button
                   variant="contained"
-                  startIcon={<SportsTennisIcon />}
+                  startIcon={<EmojiEventsIcon />}
+                  endIcon={<EmojiEventsIcon />}
                   onClick={() => handleEventTypeSelect("tour")}
                   sx={{
                     p: 2,
@@ -798,7 +799,7 @@ const Events: React.FC = () => {
                     "&:hover": { bgcolor: "secondary.dark" },
                   }}
                 >
-                  Tournament Series
+                  Tour
                 </Button>
               </Box>
             </DialogContent>

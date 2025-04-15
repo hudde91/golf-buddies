@@ -1,6 +1,5 @@
 import { UserProfile, Achievement } from "../types";
 import { v4 as uuidv4 } from "uuid";
-import axios from "axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const API_BASE_URL =
@@ -22,17 +21,16 @@ export const useGetUserByClerkId = (clerkId: string) => {
     queryKey: ["user", clerkId],
     queryFn: async () => {
       try {
-        const response = await axios.get(
-          `${API_BASE_URL}/user?clerkId=${clerkId}`
-        );
-        // Store user data in localStorage as fallback
-        if (response.data) {
-          localStorage.setItem(
-            `profile_${clerkId}`,
-            JSON.stringify(response.data)
-          );
+        const response = await fetch(`${API_BASE_URL}/user?clerkId=${clerkId}`);
+
+        if (!response.ok) {
+          throw new Error(`API error: ${response.status}`);
         }
-        return response.data;
+
+        const data = await response.json();
+        // Store user data in localStorage as fallback
+        localStorage.setItem(`profile_${clerkId}`, JSON.stringify(data));
+        return data;
       } catch (error) {
         console.warn("API fetch failed, falling back to local storage");
         // Fall back to local storage
@@ -56,13 +54,25 @@ export const useUpdateUser = () => {
       profileData: Partial<UserProfile>;
     }) => {
       try {
-        const response = await axios.put(`${API_BASE_URL}/user/updateuser`, {
-          clerkId,
-          ...profileData,
+        const response = await fetch(`${API_BASE_URL}/user/updateuser`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            clerkId,
+            ...profileData,
+          }),
         });
+
+        if (!response.ok) {
+          throw new Error(`API error: ${response.status}`);
+        }
+
+        const data = await response.json();
         // Also update local storage for backward compatibility
         profileService.saveProfile(clerkId, profileData);
-        return response.data;
+        return data;
       } catch (error) {
         console.warn("API update failed, using local storage only");
         // Fall back to local storage only
@@ -84,11 +94,19 @@ export const useCreateUser = () => {
     mutationFn: async (params: CreateUserParams) => {
       try {
         // You could add a check here to see if user already exists
-        const response = await axios.post(
-          `${API_BASE_URL}/user/createUser`,
-          params
-        );
-        return response.data;
+        const response = await fetch(`${API_BASE_URL}/user/createUser`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(params),
+        });
+
+        if (!response.ok) {
+          throw new Error(`API error: ${response.status}`);
+        }
+
+        return await response.json();
       } catch (error) {
         console.error("Error creating user:", error);
         throw error;
@@ -139,17 +157,16 @@ export const profileService = {
   // Fetches user profile from the API
   fetchUserProfile: async (clerkId: string): Promise<UserProfile> => {
     try {
-      const response = await axios.get(
-        `${API_BASE_URL}/user?clerkId=${clerkId}`
-      );
-      // Store the fetched profile in localStorage as fallback
-      if (response.data) {
-        localStorage.setItem(
-          `profile_${clerkId}`,
-          JSON.stringify(response.data)
-        );
+      const response = await fetch(`${API_BASE_URL}/user?clerkId=${clerkId}`);
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
       }
-      return response.data;
+
+      const data = await response.json();
+      // Store the fetched profile in localStorage as fallback
+      localStorage.setItem(`profile_${clerkId}`, JSON.stringify(data));
+      return data;
     } catch (error) {
       console.warn("API fetch failed, falling back to local storage");
       // Fall back to local storage
@@ -163,13 +180,25 @@ export const profileService = {
     profileData: Partial<UserProfile>
   ): Promise<UserProfile> => {
     try {
-      const response = await axios.put(`${API_BASE_URL}/user/updateuser`, {
-        clerkId,
-        ...profileData,
+      const response = await fetch(`${API_BASE_URL}/user/updateuser`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          clerkId,
+          ...profileData,
+        }),
       });
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      }
+
+      const data = await response.json();
       // Update local storage for backward compatibility
       profileService.saveProfile(clerkId, profileData);
-      return response.data;
+      return data;
     } catch (error) {
       console.warn("API update failed, using local storage only");
       // Fall back to local storage only

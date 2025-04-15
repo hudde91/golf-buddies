@@ -16,7 +16,6 @@ import {
   PlayerGroup,
 } from "../types/event";
 import achievementService from "./achievementService";
-import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 
 const EVENTS_KEY = "events";
@@ -67,14 +66,16 @@ const API_BASE_URL =
 //   }
 // };
 
-// Enhanced useGetEventById hook with fallback
 export const useGetEventById = (eventId: string) => {
   return useQuery({
     queryKey: ["event", eventId],
     queryFn: async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/event/${eventId}`);
-        return response.data;
+        const response = await fetch(`${API_BASE_URL}/event/${eventId}`);
+        if (!response.ok) {
+          throw new Error(`API error with status: ${response.status}`);
+        }
+        return await response.json();
       } catch (error) {
         console.warn("API fetch failed, falling back to local storage");
 
@@ -99,10 +100,11 @@ export const useGetUserEvents = (userId: string) => {
     queryKey: ["userEvents", userId],
     queryFn: async () => {
       try {
-        const response = await axios.get(
-          `${API_BASE_URL}/event/${userId}/events`
-        );
-        return response.data;
+        const response = await fetch(`${API_BASE_URL}/event/${userId}/events`);
+        if (!response.ok) {
+          throw new Error(`API error with status: ${response.status}`);
+        }
+        return await response.json();
       } catch (error) {
         console.warn("API fetch failed, falling back to local storage");
 
@@ -171,7 +173,7 @@ const findTournamentInEvents = (
 
   if (tournamentEventIndex !== -1) {
     return {
-      tournament: events[tournamentEventIndex].data as Tournament,
+      tournament: events[tournamentEventIndex] as Tournament,
       parentEventIndex: tournamentEventIndex,
     };
   }
@@ -180,7 +182,7 @@ const findTournamentInEvents = (
   for (let i = 0; i < events.length; i++) {
     const event = events[i];
     if (event.type === "tour") {
-      const tour = event.data as Tour;
+      const tour = event as Tour;
       const tournamentIndex = tour.tournaments.findIndex(
         (t) => t.id === tournamentId
       );
@@ -214,18 +216,18 @@ const updateTournamentInEvents = (
     // It's a standalone tournament event
     updatedEvents[parentEventIndex] = {
       ...updatedEvents[parentEventIndex],
-      data: updatedTournament,
+      ...updatedTournament,
     };
   } else {
     // It's part of a tour
-    const tour = updatedEvents[parentEventIndex].data as Tour;
+    const tour = updatedEvents[parentEventIndex] as Tour;
     const updatedTour = { ...tour };
     updatedTour.tournaments = [...tour.tournaments];
     updatedTour.tournaments[tournamentIndex] = updatedTournament;
 
     updatedEvents[parentEventIndex] = {
       ...updatedEvents[parentEventIndex],
-      data: updatedTour,
+      ...updatedTour,
     };
   }
 
@@ -309,13 +311,13 @@ const eventService = {
     const events = eventService.getAllEvents();
     return events.filter((event) => {
       if (event.type === "tournament") {
-        const tournament = event.data as Tournament;
+        const tournament = event as Tournament;
         return (
           tournament.createdBy === userId ||
           tournament.players.some((player) => player.id === userId)
         );
       } else if (event.type === "tour") {
-        const tour = event.data as Tour;
+        const tour = event as Tour;
         return (
           tour.createdBy === userId ||
           (tour.players &&
@@ -325,7 +327,7 @@ const eventService = {
           )
         );
       } else if (event.type === "round") {
-        const round = event.data as Round;
+        const round = event;
         return (
           round.createdBy === userId ||
           (round.players &&
@@ -362,6 +364,7 @@ const eventService = {
     const newTournament: Tournament = {
       id: uuidv4(),
       name: data.name,
+      type: "tournament",
       format: "Standard", // Default format
       startDate: data.startDate,
       endDate: data.endDate,
@@ -380,9 +383,7 @@ const eventService = {
 
     // Create event wrapper
     const newEvent: Event = {
-      id: newTournament.id, // Same ID for simplicity
-      type: "tournament",
-      data: newTournament,
+      ...newTournament,
     };
 
     events.push(newEvent);
@@ -420,6 +421,7 @@ const eventService = {
     const newTour: Tour = {
       id: uuidv4(),
       name: data.name,
+      type: "tour",
       startDate: data.startDate,
       endDate: data.endDate,
       description: data.description,
@@ -442,9 +444,7 @@ const eventService = {
     };
 
     const newEvent: Event = {
-      id: newTour.id, // Same ID for simplicity
-      type: "tour",
-      data: newTour,
+      ...newTour,
     };
 
     events.push(newEvent);
@@ -461,7 +461,7 @@ const eventService = {
     const event = eventService.getEventByIdSync(tourId);
     if (!event || event.type !== "tour") return null;
 
-    const tour = event.data as Tour;
+    const tour = event as Tour;
 
     // Create scores object with empty scores for all players
     const scores: { [playerId: string]: HoleScore[] } = {};
@@ -491,6 +491,7 @@ const eventService = {
     const newRound: Round = {
       id: uuidv4(),
       name: roundData.name,
+      type: "round",
       date: roundData.date,
       courseDetails: {
         name: roundData.courseName,
@@ -538,8 +539,7 @@ const eventService = {
 
     // Update event in storage
     return eventService.updateEvent(tourId, {
-      type: "tour",
-      data: updatedTour,
+      ...updatedTour,
     });
   },
 
@@ -552,12 +552,13 @@ const eventService = {
     const event = eventService.getEventByIdSync(tourId);
     if (!event || event.type !== "tour") return null;
 
-    const tour = event.data as Tour;
+    const tour = event as Tour;
 
     // Create the new tournament
     const newTournament: Tournament = {
       id: uuidv4(),
       name: tournamentData.name,
+      type: "tournament",
       format: "Standard", // Default format
       startDate: tournamentData.startDate,
       endDate: tournamentData.endDate,
@@ -594,8 +595,7 @@ const eventService = {
 
     // Update event in storage
     return eventService.updateEvent(tourId, {
-      type: "tour",
-      data: updatedTour,
+      ...updatedTour,
     });
   },
 
@@ -679,13 +679,13 @@ const eventService = {
     } else {
       // It's part of a tour, just remove the tournament from the tour
       const event = events[parentEventIndex];
-      const tour = event.data as Tour;
+      const tour = event as Tour;
       const updatedTour = { ...tour };
       updatedTour.tournaments = tour.tournaments.filter((t) => t.id !== id);
 
       events[parentEventIndex] = {
         ...event,
-        data: updatedTour,
+        ...updatedTour,
       };
 
       localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
@@ -699,7 +699,7 @@ const eventService = {
     if (!event) return null;
 
     if (event.type === "tournament") {
-      const tournament = event.data as Tournament;
+      const tournament = event as Tournament;
 
       // Check if player is already in the tournament
       if (tournament.players.some((p) => p.id === player.id)) {
@@ -733,10 +733,10 @@ const eventService = {
       };
 
       return eventService.updateEvent(eventId, {
-        data: updatedTournament,
+        ...updatedTournament,
       });
     } else if (event.type === "tour") {
-      const tour = event.data as Tour;
+      const tour = event as Tour;
 
       // Check if player is already in the tour
       if (tour.players && tour.players.some((p) => p.id === player.id)) {
@@ -786,7 +786,7 @@ const eventService = {
       };
 
       return eventService.updateEvent(eventId, {
-        data: updatedTour,
+        ...updatedTour,
       });
     }
 
@@ -823,6 +823,7 @@ const eventService = {
     const newRound: Round = {
       id: uuidv4(),
       name: roundData.name,
+      type: "round",
       date: roundData.date,
       format: roundData.format,
       courseDetails: {
@@ -1194,7 +1195,7 @@ const eventService = {
 
     if (event.type === "tournament") {
       // Inviting to a standalone tournament
-      const tournament = event.data as Tournament;
+      const tournament = event as Tournament;
 
       // Filter out duplicates and existing players
       const existingEmails = tournament.players.map((p) => p.email);
@@ -1220,7 +1221,7 @@ const eventService = {
       return updatedTournament;
     } else if (event.type === "tour") {
       // Inviting to a tour
-      const tour = event.data as Tour;
+      const tour = event as Tour;
 
       // Filter out duplicates and existing players
       const existingEmails = tour.players?.map((p) => p.email) || [];
@@ -1259,7 +1260,7 @@ const eventService = {
       // Update the event in the events array
       events[events.findIndex((e) => e.id === eventId)] = {
         ...event,
-        data: updatedTour,
+        ...updatedTour,
       };
 
       localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
@@ -1313,7 +1314,7 @@ const eventService = {
 
         // Update the tournament in the tour
         const tourEvent = events[parentEventIndex];
-        const tour = tourEvent.data as Tour;
+        const tour = tourEvent as Tour;
         const updatedTour = { ...tour };
 
         if (tournamentIndex !== undefined) {
@@ -1345,7 +1346,7 @@ const eventService = {
 
     if (event.type === "tournament") {
       // Accepting invitation to a standalone tournament
-      const tournament = event.data as Tournament;
+      const tournament = event as Tournament;
 
       // Check if user is in the invitations list
       if (!tournament.invitations.includes(player.email)) return null;
@@ -1394,7 +1395,7 @@ const eventService = {
       return updatedEvent;
     } else if (event.type === "tour") {
       // Accepting invitation to a tour
-      const tour = event.data as Tour;
+      const tour = event as Tour;
 
       // Check if tour has invitations array and if user is in it
       if (!tour.invitations || !tour.invitations.includes(player.email))
@@ -1500,7 +1501,7 @@ const eventService = {
 
     if (event.type === "tournament") {
       // Declining invitation to a standalone tournament
-      const tournament = event.data as Tournament;
+      const tournament = event as Tournament;
 
       if (!tournament.invitations.includes(userEmail)) return false;
 
@@ -1513,14 +1514,14 @@ const eventService = {
 
       events[events.findIndex((e) => e.id === eventId)] = {
         ...event,
-        data: updatedTournament,
+        ...updatedTournament,
       };
 
       localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
       return true;
     } else if (event.type === "tour") {
       // Declining invitation to a tour
-      const tour = event.data as Tour;
+      const tour = event as Tour;
 
       // Check if tour has invitations and if the invitation exists
       if (!tour.invitations || !tour.invitations.includes(userEmail))
@@ -1552,7 +1553,7 @@ const eventService = {
 
       events[events.findIndex((e) => e.id === eventId)] = {
         ...event,
-        data: updatedTour,
+        ...updatedTour,
       };
 
       localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
@@ -1754,7 +1755,7 @@ const eventService = {
     const event = eventService.getEventByIdSync(tourId);
     if (!event || event.type !== "tour") return [];
 
-    const tour = event.data as Tour;
+    const tour = event as Tour;
     const playerResults: {
       [playerId: string]: {
         playerName: string;
@@ -1877,7 +1878,7 @@ const eventService = {
     const event = eventService.getEventByIdSync(tourId);
     if (!event || event.type !== "tour") return null;
 
-    const tour = event.data as Tour;
+    const tour = event as Tour;
 
     // Ensure the rounds array exists
     if (!tour.rounds) {
@@ -1913,8 +1914,7 @@ const eventService = {
 
     // Update event in storage
     return eventService.updateEvent(tourId, {
-      type: "tour",
-      data: updatedTour,
+      ...updatedTour,
     });
   },
 
@@ -1927,7 +1927,7 @@ const eventService = {
     const event = eventService.getEventByIdSync(tourId);
     if (!event || event.type !== "tour") return null;
 
-    const tour = event.data as Tour;
+    const tour = event as Tour;
 
     // Ensure the rounds array exists
     if (!tour.rounds) {
@@ -1953,8 +1953,7 @@ const eventService = {
 
     // Update event in storage
     return eventService.updateEvent(tourId, {
-      type: "tour",
-      data: updatedTour,
+      ...updatedTour,
     });
   },
 
@@ -1964,13 +1963,13 @@ const eventService = {
     // First, try to find as a standalone round event
     const roundEvent = events.find((e) => e.type === "round" && e.id === id);
     if (roundEvent) {
-      return roundEvent.data as Round;
+      return roundEvent as Round;
     }
 
     // Next, check for round in tournaments
     for (const event of events) {
       if (event.type === "tournament") {
-        const tournament = event.data as Tournament;
+        const tournament = event as Tournament;
         const round = tournament.rounds.find((r) => r.id === id);
         if (round) {
           return round;
@@ -1981,7 +1980,7 @@ const eventService = {
     // Finally, check for round in tours
     for (const event of events) {
       if (event.type === "tour") {
-        const tour = event.data as Tour;
+        const tour = event as Tour;
         if (tour.rounds) {
           const round = tour.rounds.find((r) => r.id === id);
           if (round) {
@@ -2137,14 +2136,14 @@ const eventService = {
 
     events.forEach((event, index) => {
       if (event.type === "tournament") {
-        const tournament = event.data as Tournament;
+        const tournament = event as Tournament;
         const newStatus = getEventStatus(
           tournament.startDate,
           tournament.endDate
         );
 
         if (tournament.status !== newStatus) {
-          events[index].data = {
+          events[index] = {
             ...tournament,
             status: newStatus,
           };
@@ -2161,11 +2160,11 @@ const eventService = {
           }
         }
       } else if (event.type === "tour") {
-        const tour = event.data as Tour;
+        const tour = event as Tour;
         const newStatus = getEventStatus(tour.startDate, tour.endDate);
 
         if (tour.status !== newStatus) {
-          events[index].data = {
+          events[index] = {
             ...tour,
             status: newStatus,
           };
@@ -2220,7 +2219,7 @@ const eventService = {
           });
 
           if (tourHasChanges) {
-            events[index].data = {
+            events[index] = {
               ...tour,
               tournaments: updatedTournaments,
             };
@@ -2288,10 +2287,10 @@ const eventService = {
     const event = eventService.getEventById(tournamentOrEventId);
     if (event) {
       if (event.type === "tournament") {
-        const tournamentData = event.data as Tournament;
+        const tournamentData = event as Tournament;
         return tournamentData.createdBy === currentUser.id;
       } else if (event.type === "tour") {
-        const tourData = event.data as Tour;
+        const tourData = event as Tour;
         return tourData.createdBy === currentUser.id;
       }
     }
@@ -2331,6 +2330,7 @@ const eventService = {
     const newRound: Round = {
       id: uuidv4(),
       name: data.name,
+      type: "round",
       date: data.date,
       courseDetails: {
         name: data.courseName,
@@ -2357,9 +2357,7 @@ const eventService = {
 
     // Create event wrapper
     const newEvent: Event = {
-      id: newRound.id, // Same ID for simplicity
-      type: "round",
-      data: newRound,
+      ...newRound,
     };
 
     events.push(newEvent);
@@ -2407,7 +2405,7 @@ const eventService = {
 
     if (index === -1) return null;
 
-    const round = events[index].data as Round;
+    const round = events[index] as Round;
     const updatedRound = { ...round, ...data };
 
     // Update status if date changed
@@ -2423,7 +2421,7 @@ const eventService = {
 
     events[index] = {
       ...events[index],
-      data: updatedRound,
+      ...updatedRound,
     };
 
     localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
@@ -2450,7 +2448,7 @@ const eventService = {
 
     if (!event) return null;
 
-    const round = event.data as Round;
+    const round = event as Round;
 
     // Filter out duplicates and existing players
     const existingEmails = round.players?.map((p) => p.email) || [];
@@ -2484,7 +2482,7 @@ const eventService = {
 
     if (!event) return null;
 
-    const round = event.data as Round;
+    const round = event as Round;
 
     // Check if user is in the invitations list
     if (!(round.invitations || []).includes(player.email)) return null;
@@ -2539,7 +2537,7 @@ const eventService = {
 
     if (!event) return false;
 
-    const round = event.data as Round;
+    const round = event as Round;
 
     // Check if the invitation exists
     if (!(round.invitations || []).includes(userEmail)) return false;
@@ -2582,12 +2580,12 @@ const eventService = {
 
     events.forEach((event) => {
       if (event.type === "tournament") {
-        const tournament = event.data as Tournament;
+        const tournament = event as Tournament;
         if (tournament.invitations.includes(userEmail)) {
           invitations.tournaments.push(tournament);
         }
       } else if (event.type === "tour") {
-        const tour = event.data as Tour;
+        const tour = event as Tour;
         if (tour.invitations && tour.invitations.includes(userEmail)) {
           invitations.tours.push(tour);
         }
@@ -2599,7 +2597,7 @@ const eventService = {
           }
         });
       } else if (event.type === "round") {
-        const round = event.data as Round;
+        const round = event as Round;
         if (round.invitations && round.invitations.includes(userEmail)) {
           invitations.rounds.push(round);
         }
@@ -2668,7 +2666,7 @@ export const addTeamToTour = (
 
   if (!event) return null;
 
-  const tour = event.data as Tour;
+  const tour = event as Tour;
 
   // Create new team
   const newTeam: Team = {
@@ -2688,7 +2686,7 @@ export const addTeamToTour = (
   // Update event
   events[events.findIndex((e) => e.id === tourId)] = {
     ...event,
-    data: updatedTour,
+    ...updatedTour,
   };
 
   localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
@@ -2706,7 +2704,7 @@ export const updateTourTeam = (
 
   if (!event) return null;
 
-  const tour = event.data as Tour;
+  const tour = event as Tour;
 
   // Ensure teams array exists
   if (!tour.teams) return event;
@@ -2729,7 +2727,7 @@ export const updateTourTeam = (
   // Update event
   events[events.findIndex((e) => e.id === tourId)] = {
     ...event,
-    data: updatedTour,
+    ...updatedTour,
   };
 
   localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
@@ -2746,7 +2744,7 @@ export const deleteTourTeam = (
 
   if (!event) return null;
 
-  const tour = event.data as Tour;
+  const tour = event as Tour;
 
   // Ensure teams array exists
   if (!tour.teams) return event;
@@ -2773,7 +2771,7 @@ export const deleteTourTeam = (
   // Update event
   events[events.findIndex((e) => e.id === tourId)] = {
     ...event,
-    data: updatedTour,
+    ...updatedTour,
   };
 
   localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
@@ -2791,7 +2789,7 @@ export const assignPlayerToTourTeam = (
 
   if (!event) return null;
 
-  const tour = event.data as Tour;
+  const tour = event as Tour;
 
   if (!tour.players) return event;
 
@@ -2825,7 +2823,7 @@ export const assignPlayerToTourTeam = (
   // Update event
   events[events.findIndex((e) => e.id === tourId)] = {
     ...event,
-    data: updatedTour,
+    ...updatedTour,
   };
 
   localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
@@ -2835,7 +2833,7 @@ export const assignPlayerToTourTeam = (
 // Get tour by ID (helper function)
 export const getTourById = (tourId: string): Tour | null => {
   const event = eventService.getEventByIdSync(tourId);
-  return event && event.type === "tour" ? (event.data as Tour) : null;
+  return event && event.type === "tour" ? (event as Tour) : null;
 };
 
 // Get team leaderboard for a tour

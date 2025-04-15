@@ -12,7 +12,6 @@ import PeopleIcon from "@mui/icons-material/People";
 import AnalyticsIcon from "@mui/icons-material/Analytics";
 
 import { useStyles } from "../styles/hooks/useStyles";
-// import { useGetUserEvents } from "../services/eventService";
 
 interface FeatureProps {
   icon: React.ReactNode;
@@ -22,10 +21,6 @@ interface FeatureProps {
 
 const Home: React.FC = () => {
   const styles = useStyles();
-
-  // const { data } = useGetUserEvents("2uHNrS8Ei3sitQFeEwt8EKsg6Qo");
-
-  // console.log("Response from useGetUserEvents:", data);
 
   return (
     <Box sx={styles.layout.page.withBackground}>

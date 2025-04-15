@@ -79,7 +79,7 @@ const TourDetails: React.FC = () => {
         const fetchedEvent = await eventService.getEventById(id);
 
         if (fetchedEvent && fetchedEvent.type === "tour") {
-          const tourData = fetchedEvent.data as Tour;
+          const tourData = fetchedEvent as Tour;
           if (!tourData.rounds) {
             tourData.rounds = [];
           }
@@ -135,7 +135,7 @@ const TourDetails: React.FC = () => {
         const fetchedEvent = await eventService.getEventById(id);
 
         if (fetchedEvent && fetchedEvent.type === "tour") {
-          const tourData = fetchedEvent.data as Tour;
+          const tourData = fetchedEvent as Tour;
           if (!tourData.rounds) {
             tourData.rounds = [];
           }
@@ -216,7 +216,7 @@ const TourDetails: React.FC = () => {
     );
 
     if (updatedEvent) {
-      setTour(updatedEvent.data as Tour);
+      setTour(updatedEvent as Tour);
     }
 
     setOpenAddTournament(false);
@@ -236,7 +236,7 @@ const TourDetails: React.FC = () => {
     const updatedEvent = eventService.addRoundToTour(id!, data, currentUser);
 
     if (updatedEvent) {
-      setTour(updatedEvent.data as Tour);
+      setTour(updatedEvent as Tour);
     }
 
     setOpenAddRound(false);
@@ -252,7 +252,7 @@ const TourDetails: React.FC = () => {
         const fetchedEvent = await eventService.getEventById(id);
 
         if (fetchedEvent && fetchedEvent.type === "tour") {
-          const tourData = fetchedEvent.data as Tour;
+          const tourData = fetchedEvent as Tour;
           if (!tourData.rounds) {
             tourData.rounds = [];
           }
@@ -290,7 +290,7 @@ const TourDetails: React.FC = () => {
 
     const updatedEvent = addTeamToTour(id, teamData);
     if (updatedEvent) {
-      setTour(updatedEvent.data as Tour);
+      setTour(updatedEvent as Tour);
 
       // Update team leaderboard
       const updatedTeamLeaderboard = getTourTeamLeaderboard(id);
@@ -303,7 +303,7 @@ const TourDetails: React.FC = () => {
 
     const updatedEvent = updateTourTeam(id, teamId, teamData);
     if (updatedEvent) {
-      setTour(updatedEvent.data as Tour);
+      setTour(updatedEvent as Tour);
 
       // Update team leaderboard
       const updatedTeamLeaderboard = getTourTeamLeaderboard(id);
@@ -316,7 +316,7 @@ const TourDetails: React.FC = () => {
 
     const updatedEvent = deleteTourTeam(id, teamId);
     if (updatedEvent) {
-      setTour(updatedEvent.data as Tour);
+      setTour(updatedEvent as Tour);
 
       // Update team leaderboard
       const updatedTeamLeaderboard = getTourTeamLeaderboard(id);
@@ -329,7 +329,7 @@ const TourDetails: React.FC = () => {
 
     const updatedEvent = assignPlayerToTourTeam(id, playerId, teamId);
     if (updatedEvent) {
-      setTour(updatedEvent.data as Tour);
+      setTour(updatedEvent as Tour);
 
       // Update team leaderboard
       const updatedTeamLeaderboard = getTourTeamLeaderboard(id);
@@ -349,11 +349,11 @@ const TourDetails: React.FC = () => {
     };
 
     const updatedEvent = eventService.updateEvent(id!, {
-      data: updatedTour,
+      ...updatedTour,
     });
 
     if (updatedEvent) {
-      setTour(updatedEvent.data as Tour);
+      setTour(updatedEvent as Tour);
     }
 
     setOpenEditTour(false);
@@ -386,7 +386,7 @@ const TourDetails: React.FC = () => {
     ) {
       const updatedEvent = eventService.deleteRoundFromTour(id!, roundId);
       if (updatedEvent) {
-        setTour(updatedEvent.data as Tour);
+        setTour(updatedEvent as Tour);
       }
     }
   };
@@ -401,7 +401,7 @@ const TourDetails: React.FC = () => {
       playerGroups
     );
     if (updatedEvent) {
-      setTour(updatedEvent.data as Tour);
+      setTour(updatedEvent as Tour);
     }
   };
 
