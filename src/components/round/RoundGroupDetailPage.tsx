@@ -10,7 +10,6 @@ import {
   IconButton,
   Collapse,
   Divider,
-  AppBar,
   Toolbar,
   Container,
   useTheme,
@@ -113,7 +112,7 @@ const RoundGroupDetailPage: React.FC = () => {
     groupPlayers,
   });
 
-  const handleBack = () => {
+  const handleBack: () => void = () => {
     navigate(`/rounds/${roundId}`);
   };
 
@@ -218,40 +217,35 @@ const RoundGroupDetailPage: React.FC = () => {
 
   return (
     <Box sx={{ pb: 6 }}>
-      <AppBar position="static" color="primary" elevation={0}>
-        <Toolbar>
-          <IconButton
-            edge="start"
-            color="inherit"
+      <Toolbar>
+        <Box sx={styles.navigation.backButtonContainer}>
+          <Button
+            startIcon={<ArrowBackIcon />}
             onClick={handleBack}
-            aria-label="back"
             sx={styles.navigation.backButton}
           >
-            <ArrowBackIcon />
-          </IconButton>
-          <Typography variant="h6" sx={{ ml: 2, flex: 1 }}>
-            {group.name} - {round.name}
-          </Typography>
-          <Box sx={{ display: "flex", gap: 1 }}>
-            {group.teeTime && (
-              <Chip
-                icon={<ScheduleIcon />}
-                label={`${group.teeTime}`}
-                size="small"
-                sx={{ color: "white", bgcolor: "rgba(255,255,255,0.2)" }}
-              />
-            )}
-            {group.startingHole && (
-              <Chip
-                icon={<FlagIcon />}
-                label={`Hole ${group.startingHole}`}
-                size="small"
-                sx={{ color: "white", bgcolor: "rgba(255,255,255,0.2)" }}
-              />
-            )}
-          </Box>
-        </Toolbar>
-      </AppBar>
+            Back to round details
+          </Button>
+        </Box>
+        <Box sx={{ display: "flex", gap: 1 }}>
+          {group.teeTime && (
+            <Chip
+              icon={<ScheduleIcon />}
+              label={`${group.teeTime}`}
+              size="small"
+              sx={{ color: "white", bgcolor: "rgba(255,255,255,0.2)" }}
+            />
+          )}
+          {group.startingHole && (
+            <Chip
+              icon={<FlagIcon />}
+              label={`Hole ${group.startingHole}`}
+              size="small"
+              sx={{ color: "white", bgcolor: "rgba(255,255,255,0.2)" }}
+            />
+          )}
+        </Box>
+      </Toolbar>
 
       <Container
         maxWidth={false}

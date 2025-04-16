@@ -31,14 +31,12 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useStyles } from "../../styles/hooks/useStyles";
 import { useTheme } from "@mui/material/styles";
 
-// Define tee colors with properties
 const TEE_COLORS = [
   { name: "Red", color: "#e74c3c", difficulty: 1 },
   { name: "Yellow", color: "#f1c40f", difficulty: 2 },
   { name: "White", color: "#ecf0f1", difficulty: 3 },
 ];
 
-// Tee box interface
 interface TeeBox {
   id: string;
   color: string;
@@ -46,13 +44,12 @@ interface TeeBox {
   womenSlope: number;
 }
 
-// Hole interface for par values
 interface HoleInfo {
   number: number;
   par: number;
+  index: number;
 }
 
-// Enhanced GolfCourse interface
 interface GolfCourse {
   id?: string;
   name: string;
@@ -70,15 +67,14 @@ interface CourseFormDialogProps {
   initialData?: GolfCourse;
 }
 
-// Create an array of 18 default holes with par 4
 const createDefaultHoles = (): HoleInfo[] => {
   return Array.from({ length: 18 }, (_, i) => ({
     number: i + 1,
     par: 4,
+    index: i + 1,
   }));
 };
 
-// Helper function to generate a unique ID
 const generateId = (): string =>
   `id-${Math.random().toString(36).substring(2, 11)}`;
 
@@ -100,7 +96,6 @@ const CourseFormDialog: React.FC<CourseFormDialogProps> = ({
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  // Calculate default par from holes
   const calculateDefaultPar = (holes: HoleInfo[]): number => {
     return holes.reduce((total, hole) => total + hole.par, 0);
   };
@@ -118,6 +113,7 @@ const CourseFormDialog: React.FC<CourseFormDialogProps> = ({
   );
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [indexErrors, setIndexErrors] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<number>(0);
 
   // Update par automatically when hole pars change
@@ -129,7 +125,11 @@ const CourseFormDialog: React.FC<CourseFormDialogProps> = ({
     }));
   }, [formData.holes]);
 
-  // Handler for tab changes
+  // Validate indexes whenever they change
+  //   useEffect(() => {
+  //     validateIndexes();
+  //   }, [formData.holes]);
+
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
   };
@@ -165,6 +165,36 @@ const CourseFormDialog: React.FC<CourseFormDialogProps> = ({
     });
   };
 
+  const handleHoleIndexChange = (holeIndex: number, newIndex: number) => {
+    if (newIndex < 1 || newIndex > 18) return;
+
+    setFormData((prev) => {
+      const updatedHoles = [...prev.holes];
+      updatedHoles[holeIndex] = { ...updatedHoles[holeIndex], index: newIndex };
+      return {
+        ...prev,
+        holes: updatedHoles,
+      };
+    });
+  };
+
+  const validateIndexes = () => {
+    const indexes = formData.holes.map((hole) => hole.index);
+
+    const duplicates: string[] = [];
+    indexes.forEach((index, i) => {
+      const firstIndex = indexes.indexOf(index);
+      if (firstIndex !== i) {
+        duplicates.push(
+          `Hole ${formData.holes[i].number} and Hole ${formData.holes[firstIndex].number} both have index ${index}`
+        );
+      }
+    });
+
+    setIndexErrors(duplicates);
+    return duplicates.length === 0;
+  };
+
   const handleTeeBoxChange = (
     teeBoxId: string,
     field: keyof TeeBox,
@@ -194,7 +224,7 @@ const CourseFormDialog: React.FC<CourseFormDialogProps> = ({
       (tee) => !usedColors.includes(tee.name)
     );
 
-    if (availableColors.length === 0) return; // All colors are used
+    if (availableColors.length === 0) return;
 
     // Sort by difficulty and pick the next appropriate one
     const sortedAvailable = [...availableColors].sort(
@@ -232,14 +262,17 @@ const CourseFormDialog: React.FC<CourseFormDialogProps> = ({
       newErrors.country = "Country is required";
     }
 
-    // Validate par range
     if (formData.par <= 0) {
       newErrors.par = "Par must be greater than 0";
     }
 
-    // Validate at least one tee box
     if (formData.teeBoxes.length === 0) {
       newErrors.teeBoxes = "At least one tee box is required";
+    }
+
+    const indexesValid = validateIndexes();
+    if (!indexesValid) {
+      newErrors.indexes = "All hole indexes must be unique";
     }
 
     setErrors(newErrors);
@@ -275,9 +308,53 @@ const CourseFormDialog: React.FC<CourseFormDialogProps> = ({
 
   const { front, back, total } = calculateTotalPar();
 
-  // Group holes into front nine and back nine for UI
   const frontNine = formData.holes.slice(0, 9);
   const backNine = formData.holes.slice(9, 18);
+
+  const renderHoleIndexInput = (hole: HoleInfo, holeIndex: number) => {
+    const isDuplicate = formData.holes.some(
+      (h, i) => h.index === hole.index && i !== holeIndex
+    );
+
+    return (
+      <TextField
+        type="number"
+        value={hole.index}
+        onChange={(e) =>
+          handleHoleIndexChange(holeIndex, parseInt(e.target.value))
+        }
+        inputProps={{
+          min: 1,
+          max: 18,
+          style: {
+            textAlign: "center",
+            color: isDuplicate ? theme.palette.error.main : "white",
+            padding: "4px",
+            width: "40px",
+            background: alpha(theme.palette.common.black, 0.1),
+            border: `1px solid ${
+              isDuplicate
+                ? theme.palette.error.main
+                : alpha(theme.palette.common.white, 0.2)
+            }`,
+            borderRadius: "4px",
+          },
+        }}
+        variant="standard"
+        sx={{
+          "& .MuiInput-underline:before": {
+            borderBottom: "none",
+          },
+          "& .MuiInput-underline:after": {
+            borderBottom: "none",
+          },
+          "& .MuiInput-underline:hover:not(.Mui-disabled):before": {
+            borderBottom: "none",
+          },
+        }}
+      />
+    );
+  };
 
   return (
     <>
@@ -432,8 +509,9 @@ const CourseFormDialog: React.FC<CourseFormDialogProps> = ({
                 </Grid>
                 <Grid item xs={12}>
                   <Typography variant="body2" sx={styles.text.body.muted}>
-                    Note: You can set individual hole pars in the "Hole Details"
-                    tab. The total par will be calculated automatically.
+                    Note: You can set individual hole pars and handicap indexes
+                    in the "Hole Details" tab. The total par will be calculated
+                    automatically.
                   </Typography>
                 </Grid>
               </Grid>
@@ -663,9 +741,37 @@ const CourseFormDialog: React.FC<CourseFormDialogProps> = ({
                   Individual Hole Information
                 </Typography>
                 <Typography variant="body2" sx={styles.text.body.muted}>
-                  Set the par for each hole. Standard courses have approximately
-                  four par-3s, four par-5s, and the rest par-4s.
+                  Set the par and handicap index for each hole. The index should
+                  be a value from 1-18, with 1 being the most difficult hole and
+                  18 being the easiest. Each hole must have a unique index.
                 </Typography>
+
+                {indexErrors.length > 0 && (
+                  <Box
+                    sx={{
+                      mt: 2,
+                      p: 2,
+                      bgcolor: alpha(theme.palette.error.main, 0.1),
+                      borderRadius: 1,
+                    }}
+                  >
+                    <Typography variant="subtitle2" color="error">
+                      Index Error{indexErrors.length > 1 ? "s" : ""}:
+                    </Typography>
+                    <ul style={{ margin: "8px 0", paddingLeft: "24px" }}>
+                      {indexErrors.map((error, i) => (
+                        <li key={i}>
+                          <Typography variant="body2" color="error">
+                            {error}
+                          </Typography>
+                        </li>
+                      ))}
+                    </ul>
+                    <Typography variant="body2" color="error">
+                      Each hole must have a unique index between 1-18.
+                    </Typography>
+                  </Box>
+                )}
               </Grid>
 
               <Grid item xs={12}>
@@ -726,6 +832,22 @@ const CourseFormDialog: React.FC<CourseFormDialogProps> = ({
                           }}
                         >
                           OUT
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                          Index
+                        </TableCell>
+                        {frontNine.map((hole, index) => (
+                          <TableCell
+                            key={`index-${hole.number}`}
+                            align="center"
+                          >
+                            {renderHoleIndexInput(hole, index)}
+                          </TableCell>
+                        ))}
+                        <TableCell align="center">
+                          {/* Empty cell for the OUT column */}
                         </TableCell>
                       </TableRow>
                     </TableHead>
@@ -848,6 +970,22 @@ const CourseFormDialog: React.FC<CourseFormDialogProps> = ({
                           }}
                         >
                           IN
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                          Index
+                        </TableCell>
+                        {backNine.map((hole, index) => (
+                          <TableCell
+                            key={`index-${hole.number}`}
+                            align="center"
+                          >
+                            {renderHoleIndexInput(hole, index + 9)}
+                          </TableCell>
+                        ))}
+                        <TableCell align="center">
+                          {/* Empty cell for the IN column */}
                         </TableCell>
                       </TableRow>
                     </TableHead>
