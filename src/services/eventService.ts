@@ -131,6 +131,10 @@ const createGameplayAPI = async (
         },
         body: JSON.stringify({
           type,
+          // Remove below once Rasmus updates service
+          location: "",
+          hostName: "",
+          imageUrl: "",
           ...data,
         }),
       }
@@ -450,7 +454,6 @@ const eventService = {
   ): Promise<Event> => {
     try {
       // Try to create tour via API first
-      debugger;
       const apiResponse = await createGameplayAPI(
         "tour",
         {

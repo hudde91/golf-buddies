@@ -717,7 +717,6 @@ const RoundDetails: React.FC = () => {
             name: round.name,
             date: round.date,
             courseName: round.courseDetails?.name,
-            location: round.location,
             description: round.description,
             holes: round.courseDetails?.holes || 18,
             par: round.courseDetails?.par || 72,

@@ -430,6 +430,12 @@ const CourseFormDialog: React.FC<CourseFormDialogProps> = ({
                     </Box>
                   </Box>
                 </Grid>
+                <Grid item xs={12}>
+                  <Typography variant="body2" sx={styles.text.body.muted}>
+                    Note: You can set individual hole pars in the "Hole Details"
+                    tab. The total par will be calculated automatically.
+                  </Typography>
+                </Grid>
               </Grid>
             )}
           </Box>
@@ -572,18 +578,7 @@ const CourseFormDialog: React.FC<CourseFormDialogProps> = ({
                         </TextField>
                       </Grid>
 
-                      <Grid item xs={12}>
-                        <Typography
-                          variant="subtitle2"
-                          sx={{
-                            ...styles.course.form.sectionTitle,
-                            fontSize: "0.9rem",
-                          }}
-                        >
-                          Men's Ratings
-                        </Typography>
-                      </Grid>
-
+                      {/* TODO: I want the two below TextFields to share the same row when sm size */}
                       <Grid item xs={12} sm={6}>
                         <TextField
                           label="Men's Slope Rating"
@@ -609,18 +604,6 @@ const CourseFormDialog: React.FC<CourseFormDialogProps> = ({
                           sx={styles.course.form.formField}
                           helperText="Standard is 113 (55-155)"
                         />
-                      </Grid>
-
-                      <Grid item xs={12}>
-                        <Typography
-                          variant="subtitle2"
-                          sx={{
-                            ...styles.course.form.sectionTitle,
-                            fontSize: "0.9rem",
-                          }}
-                        >
-                          Women's Ratings
-                        </Typography>
                       </Grid>
 
                       <Grid item xs={12} sm={6}>
@@ -977,12 +960,6 @@ const CourseFormDialog: React.FC<CourseFormDialogProps> = ({
                     </Typography>
                   </Box>
                 </Box>
-              </Grid>
-              <Grid item xs={12}>
-                <Typography variant="body2" sx={styles.text.body.muted}>
-                  Note: You can set individual hole pars in the "Hole Details"
-                  tab. The total par will be calculated automatically.
-                </Typography>
               </Grid>
             </Grid>
           )}
