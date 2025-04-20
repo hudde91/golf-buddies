@@ -48,6 +48,8 @@ interface HoleInfo {
   number: number;
   par: number;
   index: number;
+  rangeMeters: number;
+  rangeYards: number;
 }
 
 interface GolfCourse {
@@ -72,6 +74,8 @@ const createDefaultHoles = (): HoleInfo[] => {
     number: i + 1,
     par: 4,
     index: i + 1,
+    rangeMeters: 0,
+    rangeYards: 0,
   }));
 };
 
@@ -158,6 +162,38 @@ const CourseFormDialog: React.FC<CourseFormDialogProps> = ({
     setFormData((prev) => {
       const updatedHoles = [...prev.holes];
       updatedHoles[index] = { ...updatedHoles[index], par: newPar };
+      return {
+        ...prev,
+        holes: updatedHoles,
+      };
+    });
+  };
+
+  const handleHoleRangeMetersChange = (holeIndex: number, newRange: number) => {
+    setFormData((prev) => {
+      const updatedHoles = [...prev.holes];
+      updatedHoles[holeIndex] = {
+        ...updatedHoles[holeIndex],
+        rangeMeters: newRange,
+        // Optionally auto-convert to yards (1m ≈ 1.09361 yards)
+        rangeYards: Math.round(newRange * 1.09361),
+      };
+      return {
+        ...prev,
+        holes: updatedHoles,
+      };
+    });
+  };
+
+  const handleHoleRangeYardsChange = (holeIndex: number, newRange: number) => {
+    setFormData((prev) => {
+      const updatedHoles = [...prev.holes];
+      updatedHoles[holeIndex] = {
+        ...updatedHoles[holeIndex],
+        rangeYards: newRange,
+        // Optionally auto-convert to meters (1yd ≈ 0.9144 meters)
+        rangeMeters: Math.round(newRange * 0.9144),
+      };
       return {
         ...prev,
         holes: updatedHoles,
@@ -318,7 +354,7 @@ const CourseFormDialog: React.FC<CourseFormDialogProps> = ({
 
     return (
       <TextField
-        type="number"
+        // type="number"
         value={hole.index}
         onChange={(e) =>
           handleHoleIndexChange(holeIndex, parseInt(e.target.value))
@@ -353,6 +389,73 @@ const CourseFormDialog: React.FC<CourseFormDialogProps> = ({
           },
         }}
       />
+    );
+  };
+
+  // Helper function to render range input fields
+  const renderHoleRangeInputs = (hole: HoleInfo, holeIndex: number) => {
+    return (
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+        <TextField
+          // type="number"
+          value={hole.rangeYards || ""}
+          onChange={(e) =>
+            handleHoleRangeYardsChange(holeIndex, parseInt(e.target.value) || 0)
+          }
+          placeholder="Yards"
+          inputProps={{
+            min: 0,
+            style: {
+              textAlign: "center",
+              color: "white",
+              padding: "4px",
+              width: "55px",
+              background: alpha(theme.palette.common.black, 0.1),
+              border: `1px solid ${alpha(theme.palette.common.white, 0.2)}`,
+              borderRadius: "4px",
+            },
+          }}
+          variant="standard"
+          sx={{
+            "& .MuiInput-underline:before": { borderBottom: "none" },
+            "& .MuiInput-underline:after": { borderBottom: "none" },
+            "& .MuiInput-underline:hover:not(.Mui-disabled):before": {
+              borderBottom: "none",
+            },
+          }}
+        />
+        <TextField
+          // type="number"
+          value={hole.rangeMeters || ""}
+          onChange={(e) =>
+            handleHoleRangeMetersChange(
+              holeIndex,
+              parseInt(e.target.value) || 0
+            )
+          }
+          placeholder="Meters"
+          inputProps={{
+            min: 0,
+            style: {
+              textAlign: "center",
+              color: "white",
+              padding: "4px",
+              width: "55px",
+              background: alpha(theme.palette.common.black, 0.1),
+              border: `1px solid ${alpha(theme.palette.common.white, 0.2)}`,
+              borderRadius: "4px",
+            },
+          }}
+          variant="standard"
+          sx={{
+            "& .MuiInput-underline:before": { borderBottom: "none" },
+            "& .MuiInput-underline:after": { borderBottom: "none" },
+            "& .MuiInput-underline:hover:not(.Mui-disabled):before": {
+              borderBottom: "none",
+            },
+          }}
+        />
+      </Box>
     );
   };
 
@@ -656,59 +759,62 @@ const CourseFormDialog: React.FC<CourseFormDialogProps> = ({
                         </TextField>
                       </Grid>
 
-                      {/* TODO: I want the two below TextFields to share the same row when sm size */}
-                      <Grid item xs={12} sm={6}>
-                        <TextField
-                          label="Men's Slope Rating"
-                          type="number"
-                          value={teeBox.menSlope}
-                          onChange={(e) =>
-                            handleTeeBoxChange(
-                              teeBox.id,
-                              "menSlope",
-                              e.target.value
-                            )
-                          }
-                          fullWidth
-                          InputLabelProps={styles.tournamentCard.formStyles.labelProps(
-                            theme
-                          )}
-                          InputProps={{
-                            ...styles.tournamentCard.formStyles.inputProps(
-                              theme
-                            ),
-                            inputProps: { min: 55, max: 155 },
-                          }}
-                          sx={styles.course.form.formField}
-                          helperText="Standard is 113 (55-155)"
-                        />
-                      </Grid>
+                      <Grid item xs={12}>
+                        <Grid container spacing={2}>
+                          <Grid item xs={12} sm={6}>
+                            <TextField
+                              label="Men's Slope Rating"
+                              // type="number"
+                              value={teeBox.menSlope}
+                              onChange={(e) =>
+                                handleTeeBoxChange(
+                                  teeBox.id,
+                                  "menSlope",
+                                  e.target.value
+                                )
+                              }
+                              fullWidth
+                              InputLabelProps={styles.tournamentCard.formStyles.labelProps(
+                                theme
+                              )}
+                              InputProps={{
+                                ...styles.tournamentCard.formStyles.inputProps(
+                                  theme
+                                ),
+                                inputProps: { min: 55, max: 155 },
+                              }}
+                              sx={styles.course.form.formField}
+                              helperText="Standard is 113 (55-155)"
+                            />
+                          </Grid>
 
-                      <Grid item xs={12} sm={6}>
-                        <TextField
-                          label="Women's Slope Rating"
-                          type="number"
-                          value={teeBox.womenSlope}
-                          onChange={(e) =>
-                            handleTeeBoxChange(
-                              teeBox.id,
-                              "womenSlope",
-                              e.target.value
-                            )
-                          }
-                          fullWidth
-                          InputLabelProps={styles.tournamentCard.formStyles.labelProps(
-                            theme
-                          )}
-                          InputProps={{
-                            ...styles.tournamentCard.formStyles.inputProps(
-                              theme
-                            ),
-                            inputProps: { min: 55, max: 155 },
-                          }}
-                          sx={styles.course.form.formField}
-                          helperText="Standard is 113 (55-155)"
-                        />
+                          <Grid item xs={12} sm={6}>
+                            <TextField
+                              label="Women's Slope Rating"
+                              // type="number"
+                              value={teeBox.womenSlope}
+                              onChange={(e) =>
+                                handleTeeBoxChange(
+                                  teeBox.id,
+                                  "womenSlope",
+                                  e.target.value
+                                )
+                              }
+                              fullWidth
+                              InputLabelProps={styles.tournamentCard.formStyles.labelProps(
+                                theme
+                              )}
+                              InputProps={{
+                                ...styles.tournamentCard.formStyles.inputProps(
+                                  theme
+                                ),
+                                inputProps: { min: 55, max: 155 },
+                              }}
+                              sx={styles.course.form.formField}
+                              helperText="Standard is 113 (55-155)"
+                            />
+                          </Grid>
+                        </Grid>
                       </Grid>
                     </Grid>
                   </Paper>
@@ -743,7 +849,9 @@ const CourseFormDialog: React.FC<CourseFormDialogProps> = ({
                 <Typography variant="body2" sx={styles.text.body.muted}>
                   Set the par and handicap index for each hole. The index should
                   be a value from 1-18, with 1 being the most difficult hole and
-                  18 being the easiest. Each hole must have a unique index.
+                  18 being the easiest. Each hole must have a unique index.You
+                  can enter distances in either yards or meters - both will be
+                  stored.
                 </Typography>
 
                 {indexErrors.length > 0 && (
@@ -846,6 +954,19 @@ const CourseFormDialog: React.FC<CourseFormDialogProps> = ({
                             {renderHoleIndexInput(hole, index)}
                           </TableCell>
                         ))}
+                      </TableRow>
+                      <TableRow>
+                        <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                          Range
+                        </TableCell>
+                        {frontNine.map((hole, index) => (
+                          <TableCell
+                            key={`range-${hole.number}`}
+                            align="center"
+                          >
+                            {renderHoleRangeInputs(hole, index)}
+                          </TableCell>
+                        ))}
                         <TableCell align="center">
                           {/* Empty cell for the OUT column */}
                         </TableCell>
@@ -859,7 +980,7 @@ const CourseFormDialog: React.FC<CourseFormDialogProps> = ({
                         {frontNine.map((hole, index) => (
                           <TableCell key={hole.number} align="center">
                             <TextField
-                              type="number"
+                              // type="number"
                               value={hole.par}
                               onChange={(e) =>
                                 handleHoleParChange(
@@ -984,6 +1105,19 @@ const CourseFormDialog: React.FC<CourseFormDialogProps> = ({
                             {renderHoleIndexInput(hole, index + 9)}
                           </TableCell>
                         ))}
+                      </TableRow>
+                      <TableRow>
+                        <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                          Range
+                        </TableCell>
+                        {backNine.map((hole, index) => (
+                          <TableCell
+                            key={`range-${hole.number}`}
+                            align="center"
+                          >
+                            {renderHoleRangeInputs(hole, index + 9)}
+                          </TableCell>
+                        ))}
                         <TableCell align="center">
                           {/* Empty cell for the IN column */}
                         </TableCell>
@@ -997,7 +1131,7 @@ const CourseFormDialog: React.FC<CourseFormDialogProps> = ({
                         {backNine.map((hole, index) => (
                           <TableCell key={hole.number} align="center">
                             <TextField
-                              type="number"
+                              // type="number"
                               value={hole.par}
                               onChange={(e) =>
                                 handleHoleParChange(

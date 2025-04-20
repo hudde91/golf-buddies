@@ -19,7 +19,7 @@ export const inputs = {
       },
     },
     "& .MuiInputBase-input": {
-      color: "white",
+      color: alpha(theme.palette.common.white, 0.7),
     },
   }),
 
@@ -38,20 +38,6 @@ export const inputs = {
       color: alpha(theme.palette.common.white, 0.7),
     },
   }),
-
-  slider: {
-    height: 8,
-    borderRadius: 4,
-    "& .MuiSlider-track": {
-      border: "none",
-    },
-    "& .MuiSlider-thumb": {
-      height: 16,
-      width: 16,
-      backgroundColor: (theme: Theme) => theme.palette.primary.main,
-      border: (theme: Theme) => `2px solid ${theme.palette.primary.main}`,
-    },
-  },
 
   menuPaper: (theme: Theme) => ({
     bgcolor: alpha(theme.palette.common.black, 0.9),

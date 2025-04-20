@@ -144,7 +144,6 @@ export const useStyles = () => {
       },
     },
 
-    // Layout components
     layout: {
       page: layout.page,
       container: layout.container,
@@ -295,7 +294,6 @@ export const useStyles = () => {
     inputs: {
       formField: inputs.formField(theme),
       select: inputs.select(theme),
-      slider: inputs.slider,
       menuPaper: inputs.menuPaper(theme),
       menuItem: inputs.menuItem(theme),
     },
@@ -337,16 +335,8 @@ export const useStyles = () => {
     },
 
     tournamentCard: {
-      container: tournamentCard.container(theme),
-      media: tournamentCard.media,
-      divider: tournamentCard.divider(theme),
       infoItem: tournamentCard.infoItem(theme),
-      emptyState: tournamentCard.emptyState(theme),
-      emptyStateIcon: tournamentCard.emptyStateIcon(theme),
       formStyles: tournamentCard.formStyles,
-      dialogStyles: tournamentCard.dialogStyles,
-      typography: tournamentCard.typography,
-      loadingState: tournamentCard.loadingState,
     },
 
     tournamentScorecard: {
@@ -622,8 +612,6 @@ export const useStyles = () => {
       infoItem: tour.infoItem,
       divider: tour.divider(theme),
 
-      teamCard: tour.teamCard(theme),
-
       typography: {
         title: tour.typography.title,
       },
@@ -670,7 +658,6 @@ export const useStyles = () => {
         value: course.courseRating.value(theme),
       },
       list: {
-        container: course.courseList.container(theme),
         item: course.courseList.item(theme),
         name: course.courseList.name,
         details: course.courseList.details(theme),

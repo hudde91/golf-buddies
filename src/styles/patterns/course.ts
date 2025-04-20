@@ -134,14 +134,6 @@ export const course = {
 
   // Course list styles
   courseList: {
-    container: (theme: Theme) => ({
-      backgroundColor: alpha(theme.palette.common.black, 0.3),
-      backdropFilter: "blur(10px)",
-      borderRadius: 2,
-      border: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
-      overflow: "hidden",
-      maxHeight: 300,
-    }),
     item: (theme: Theme) => ({
       borderBottom: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
       p: 2,

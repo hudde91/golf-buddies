@@ -175,15 +175,6 @@ export const tour = {
     borderColor: alpha(theme.palette.common.white, 0.1),
   }),
 
-  // Team card styles
-  teamCard: (theme: Theme) => ({
-    backgroundColor: alpha(theme.palette.common.black, 0.3),
-    backdropFilter: "blur(10px)",
-    borderRadius: 2,
-    overflow: "hidden",
-    height: "100%",
-  }),
-
   // Typography styles
   typography: {
     title: {
