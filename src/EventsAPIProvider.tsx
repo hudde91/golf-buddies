@@ -26,7 +26,7 @@ export const useEventsAPI = () => useContext(EventsAPIContext);
 export const EventsAPIProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const { userId, isLoaded, isSignedIn } = useAuth();
+  const { userId, isLoaded } = useAuth();
   const [initialized, setInitialized] = useState(false);
 
   // Store user ID in localStorage for background services
@@ -72,7 +72,6 @@ export const EventsAPIProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [isLoaded, userId, initialized]);
 
-  // Value to be provided by the context
   const contextValue: EventsAPIContextType = {
     events,
     isLoading,

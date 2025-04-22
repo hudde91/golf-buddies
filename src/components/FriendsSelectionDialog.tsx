@@ -288,17 +288,6 @@ const FriendsSelectionDialog: React.FC<FriendsSelectionDialogProps> = ({
                         </Typography>
                       )} */}
                     </Box>
-
-                    {selectedFriends.includes(friend.id) && (
-                      <CheckCircleIcon
-                        sx={{
-                          position: "absolute",
-                          right: 8,
-                          bottom: 8,
-                          color: theme.palette.primary.main,
-                        }}
-                      />
-                    )}
                   </Paper>
                 </Grid>
               ))}

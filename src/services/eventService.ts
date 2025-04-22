@@ -312,7 +312,7 @@ const getRoundLeaderboard = (
         score: totalScore,
       };
     })
-    .sort((a, b) => a.score - b.score); // Sort by score (lower is better)
+    .sort((a, b) => a.score - b.score);
 };
 
 const eventService = {

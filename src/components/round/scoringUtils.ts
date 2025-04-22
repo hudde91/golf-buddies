@@ -133,34 +133,3 @@ export const findFirstIncompleteHole = (
 
   return 1; // Default to first hole if all are complete
 };
-
-/**
- * Update score for a player and hole
- */
-// export const updateScore = (
-//   playerId: string,
-//   holeNumber: number,
-//   score: number,
-//   currentScores: { score?: number; par?: number; hole: number }[],
-//   holePar?: number
-// ): { score?: number; par?: number; hole: number }[] => {
-//   const newScores = [...currentScores];
-
-//   // Ensure there are entries for all holes up to the target hole
-//   while (newScores.length < holeNumber) {
-//     newScores.push({
-//       score: undefined,
-//       hole: newScores.length + 1,
-//       par: holePar,
-//     });
-//   }
-
-//   // Update the specific hole
-//   newScores[holeNumber - 1] = {
-//     score,
-//     par: holePar,
-//     hole: holeNumber,
-//   };
-
-//   return newScores;
-// };

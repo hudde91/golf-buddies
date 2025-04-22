@@ -207,7 +207,6 @@ const RoundDetails: React.FC = () => {
   const handleCreateNewGroup = async (name: string, playerIds: string[]) => {
     if (!round) return;
 
-    // Create player objects from selected friends
     const newPlayers: Player[] = playerIds
       .map((playerId) => {
         const friend = friends.find((f) => f.id === playerId);
@@ -219,7 +218,6 @@ const RoundDetails: React.FC = () => {
       })
       .filter((player) => player.id !== "");
 
-    // Create a new group with the selected player IDs
     const newGroup: PlayerGroup = {
       id: uuidv4(),
       name,
@@ -622,7 +620,6 @@ const RoundDetails: React.FC = () => {
               Leaderboard
             </Typography>
             <Paper sx={styles.card.glass}>
-              {/* Sort players by their scores */}
               {round.players
                 .sort((a, b) => {
                   const aTotal = calculateTotal(a.id, round);
@@ -704,7 +701,6 @@ const RoundDetails: React.FC = () => {
         )}
       </Container>
 
-      {/* Edit Round Dialog */}
       <Dialog
         open={openEditDialog}
         onClose={handleCloseEditDialog}
