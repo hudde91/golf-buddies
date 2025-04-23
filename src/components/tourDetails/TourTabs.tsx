@@ -1,19 +1,13 @@
 import React from "react";
 import { Box, Tabs, Tab } from "@mui/material";
-import {
-  PlayerGroup,
-  Team,
-  TeamFormData,
-  Tour,
-  Player,
-} from "../../types/event";
+import { PlayerGroup, Team, TeamFormData, Tour } from "../../types/event";
 import TournamentsTab from "./TournamentsTab";
 import RoundsTab from "./RoundsTab";
 import LeaderboardTab from "./LeaderboardTab";
 import PlayersTab from "./PlayersTab";
-import TeamsTab from "./TeamsTab";
 import { useStyles } from "../../styles/hooks/useStyles";
 import SharedHighlightsTab from "../highlights/SharedHighlightsTab";
+import TeamManagement from "../teams/TeamManagement";
 
 interface TourTabsProps {
   tour: Tour;
@@ -145,7 +139,6 @@ const TourTabs: React.FC<TourTabsProps> = ({
         {tabValue === 3 && <PlayersTab tour={tour} />}
       </div>
 
-      {/* Tab Panel for Teams (if applicable) */}
       {tour.isTeamEvent && (
         <div
           role="tabpanel"
@@ -154,8 +147,8 @@ const TourTabs: React.FC<TourTabsProps> = ({
           aria-labelledby="tour-tab-4"
         >
           {tabValue === 4 && (
-            <TeamsTab
-              tour={tour}
+            <TeamManagement
+              event={tour}
               isCreator={isCreator}
               onAddTeam={onAddTeam}
               onUpdateTeam={onUpdateTeam}

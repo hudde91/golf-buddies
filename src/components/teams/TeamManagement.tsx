@@ -8,18 +8,16 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { Add as AddIcon } from "@mui/icons-material";
-import { Team, Player, TeamFormData } from "../../../types/event";
-import { useStyles } from "../../../styles/hooks/useStyles";
-
 import TeamCard from "./TeamCard";
 import UnassignedPlayersList from "./UnassignedPlayersList";
 import TeamFormDialog from "./TeamFormDialog";
 import TeamPlayersDialog from "./TeamPlayersDialog";
 import EmptyTeamsPlaceholder from "./EmptyTeamsPlaceholder";
+import { useStyles } from "../../styles";
+import { TeamFormData, Team, Event } from "../../types/event";
 
 interface TeamManagementProps {
-  teams: Team[];
-  players: Player[];
+  event: Event;
   isCreator: boolean;
   onAddTeam: (team: TeamFormData) => void;
   onUpdateTeam: (teamId: string, team: Partial<Team>) => void;
@@ -28,8 +26,7 @@ interface TeamManagementProps {
 }
 
 const TeamManagement: React.FC<TeamManagementProps> = ({
-  teams,
-  players,
+  event,
   isCreator,
   onAddTeam,
   onUpdateTeam,
@@ -39,6 +36,9 @@ const TeamManagement: React.FC<TeamManagementProps> = ({
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const styles = useStyles();
+
+  const teams = event.teams || [];
+  const players = event.players || [];
 
   const [openTeamDialog, setOpenTeamDialog] = useState(false);
   const [openPlayersDialog, setOpenPlayersDialog] = useState(false);
@@ -128,7 +128,6 @@ const TeamManagement: React.FC<TeamManagementProps> = ({
     }
   };
 
-  // Helper functions for filtering players
   const getTeamPlayers = (teamId: string) => {
     return players.filter((player) => player.teamId === teamId);
   };
@@ -137,7 +136,6 @@ const TeamManagement: React.FC<TeamManagementProps> = ({
     return players.filter((player) => !player.teamId);
   };
 
-  // Helper to get the captain player object
   const getTeamCaptain = (teamId: string) => {
     const team = teams.find((t) => t.id === teamId);
     if (!team || !team.captain) return null;
@@ -146,7 +144,6 @@ const TeamManagement: React.FC<TeamManagementProps> = ({
 
   return (
     <Box>
-      {/* Header with Add Team button */}
       <Box sx={styles.tournamentTeams.header}>
         <Typography variant="h6" sx={styles.text.heading.section}>
           Teams ({teams.length})
@@ -166,7 +163,6 @@ const TeamManagement: React.FC<TeamManagementProps> = ({
         )}
       </Box>
 
-      {/* Team Grid or Empty State */}
       {teams.length > 0 ? (
         <Grid container spacing={3}>
           {teams.map((team) => (
@@ -190,7 +186,6 @@ const TeamManagement: React.FC<TeamManagementProps> = ({
         />
       )}
 
-      {/* Unassigned Players Section */}
       {teams.length > 0 && (
         <UnassignedPlayersList
           players={getUnassignedPlayers()}
@@ -200,7 +195,6 @@ const TeamManagement: React.FC<TeamManagementProps> = ({
         />
       )}
 
-      {/* Add/Edit Team Dialog */}
       <TeamFormDialog
         open={openTeamDialog}
         onClose={handleCloseTeamDialog}
@@ -214,7 +208,6 @@ const TeamManagement: React.FC<TeamManagementProps> = ({
         isMobile={isMobile}
       />
 
-      {/* Manage Team Players Dialog */}
       <TeamPlayersDialog
         open={openPlayersDialog}
         onClose={handleClosePlayersDialog}

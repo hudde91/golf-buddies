@@ -1,25 +1,25 @@
 import React from "react";
 import { Box, Typography, Paper, Avatar, Chip } from "@mui/material";
 import { GolfCourse as GolfIcon } from "@mui/icons-material";
-import { Tournament, Player } from "../../../types/event";
-import { useStyles } from "../../../styles/hooks/useStyles";
+import { useStyles } from "../../styles";
+import { Player, Event } from "../../types/event";
 
 interface PlayerCardProps {
   player: Player;
-  tournament: Tournament;
+  event: Event;
   onClick: (player: Player) => void;
   renderPlayerExtra?: (player: Player) => React.ReactNode;
 }
 
 const PlayerCard: React.FC<PlayerCardProps> = ({
   player,
-  tournament,
+  event,
   onClick,
   renderPlayerExtra,
 }) => {
   const styles = useStyles();
 
-  const playerTeam = tournament.teams.find((t) => t.id === player.teamId);
+  const playerTeam = (event.teams || []).find((t) => t.id === player.teamId);
 
   return (
     <Paper
@@ -61,7 +61,7 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
             gap: 1,
           }}
         >
-          {player.id === tournament.createdBy && (
+          {player.id === event.createdBy && (
             <Chip
               label="Creator"
               size="small"

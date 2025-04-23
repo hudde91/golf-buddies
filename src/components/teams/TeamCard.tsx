@@ -21,8 +21,8 @@ import {
   GroupAdd as GroupAddIcon,
   Star as StarIcon,
 } from "@mui/icons-material";
-import { Team, Player } from "../../../types/event";
-import { useStyles } from "../../../styles/hooks/useStyles";
+import { useStyles } from "../../styles";
+import { Team, Player } from "../../types/event";
 
 interface TeamCardProps {
   team: Team;

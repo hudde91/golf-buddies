@@ -11,11 +11,11 @@ import { Add as AddIcon } from "@mui/icons-material";
 import { Team, Player, TeamFormData } from "../../types/event";
 import { useStyles } from "../../styles/hooks/useStyles";
 
-import TeamCard from "../tournamentDetails/teamsTab/TeamCard";
-import UnassignedPlayersList from "../tournamentDetails/teamsTab/UnassignedPlayersList";
-import TeamFormDialog from "../tournamentDetails/teamsTab/TeamFormDialog";
-import TeamPlayersDialog from "../tournamentDetails/teamsTab/TeamPlayersDialog";
-import EmptyTeamsPlaceholder from "../tournamentDetails/teamsTab/EmptyTeamsPlaceholder";
+import TeamCard from "../teams/TeamCard";
+import EmptyTeamsPlaceholder from "../teams/EmptyTeamsPlaceholder";
+import TeamFormDialog from "../teams/TeamFormDialog";
+import TeamPlayersDialog from "../teams/TeamPlayersDialog";
+import UnassignedPlayersList from "../teams/UnassignedPlayersList";
 
 interface TeamManagementProps {
   teams: Team[];

@@ -4,7 +4,7 @@ import { People as PeopleIcon } from "@mui/icons-material";
 import { Player, Tour } from "../../types/event";
 import { useStyles } from "../../styles/hooks/useStyles";
 import SharedPlayerCard from "../SharedPlayerCard";
-import PlayerProfileDialog from "../tournamentDetails/playersTab/PlayerProfileDialog";
+import PlayerProfileDialog from "../players/PlayerProfileDialog";
 
 interface PlayersTabProps {
   tour: Tour;
@@ -58,19 +58,19 @@ const PlayersTab: React.FC<PlayersTabProps> = ({ tour }) => {
       <PlayerProfileDialog
         open={profileDialogOpen}
         player={selectedPlayer}
-        tournament={{
+        event={{
           ...tour,
           startDate: tour.startDate,
           endDate: tour.endDate,
-          rounds: [],
-          location: "",
-          format: "",
+          // rounds: [],
+          // location: "",
+          // format: "",
           players: tour.players || [],
           teams: tour.teams || [],
-          invitations: [],
-          isTeamEvent: true,
-          scoringType: "individual",
-          status: tour.status || "active",
+          // invitations: [],
+          // isTeamEvent: true,
+          // scoringType: "individual",
+          // status: tour.status || "active",
         }}
         onClose={handleCloseDialog}
       />

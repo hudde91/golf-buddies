@@ -1,3 +1,4 @@
+// src/components/shared/teams/UnassignedPlayersList.tsx
 import React from "react";
 import {
   Box,
@@ -10,8 +11,8 @@ import {
   Select,
   MenuItem,
 } from "@mui/material";
-import { Team, Player } from "../../../types/event";
-import { useStyles } from "../../../styles/hooks/useStyles";
+import { useStyles } from "../../styles";
+import { Player, Team } from "../../types/event";
 
 interface UnassignedPlayersListProps {
   players: Player[];

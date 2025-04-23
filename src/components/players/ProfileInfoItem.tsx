@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Typography, Avatar } from "@mui/material";
-import { useStyles } from "../../../styles/hooks/useStyles";
+import { useStyles } from "../../styles";
 
 interface ProfileInfoItemProps {
   icon: React.ReactNode;

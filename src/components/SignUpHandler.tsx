@@ -61,13 +61,14 @@ const SignUpHandler: React.FC = () => {
         try {
           console.log("User does not exist in backend, creating new user");
 
-          await createUserMutation.mutateAsync({
-            userId: user.id,
-            email: user.primaryEmailAddress?.emailAddress,
-            firstName: user.firstName || "Anonymous",
-            lastName: user.lastName || "User",
-            clerkId: user.id,
-          });
+          // Uncomment the following lines once the backend API is ready
+          // await createUserMutation.mutateAsync({
+          //   userId: user.id,
+          //   email: user.primaryEmailAddress?.emailAddress,
+          //   firstName: user.firstName || "Anonymous",
+          //   lastName: user.lastName || "User",
+          //   clerkId: user.id,
+          // });
 
           console.log("User successfully created in backend");
         } catch (error) {

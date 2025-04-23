@@ -1,3 +1,4 @@
+// src/components/shared/teams/TeamFormDialog.tsx
 import React from "react";
 import {
   Dialog,
@@ -20,9 +21,9 @@ import {
   Star as StarIcon,
   StarBorder as StarBorderIcon,
 } from "@mui/icons-material";
-import { Team, Player, TeamFormData } from "../../../types/event";
-import { teamColors } from "../../../services/eventService";
-import { useStyles } from "../../../styles/hooks/useStyles";
+import { teamColors } from "../../services/eventService";
+import { useStyles } from "../../styles";
+import { Team, TeamFormData, Player } from "../../types/event";
 
 interface TeamFormDialogProps {
   open: boolean;

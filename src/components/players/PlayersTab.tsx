@@ -8,21 +8,21 @@ import {
   useTheme,
 } from "@mui/material";
 import { PersonAdd as PersonAddIcon } from "@mui/icons-material";
-import { Tournament, Player } from "../../../types/event";
-import PlayerCard from "./PlayerCard";
+import { useStyles } from "../../styles";
+import { Player, Event } from "../../types/event";
 import InvitationCard from "./InvitationCard";
+import PlayerCard from "./PlayerCard";
 import PlayerProfileDialog from "./PlayerProfileDialog";
-import { useStyles } from "../../../styles/hooks/useStyles";
 
 interface PlayersTabProps {
-  tournament: Tournament;
+  event: Event;
   isCreator: boolean;
-  onInvitePlayers: () => void;
+  onInvitePlayers?: () => void;
   renderPlayerExtra?: (player: Player) => React.ReactNode;
 }
 
 const PlayersTab: React.FC<PlayersTabProps> = ({
-  tournament,
+  event,
   isCreator,
   onInvitePlayers,
   renderPlayerExtra,
@@ -42,6 +42,11 @@ const PlayersTab: React.FC<PlayersTabProps> = ({
     setProfileDialogOpen(false);
   };
 
+  // Get players based on event type
+  const players = event.players || [];
+  // Get invitations based on event type
+  const invitations = event.invitations || [];
+
   return (
     <Box>
       <Box sx={styles.tournamentPlayers.layouts.tabHeader}>
@@ -49,10 +54,10 @@ const PlayersTab: React.FC<PlayersTabProps> = ({
           variant="h6"
           sx={styles.tournamentPlayers.playerTypography.playerName}
         >
-          Players ({tournament.players.length})
+          Players ({players.length})
         </Typography>
 
-        {isCreator && (
+        {isCreator && onInvitePlayers && (
           <Button
             color="primary"
             startIcon={<PersonAddIcon />}
@@ -67,11 +72,11 @@ const PlayersTab: React.FC<PlayersTabProps> = ({
       </Box>
 
       <Grid container spacing={2}>
-        {tournament.players.map((player) => (
+        {players.map((player) => (
           <Grid item xs={12} sm={6} md={4} key={player.id}>
             <PlayerCard
               player={player}
-              tournament={tournament}
+              event={event}
               onClick={handlePlayerClick}
               renderPlayerExtra={renderPlayerExtra}
             />
@@ -79,18 +84,18 @@ const PlayersTab: React.FC<PlayersTabProps> = ({
         ))}
       </Grid>
 
-      {tournament.invitations.length > 0 && (
+      {invitations.length > 0 && (
         <Box sx={{ mt: 4 }}>
           <Typography
             variant="h6"
             gutterBottom
             sx={styles.tournamentPlayers.playerTypography.playerName}
           >
-            Pending Invitations ({tournament.invitations.length})
+            Pending Invitations ({invitations.length})
           </Typography>
 
           <Grid container spacing={2}>
-            {tournament.invitations.map((email) => (
+            {invitations.map((email) => (
               <Grid item xs={12} sm={6} md={4} key={email}>
                 <InvitationCard email={email} />
               </Grid>
@@ -102,7 +107,7 @@ const PlayersTab: React.FC<PlayersTabProps> = ({
       <PlayerProfileDialog
         open={profileDialogOpen}
         player={selectedPlayer}
-        tournament={tournament}
+        event={event}
         onClose={handleCloseDialog}
       />
     </Box>

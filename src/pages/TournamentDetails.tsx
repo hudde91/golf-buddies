@@ -23,15 +23,16 @@ import TournamentHeader from "../components/tournamentDetails/TournamentHeader";
 import TournamentInfo from "../components/tournamentDetails/TournamentInfo";
 import LeaderboardTab from "../components/tournamentDetails/leaderboardTab/LeaderboardTab";
 import RoundsTab from "../components/tournamentDetails/roundsTab/RoundsTab";
-import PlayersTab from "../components/tournamentDetails/playersTab/PlayersTab";
 import TournamentDialogs from "../components/tournamentDetails/TournamentDialogs";
 import NotFoundView from "../components/tournamentDetails/NotFoundView";
-import TeamManagement from "../components/tournamentDetails/teamsTab/TeamManagement";
-import HighlightsTab from "../components/tournamentDetails/HighlightsTab";
+
 import { useStyles } from "../styles/hooks/useStyles";
 import { useTheme } from "@mui/material/styles";
 import { alpha } from "@mui/material/styles";
 import MobileBottomNavigation from "../components/tournamentDetails/MobileBottomNavigation";
+import PlayersTab from "../components/players/PlayersTab";
+import SharedHighlightsTab from "../components/highlights/SharedHighlightsTab";
+import TeamManagement from "../components/teams/TeamManagement";
 
 const TAB_INDICES = {
   leaderboard: 0,
@@ -426,7 +427,7 @@ const TournamentDetail: React.FC = () => {
   const EnhancedPlayersTab = () => (
     <Box>
       <PlayersTab
-        tournament={tournament}
+        event={tournament}
         isCreator={isCreator}
         onInvitePlayers={dialogHandlers.invite.open}
         renderPlayerExtra={(player) => (
@@ -551,8 +552,7 @@ const TournamentDetail: React.FC = () => {
               {tabValue === 3 && (
                 <Box sx={styles.tabs.panel}>
                   <TeamManagement
-                    teams={tournament.teams}
-                    players={tournament.players}
+                    event={tournament}
                     isCreator={isCreator}
                     onAddTeam={handleAddTeam}
                     onUpdateTeam={handleUpdateTeam}
@@ -572,7 +572,10 @@ const TournamentDetail: React.FC = () => {
           >
             {tabValue === (tournament.isTeamEvent ? 4 : 3) && (
               <Box sx={styles.tabs.panel}>
-                <HighlightsTab tournament={tournament} />
+                <SharedHighlightsTab
+                  event={tournament}
+                  eventType="tournament"
+                />
               </Box>
             )}
           </div>

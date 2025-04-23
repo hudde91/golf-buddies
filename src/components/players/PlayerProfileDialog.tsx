@@ -1,3 +1,4 @@
+// src/components/shared/players/PlayerProfileDialog.tsx
 import React from "react";
 import {
   Dialog,
@@ -18,32 +19,34 @@ import {
   SportsBar as BeerIcon,
   EmojiEvents as TrophyIcon,
 } from "@mui/icons-material";
-import { Tournament, Player } from "../../../types/event";
+import { useStyles } from "../../styles";
+import { Player, Event } from "../../types/event";
 import ProfileInfoItem from "./ProfileInfoItem";
-import { useStyles } from "../../../styles/hooks/useStyles";
 
 interface PlayerProfileDialogProps {
   open: boolean;
   player: Player | null;
-  tournament: Tournament;
+  event: Event;
   onClose: () => void;
 }
 
 const PlayerProfileDialog: React.FC<PlayerProfileDialogProps> = ({
   open,
   player,
-  tournament,
+  event,
   onClose,
 }) => {
   const styles = useStyles();
 
   if (!player) return null;
 
-  const playerTeam = tournament.teams.find(
+  const playerTeam = (event.teams || []).find(
     (team) => player.teamId && team.id === player.teamId
   );
 
-  const isCaptain = tournament.teams.some((team) => team.captain === player.id);
+  const isCaptain = (event.teams || []).some(
+    (team) => team.captain === player.id
+  );
 
   return (
     <Dialog
@@ -87,7 +90,7 @@ const PlayerProfileDialog: React.FC<PlayerProfileDialogProps> = ({
               {player.name}
             </Typography>
             <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mt: 1 }}>
-              {player.id === tournament.createdBy && (
+              {player.id === event.createdBy && (
                 <Chip label="Creator" size="small" color="primary" />
               )}
 
@@ -148,7 +151,7 @@ const PlayerProfileDialog: React.FC<PlayerProfileDialogProps> = ({
               icon={<GolfIcon />}
               title="Handicap"
               value={player.question1}
-              color="#90caf9" // primary.light equivalent
+              color="#90caf9"
             />
           )}
 
@@ -158,7 +161,7 @@ const PlayerProfileDialog: React.FC<PlayerProfileDialogProps> = ({
               icon={<SportsGolf />}
               title="Favorite Club"
               value={player.question2}
-              color="#ce93d8" // secondary.light equivalent
+              color="#ce93d8"
             />
           )}
 
@@ -168,7 +171,7 @@ const PlayerProfileDialog: React.FC<PlayerProfileDialogProps> = ({
               icon={<BeerIcon />}
               title="Beers Per Round"
               value={player.question3}
-              color="#ffb74d" // warning.light equivalent
+              color="#ffb74d"
             />
           )}
 
@@ -178,7 +181,7 @@ const PlayerProfileDialog: React.FC<PlayerProfileDialogProps> = ({
               icon={<TrophyIcon />}
               title="Favorite Golf Memory"
               value={player.question4}
-              color="#81c784" // success.light equivalent
+              color="#81c784"
             />
           )}
         </Box>

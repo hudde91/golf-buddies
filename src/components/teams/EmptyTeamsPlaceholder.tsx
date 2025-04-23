@@ -1,7 +1,8 @@
+// src/components/shared/teams/EmptyTeamsPlaceholder.tsx
 import React from "react";
 import { Box, Typography, Button } from "@mui/material";
 import { Add as AddIcon, GroupAdd as GroupAddIcon } from "@mui/icons-material";
-import { useStyles } from "../../../styles/hooks/useStyles";
+import { useStyles } from "../../styles";
 
 interface EmptyTeamsPlaceholderProps {
   isCreator: boolean;
@@ -29,7 +30,7 @@ const EmptyTeamsPlaceholder: React.FC<EmptyTeamsPlaceholderProps> = ({
         paragraph
         sx={styles.tournamentTeams.emptyStateMessage}
       >
-        Create teams to track team scores in this tournament.
+        Create teams to track team scores in this event.
       </Typography>
       {isCreator && (
         <Button

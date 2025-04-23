@@ -58,6 +58,7 @@ export interface Round extends BaseEvent {
   createdBy?: string;
   createdAt?: string;
   players?: Player[];
+  teams?: Team[];
   location?: string;
   description?: string;
   status?: "upcoming" | "active" | "completed";

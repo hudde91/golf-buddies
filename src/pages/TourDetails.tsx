@@ -37,8 +37,9 @@ import TourTabs from "../components/tourDetails/TourTabs";
 import { colors, useStyles } from "../styles";
 import MobileTourBottomNavigation from "../components/tourDetails/MobileTourBottomNavigation";
 import SharedPlayerCard from "../components/SharedPlayerCard";
-import PlayerProfileDialog from "../components/tournamentDetails/playersTab/PlayerProfileDialog";
+import PlayerProfileDialog from "../components/players/PlayerProfileDialog";
 import friendsService from "../services/friendsService";
+import TeamManagement from "../components/teams/TeamManagement";
 
 const TourDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -797,105 +798,14 @@ const TourDetails: React.FC = () => {
               >
                 {tabValue === 4 && (
                   <Box sx={styles.tabs.panel}>
-                    <Typography
-                      variant="h6"
-                      sx={styles.headers.tour.sectionTitle}
-                    >
-                      Tour Teams
-                    </Typography>
-
-                    {tour.teams!.map((team) => {
-                      const teamPlayers =
-                        tour.players?.filter((p) => p.teamId === team.id) || [];
-
-                      return (
-                        <Box
-                          key={team.id}
-                          sx={{
-                            mb: 2,
-                            borderRadius: 2,
-                            overflow: "hidden",
-                            border: `1px solid ${alpha(team.color, 0.3)}`,
-                          }}
-                        >
-                          <Box
-                            sx={{
-                              p: 2,
-                              bgcolor: alpha(team.color, 0.15),
-                              borderBottom: `1px solid ${alpha(
-                                team.color,
-                                0.3
-                              )}`,
-                            }}
-                          >
-                            <Typography variant="h6" sx={{ color: "white" }}>
-                              {team.name}
-                            </Typography>
-                            <Typography
-                              variant="body2"
-                              sx={{
-                                color: alpha(theme.palette.common.white, 0.7),
-                              }}
-                            >
-                              {teamPlayers.length} member
-                              {teamPlayers.length !== 1 ? "s" : ""}
-                            </Typography>
-                          </Box>
-
-                          <Box
-                            sx={{
-                              p: 2,
-                              bgcolor: alpha(theme.palette.common.black, 0.3),
-                            }}
-                          >
-                            {teamPlayers.length === 0 ? (
-                              <Typography
-                                sx={{
-                                  color: alpha(theme.palette.common.white, 0.5),
-                                  fontStyle: "italic",
-                                }}
-                              >
-                                No players assigned to this team
-                              </Typography>
-                            ) : (
-                              teamPlayers.map((player) => (
-                                <Box
-                                  key={player.id}
-                                  sx={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    mb: 1,
-                                  }}
-                                >
-                                  <Typography sx={{ color: "white" }}>
-                                    {player.name}
-                                  </Typography>
-                                  {player.id === team.captain && (
-                                    <Typography
-                                      variant="caption"
-                                      sx={{
-                                        ml: 1,
-                                        color: team.color,
-                                        px: 0.75,
-                                        py: 0.25,
-                                        borderRadius: 1,
-                                        bgcolor: alpha(team.color, 0.1),
-                                        border: `1px solid ${alpha(
-                                          team.color,
-                                          0.3
-                                        )}`,
-                                      }}
-                                    >
-                                      Captain
-                                    </Typography>
-                                  )}
-                                </Box>
-                              ))
-                            )}
-                          </Box>
-                        </Box>
-                      );
-                    })}
+                    <TeamManagement
+                      event={tour}
+                      isCreator={isCreator}
+                      onAddTeam={handleAddTeam}
+                      onUpdateTeam={handleUpdateTeam}
+                      onDeleteTeam={handleDeleteTeam}
+                      onAssignPlayer={handleAssignPlayerToTeam}
+                    />
                   </Box>
                 )}
               </div>
@@ -994,19 +904,19 @@ const TourDetails: React.FC = () => {
       <PlayerProfileDialog
         open={profileDialogOpen}
         player={selectedPlayer}
-        tournament={{
+        event={{
           ...tour,
-          startDate: tour.startDate,
-          endDate: tour.endDate,
-          rounds: [],
-          location: "",
-          format: "",
-          players: tour.players || [],
-          teams: tour.teams || [],
-          invitations: [],
-          isTeamEvent: true,
-          scoringType: "individual",
-          status: tour.status || "active",
+          // startDate: tour.startDate,
+          // endDate: tour.endDate,
+          // rounds: [],
+          // location: "",
+          // format: "",
+          // players: tour.players || [],
+          // teams: tour.teams || [],
+          // invitations: [],
+          // isTeamEvent: true,
+          // scoringType: "individual",
+          // status: tour.status || "active",
         }}
         onClose={() => setProfileDialogOpen(false)}
       />
