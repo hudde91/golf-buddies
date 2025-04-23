@@ -11,6 +11,7 @@ import {
   People as PeopleIcon,
   Groups as TeamsIcon,
   SportsGolf as RoundIcon,
+  PhotoLibrary as HighlightsIcon,
 } from "@mui/icons-material";
 
 interface MobileTourBottomNavigationProps {
@@ -20,6 +21,7 @@ interface MobileTourBottomNavigationProps {
   roundCount: number;
   playerCount: number;
   teamCount: number;
+  highlightCount: number;
   onTabChange: (event: React.SyntheticEvent, newValue: number) => void;
 }
 
@@ -30,6 +32,7 @@ const MobileTourBottomNavigation: React.FC<MobileTourBottomNavigationProps> = ({
   roundCount,
   playerCount,
   teamCount,
+  highlightCount,
   onTabChange,
 }) => {
   // Define the indices to match the desktop tab order
@@ -38,6 +41,7 @@ const MobileTourBottomNavigation: React.FC<MobileTourBottomNavigationProps> = ({
   const LEADERBOARD_TAB = 2;
   const PLAYERS_TAB = 3;
   const TEAMS_TAB = 4;
+  const HIGHLIGHTS_TAB = hasTeams ? 5 : 4;
 
   return (
     <Paper
@@ -111,6 +115,15 @@ const MobileTourBottomNavigation: React.FC<MobileTourBottomNavigationProps> = ({
             }
           />
         )}
+        <BottomNavigationAction
+          label="Highlights"
+          value={HIGHLIGHTS_TAB}
+          icon={
+            <Badge badgeContent={highlightCount} color="primary">
+              <HighlightsIcon />
+            </Badge>
+          }
+        />
       </BottomNavigation>
     </Paper>
   );

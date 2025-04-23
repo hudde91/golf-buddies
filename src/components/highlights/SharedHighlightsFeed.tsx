@@ -1,23 +1,25 @@
 import React from "react";
 import { List, Divider, Paper } from "@mui/material";
-import HighlightItem from "./HighlightItem";
-import EmptyHighlightsState from "./EmptyHighlightsState";
-import { FeedItem, Tournament } from "../../../types/event";
-import { useStyles } from "../../../styles/hooks/useStyles";
+import SharedHighlightItem from "./SharedHighlightItem";
+import SharedEmptyHighlightsState from "./SharedEmptyHighlightsState";
+import { FeedItem, Event } from "../../types/event";
+import { useStyles } from "../../styles";
 
-interface HighlightsFeedProps {
+interface SharedHighlightsFeedProps {
   feedItems: FeedItem[];
-  tournament: Tournament;
+  event: Event;
+  eventType: "tournament" | "tour";
 }
 
-const HighlightsFeed: React.FC<HighlightsFeedProps> = ({
+const SharedHighlightsFeed: React.FC<SharedHighlightsFeedProps> = ({
   feedItems,
-  tournament,
+  event,
+  eventType,
 }) => {
   const styles = useStyles();
 
   if (feedItems.length === 0) {
-    return <EmptyHighlightsState />;
+    return <SharedEmptyHighlightsState eventType={eventType} />;
   }
 
   return (
@@ -32,7 +34,11 @@ const HighlightsFeed: React.FC<HighlightsFeedProps> = ({
                 sx={styles.tournamentHighlights.divider}
               />
             )}
-            <HighlightItem item={item} tournament={tournament} />
+            <SharedHighlightItem
+              item={item}
+              event={event}
+              eventType={eventType}
+            />
           </React.Fragment>
         ))}
       </List>
@@ -40,4 +46,4 @@ const HighlightsFeed: React.FC<HighlightsFeedProps> = ({
   );
 };
 
-export default HighlightsFeed;
+export default SharedHighlightsFeed;

@@ -16,30 +16,64 @@ import {
   Videocam as VideoIcon,
 } from "@mui/icons-material";
 import { format } from "date-fns";
+
+import { useStyles } from "../../styles";
 import {
   FeedItem,
   Tournament,
+  Tour,
   ShoutOut,
+  Event,
   Highlight,
-} from "../../../types/event";
-import { useStyles } from "../../../styles/hooks/useStyles";
+} from "../../types/event";
 
-export interface HighlightItemProps {
+export interface SharedHighlightItemProps {
   item: FeedItem;
-  tournament: Tournament;
+  event: Event;
+  eventType: "tournament" | "tour";
 }
 
-const HighlightItem: React.FC<HighlightItemProps> = ({ item, tournament }) => {
+const SharedHighlightItem: React.FC<SharedHighlightItemProps> = ({
+  item,
+  event,
+}) => {
   const styles = useStyles();
 
+  // Type guard function to check if the event is a Tournament
+  const isTournament = (event: Event): event is Tournament => {
+    return event.type === "tournament";
+  };
+
+  // Type guard function to check if the event is a Tour
+  const isTour = (event: Event): event is Tour => {
+    return event.type === "tour";
+  };
+
   const getPlayerName = (playerId: string) => {
-    const player = tournament.players.find((p) => p.id === playerId);
+    let players: any[] = [];
+
+    if (isTournament(event)) {
+      players = event.players;
+    } else if (isTour(event) && event.players) {
+      players = event.players;
+    }
+
+    const player = players.find((p) => p.id === playerId);
     return player ? player.name : "Unknown Player";
   };
 
   const getRoundName = (roundId?: string) => {
     if (!roundId) return "General";
-    const round = tournament.rounds.find((r) => r.id === roundId);
+
+    let rounds: any[] = [];
+
+    if (isTournament(event)) {
+      rounds = event.rounds;
+    } else if (isTour(event)) {
+      rounds = event.rounds || [];
+    }
+
+    const round = rounds.find((r) => r.id === roundId);
     return round ? round.name : "Unknown Round";
   };
 
@@ -220,4 +254,4 @@ const HighlightItem: React.FC<HighlightItemProps> = ({ item, tournament }) => {
   );
 };
 
-export default HighlightItem;
+export default SharedHighlightItem;

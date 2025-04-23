@@ -18,21 +18,23 @@ import {
   CloudUpload as UploadIcon,
   Clear as ClearIcon,
 } from "@mui/icons-material";
-import { HighlightFormData, Tournament } from "../../../types/event";
-import { useStyles } from "../../../styles/hooks/useStyles";
+import { useStyles } from "../../styles";
+import { HighlightFormData, Event } from "../../types/event";
 
-interface HighlightFormProps {
+interface SharedHighlightFormProps {
   open: boolean;
   onClose: () => void;
   onSubmit: (formData: HighlightFormData) => void;
-  tournament: Tournament;
+  event: Event;
+  eventType: "tournament" | "tour";
 }
 
-const HighlightForm: React.FC<HighlightFormProps> = ({
+const SharedHighlightForm: React.FC<SharedHighlightFormProps> = ({
   open,
   onClose,
   onSubmit,
-  tournament,
+  event,
+  eventType,
 }) => {
   const styles = useStyles();
 
@@ -174,6 +176,15 @@ const HighlightForm: React.FC<HighlightFormProps> = ({
     );
   };
 
+  // Get rounds based on event type
+  const rounds =
+    eventType === "tournament"
+      ? (event as any).rounds || []
+      : (event as any).rounds || [];
+
+  const eventTypeCapitalized =
+    eventType.charAt(0).toUpperCase() + eventType.slice(1);
+
   return (
     <Dialog
       open={open}
@@ -183,7 +194,7 @@ const HighlightForm: React.FC<HighlightFormProps> = ({
       PaperProps={{ sx: styles.tournamentHighlights.formDialog.paper }}
     >
       <DialogTitle sx={styles.tournamentHighlights.formDialog.title}>
-        Share a Highlight
+        Share a {eventTypeCapitalized} Highlight
       </DialogTitle>
       <DialogContent sx={styles.tournamentHighlights.formDialog.content}>
         <Box sx={{ mt: 1 }}>
@@ -260,7 +271,7 @@ const HighlightForm: React.FC<HighlightFormProps> = ({
               <MenuItem value="">
                 <em>General (not round specific)</em>
               </MenuItem>
-              {tournament.rounds.map((round) => (
+              {rounds.map((round: any) => (
                 <MenuItem key={round.id} value={round.id}>
                   {round.name}
                 </MenuItem>
@@ -291,4 +302,4 @@ const HighlightForm: React.FC<HighlightFormProps> = ({
   );
 };
 
-export default HighlightForm;
+export default SharedHighlightForm;

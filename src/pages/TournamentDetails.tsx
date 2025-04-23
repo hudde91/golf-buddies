@@ -27,7 +27,7 @@ import PlayersTab from "../components/tournamentDetails/playersTab/PlayersTab";
 import TournamentDialogs from "../components/tournamentDetails/TournamentDialogs";
 import NotFoundView from "../components/tournamentDetails/NotFoundView";
 import TeamManagement from "../components/tournamentDetails/teamsTab/TeamManagement";
-import HighlightsTab from "../components/tournamentDetails/highlightsTab/HighlightsTab";
+import HighlightsTab from "../components/tournamentDetails/HighlightsTab";
 import { useStyles } from "../styles/hooks/useStyles";
 import { useTheme } from "@mui/material/styles";
 import { alpha } from "@mui/material/styles";
@@ -572,19 +572,7 @@ const TournamentDetail: React.FC = () => {
           >
             {tabValue === (tournament.isTeamEvent ? 4 : 3) && (
               <Box sx={styles.tabs.panel}>
-                <HighlightsTab
-                  tournament={tournament}
-                  user={
-                    user
-                      ? {
-                          id: user.id,
-                          name: user.fullName || "",
-                          email: user.primaryEmailAddress?.emailAddress || "",
-                          avatarUrl: user.imageUrl,
-                        }
-                      : null
-                  }
-                />
+                <HighlightsTab tournament={tournament} />
               </Box>
             )}
           </div>

@@ -1,12 +1,19 @@
 import React from "react";
 import { Box, Tabs, Tab } from "@mui/material";
-import { PlayerGroup, Team, TeamFormData, Tour } from "../../types/event";
+import {
+  PlayerGroup,
+  Team,
+  TeamFormData,
+  Tour,
+  Player,
+} from "../../types/event";
 import TournamentsTab from "./TournamentsTab";
 import RoundsTab from "./RoundsTab";
 import LeaderboardTab from "./LeaderboardTab";
 import PlayersTab from "./PlayersTab";
 import TeamsTab from "./TeamsTab";
 import { useStyles } from "../../styles/hooks/useStyles";
+import SharedHighlightsTab from "../highlights/SharedHighlightsTab";
 
 interface TourTabsProps {
   tour: Tour;
@@ -70,9 +77,7 @@ const TourTabs: React.FC<TourTabsProps> = ({
           <Tab label="Leaderboard" />
           <Tab label="Players" />
           {tour.isTeamEvent && <Tab label="Teams" />}
-          {/* {tour.teams && tour.teams.length > 0 && (
-            <Tab label="Team Leaderboard" />
-          )} */}
+          <Tab label="Highlights" />
         </Tabs>
       </Box>
 
@@ -160,18 +165,18 @@ const TourTabs: React.FC<TourTabsProps> = ({
           )}
         </div>
       )}
-      {/* {tour.isTeamEvent && (
-        <div
-          role="tabpanel"
-          hidden={tabValue !== 5} // Assuming this is the next tab index
-          id="tour-tabpanel-5"
-          aria-labelledby="tour-tab-5"
-        >
-          {tabValue === 5 && (
-            <TeamLeaderboardTab tour={tour} teamLeaderboard={teamLeaderboard} />
-          )}
-        </div>
-      )} */}
+
+      {/* Tab Panel for Highlights */}
+      <div
+        role="tabpanel"
+        hidden={tabValue !== (tour.isTeamEvent ? 5 : 4)}
+        id={tour.isTeamEvent ? "tour-tabpanel-5" : "tour-tabpanel-4"}
+        aria-labelledby={tour.isTeamEvent ? "tour-tab-5" : "tour-tab-4"}
+      >
+        {tabValue === (tour.isTeamEvent ? 5 : 4) && (
+          <SharedHighlightsTab event={tour} eventType="tour" />
+        )}
+      </div>
     </Box>
   );
 };

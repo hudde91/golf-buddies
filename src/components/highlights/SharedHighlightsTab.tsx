@@ -1,44 +1,57 @@
 import React, { useState, useEffect } from "react";
 import { Box, Typography, Button } from "@mui/material";
 import { Add as AddIcon } from "@mui/icons-material";
+import SharedHighlightForm from "./SharedHighlightForm";
+import SharedHighlightsFeed from "./SharedHighlightsFeed";
+import { useStyles } from "../../styles";
+import eventService from "../../services/eventService";
 import {
   ShoutOut,
   Highlight,
   FeedItem,
   HighlightFormData,
-  Tournament,
-  Player,
-} from "../../../types/event";
-import eventService from "../../../services/eventService";
-import HighlightForm from "./HighlightForm";
-import HighlightsFeed from "./HighlightsFeed";
-import { useStyles } from "../../../styles/hooks/useStyles";
+  Event,
+} from "../../types/event";
+import { useUser } from "@clerk/clerk-react";
 
-interface HighlightsTabProps {
-  tournament: Tournament;
-  user: Player | null;
+interface SharedHighlightsTabProps {
+  event: Event;
+  eventType: "tournament" | "tour";
 }
 
-const HighlightsTab: React.FC<HighlightsTabProps> = ({ tournament, user }) => {
+const SharedHighlightsTab: React.FC<SharedHighlightsTabProps> = ({
+  event,
+  eventType,
+}) => {
   const styles = useStyles();
   const [shoutOuts, setShoutOuts] = useState<ShoutOut[]>([]);
   const [highlights, setHighlights] = useState<Highlight[]>([]);
   const [feedItems, setFeedItems] = useState<FeedItem[]>([]);
   const [openDialog, setOpenDialog] = useState(false);
+  const { user } = useUser();
 
   useEffect(() => {
-    if (tournament.id) {
-      const tournamentShoutOuts = eventService.getTournamentShoutOuts(
-        tournament.id
-      );
-      setShoutOuts(tournamentShoutOuts);
+    if (event.id) {
+      // Load both shoutOuts and highlights based on the event type
+      if (eventType === "tournament") {
+        const tournamentShoutOuts = eventService.getTournamentShoutOuts(
+          event.id
+        );
+        setShoutOuts(tournamentShoutOuts);
 
-      const tournamentHighlights = eventService.getTournamentHighlights(
-        tournament.id
-      );
-      setHighlights(tournamentHighlights);
+        const tournamentHighlights = eventService.getTournamentHighlights(
+          event.id
+        );
+        setHighlights(tournamentHighlights);
+      } else if (eventType === "tour") {
+        const tourShoutOuts = eventService.getTourShoutOuts(event.id);
+        setShoutOuts(tourShoutOuts);
+
+        const tourHighlights = eventService.getTourHighlights(event.id);
+        setHighlights(tourHighlights);
+      }
     }
-  }, [tournament.id, tournament.shoutOuts, tournament.highlights]);
+  }, [event.id, eventType, event.shoutOuts, event.highlights]);
 
   // Combine shoutOuts and highlights into a single feed
   useEffect(() => {
@@ -90,18 +103,32 @@ const HighlightsTab: React.FC<HighlightsTabProps> = ({ tournament, user }) => {
       }
     }
 
-    const updatedTournament = eventService.createHighlight(
-      tournament.id,
-      user.id,
-      formData.title,
-      formData.mediaType,
-      formData.description,
-      formData.roundId,
-      mediaUrl
-    );
+    let updatedEvent;
 
-    if (updatedTournament) {
-      setHighlights(updatedTournament.highlights || []);
+    if (eventType === "tournament") {
+      updatedEvent = eventService.createHighlight(
+        event.id,
+        user.id,
+        formData.title,
+        formData.mediaType,
+        formData.description,
+        formData.roundId,
+        mediaUrl
+      );
+    } else if (eventType === "tour") {
+      updatedEvent = eventService.createTourHighlight(
+        event.id,
+        user.id,
+        formData.title,
+        formData.mediaType,
+        formData.description,
+        formData.roundId,
+        mediaUrl
+      );
+    }
+
+    if (updatedEvent) {
+      setHighlights(updatedEvent.highlights || []);
       handleCloseDialog();
     }
   };
@@ -120,11 +147,14 @@ const HighlightsTab: React.FC<HighlightsTabProps> = ({ tournament, user }) => {
     });
   };
 
+  const eventTypeCapitalized =
+    eventType.charAt(0).toUpperCase() + eventType.slice(1);
+
   return (
     <Box sx={styles.tournamentHighlights.container}>
       <Box sx={styles.tournamentHighlights.header}>
         <Typography variant="h5" sx={styles.tournamentHighlights.headerTitle}>
-          Highlights & shout-outs!
+          {eventTypeCapitalized} Highlights & Shout-outs
         </Typography>
         <Box>
           <Button
@@ -139,21 +169,26 @@ const HighlightsTab: React.FC<HighlightsTabProps> = ({ tournament, user }) => {
             variant="subtitle2"
             sx={styles.tournamentHighlights.headerSubtitle}
           >
-            Share your best moments from the tournament
+            Share your best moments from the {eventType}
           </Typography>
         </Box>
       </Box>
 
-      <HighlightsFeed feedItems={feedItems} tournament={tournament} />
+      <SharedHighlightsFeed
+        feedItems={feedItems}
+        event={event}
+        eventType={eventType}
+      />
 
-      <HighlightForm
+      <SharedHighlightForm
         open={openDialog}
         onClose={handleCloseDialog}
         onSubmit={handleSubmitHighlight}
-        tournament={tournament}
+        event={event}
+        eventType={eventType}
       />
     </Box>
   );
 };
 
-export default HighlightsTab;
+export default SharedHighlightsTab;

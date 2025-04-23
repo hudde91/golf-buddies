@@ -71,6 +71,8 @@ export interface Round extends BaseEvent {
       points?: number;
     };
   };
+  shoutOuts?: ShoutOut[];
+  highlights?: Highlight[];
 }
 
 export interface Tournament extends BaseEvent {
@@ -114,6 +116,9 @@ export interface Tour extends BaseEvent {
     topFinish: { [position: number]: number }; // e.g., {1: 100, 2: 75, 3: 60}
     participation: number;
   };
+  // Add highlight support for tours
+  shoutOuts?: ShoutOut[];
+  highlights?: Highlight[];
 }
 
 export type Event = Tournament | Tour | Round;
@@ -160,7 +165,8 @@ export interface TourFormData {
 
 export interface ShoutOut {
   id: string;
-  tournamentId: string;
+  eventId: string;
+  eventType: "tournament" | "tour";
   roundId: string;
   playerId: string;
   holeNumber: number;
@@ -171,7 +177,8 @@ export interface ShoutOut {
 
 export interface Highlight {
   id: string;
-  tournamentId: string;
+  eventId: string;
+  eventType: "tournament" | "tour";
   playerId: string;
   roundId?: string;
   title: string;

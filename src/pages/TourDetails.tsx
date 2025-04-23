@@ -913,6 +913,7 @@ const TourDetails: React.FC = () => {
           teamCount={teamCount || 0}
           roundCount={roundCount}
           onTabChange={handleTabChange}
+          highlightCount={0}
         />
       )}
 

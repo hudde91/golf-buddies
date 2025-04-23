@@ -1139,7 +1139,31 @@ const eventService = {
     return eventService.updateRound(tournamentId, roundId, { playerGroups });
   },
 
-  // Create a shoutOut for special achievements
+  getAllTours(): Tour[] {
+    const toursData = localStorage.getItem("tours");
+    return toursData ? JSON.parse(toursData) : [];
+  },
+
+  getTourById(tourId: string): Tour | null {
+    const tours = this.getAllTours();
+    return tours.find((tour) => tour.id === tourId) || null;
+  },
+
+  updateTour(tourId: string, updatedTour: Tour): Tour | null {
+    const tours = this.getAllTours();
+    const tourIndex = tours.findIndex((tour) => tour.id === tourId);
+
+    if (tourIndex === -1) {
+      return null;
+    }
+
+    tours[tourIndex] = updatedTour;
+
+    localStorage.setItem("tours", JSON.stringify(tours));
+
+    return updatedTour;
+  },
+
   createShoutOut: (
     tournamentId: string,
     roundId: string,
@@ -1158,7 +1182,8 @@ const eventService = {
     // Create new shoutOut
     const newShoutOut: ShoutOut = {
       id: uuidv4(),
-      tournamentId,
+      eventId: tournamentId,
+      eventType: tournament.type as "tournament",
       roundId,
       playerId,
       holeNumber,
@@ -1184,10 +1209,194 @@ const eventService = {
   },
 
   // Get all shoutOuts for a tournament
-  getTournamentShoutOuts: (tournamentId: string): ShoutOut[] => {
-    const tournament = eventService.getTournamentById(tournamentId);
-    if (!tournament || !tournament.shoutOuts) return [];
-    return tournament.shoutOuts;
+  getTournamentShoutOuts(tournamentId: string): ShoutOut[] {
+    const tournament = this.getTournamentById(tournamentId);
+    return tournament?.shoutOuts || [];
+  },
+
+  addTournamentHighlight(
+    tournamentId: string,
+    highlight: Highlight
+  ): Tournament | null {
+    const tournament = this.getTournamentById(tournamentId);
+    if (!tournament) return null;
+
+    if (!tournament.highlights) {
+      tournament.highlights = [];
+    }
+
+    tournament.highlights.push(highlight);
+    // Simulate updating the tournament in a database
+    this.updateTournament(tournamentId, tournament);
+    return tournament;
+  },
+
+  addTournamentShoutOut(
+    tournamentId: string,
+    shoutOut: ShoutOut
+  ): Tournament | null {
+    const tournament = this.getTournamentById(tournamentId);
+    if (!tournament) return null;
+
+    if (!tournament.shoutOuts) {
+      tournament.shoutOuts = [];
+    }
+
+    tournament.shoutOuts.push(shoutOut);
+    // Simulate updating the tournament in a database
+    this.updateTournament(tournamentId, tournament);
+    return tournament;
+  },
+
+  deleteTournamentHighlight(
+    tournamentId: string,
+    highlightId: string
+  ): Tournament | null {
+    const tournament = this.getTournamentById(tournamentId);
+    if (!tournament || !tournament.highlights) return null;
+
+    tournament.highlights = tournament.highlights.filter(
+      (h) => h.id !== highlightId
+    );
+    // Simulate updating the tournament in a database
+    this.updateTournament(tournamentId, tournament);
+    return tournament;
+  },
+
+  deleteTournamentShoutOut(
+    tournamentId: string,
+    shoutOutId: string
+  ): Tournament | null {
+    const tournament = this.getTournamentById(tournamentId);
+    if (!tournament || !tournament.shoutOuts) return null;
+
+    tournament.shoutOuts = tournament.shoutOuts.filter(
+      (s) => s.id !== shoutOutId
+    );
+    // Simulate updating the tournament in a database
+    this.updateTournament(tournamentId, tournament);
+    return tournament;
+  },
+
+  // TOUR HIGHLIGHT METHODS
+  getTourHighlights(tourId: string): Highlight[] {
+    const tour = this.getTourById(tourId);
+    return tour?.highlights || [];
+  },
+
+  getTourShoutOuts(tourId: string): ShoutOut[] {
+    const tour = this.getTourById(tourId);
+    return tour?.shoutOuts || [];
+  },
+
+  addTourHighlight(tourId: string, highlight: Highlight): Tour | null {
+    const tour = this.getTourById(tourId);
+    if (!tour) return null;
+
+    if (!tour.highlights) {
+      tour.highlights = [];
+    }
+
+    tour.highlights.push(highlight);
+    // Simulate updating the tour in a database
+    this.updateTour(tourId, tour);
+    return tour;
+  },
+
+  addTourShoutOut(tourId: string, shoutOut: ShoutOut): Tour | null {
+    const tour = this.getTourById(tourId);
+    if (!tour) return null;
+
+    if (!tour.shoutOuts) {
+      tour.shoutOuts = [];
+    }
+
+    tour.shoutOuts.push(shoutOut);
+    // Simulate updating the tour in a database
+    this.updateTour(tourId, tour);
+    return tour;
+  },
+
+  deleteTourHighlight(tourId: string, highlightId: string): Tour | null {
+    const tour = this.getTourById(tourId);
+    if (!tour || !tour.highlights) return null;
+
+    tour.highlights = tour.highlights.filter((h) => h.id !== highlightId);
+    // Simulate updating the tour in a database
+    this.updateTour(tourId, tour);
+    return tour;
+  },
+
+  deleteTourShoutOut(tourId: string, shoutOutId: string): Tour | null {
+    const tour = this.getTourById(tourId);
+    if (!tour || !tour.shoutOuts) return null;
+
+    tour.shoutOuts = tour.shoutOuts.filter((s) => s.id !== shoutOutId);
+    // Simulate updating the tour in a database
+    this.updateTour(tourId, tour);
+    return tour;
+  },
+
+  // Helper method to create a highlight for either a tournament or tour
+  createHighlight(
+    eventId: string,
+    playerId: string,
+    title: string,
+    mediaType: "image" | "video",
+    description?: string,
+    roundId?: string,
+    mediaUrl?: string
+  ): Tournament | Tour | null {
+    // This is for backward compatibility with existing code
+    // In a new implementation, you would use the highlightService directly
+    const event = this.getTournamentById(eventId) || this.getTourById(eventId);
+    if (!event) return null;
+
+    const eventType = event.type as "tournament" | "tour";
+    const highlight: Highlight = {
+      id: uuidv4(),
+      eventId,
+      eventType,
+      playerId,
+      title,
+      description,
+      roundId,
+      mediaType,
+      mediaUrl,
+      timestamp: new Date().toISOString(),
+    };
+
+    if (eventType === "tournament") {
+      return this.addTournamentHighlight(eventId, highlight);
+    } else {
+      return this.addTourHighlight(eventId, highlight);
+    }
+  },
+
+  // Helper method for tour highlights specifically
+  createTourHighlight(
+    tourId: string,
+    playerId: string,
+    title: string,
+    mediaType: "image" | "video",
+    description?: string,
+    roundId?: string,
+    mediaUrl?: string
+  ): Tour | null {
+    const highlight: Highlight = {
+      id: uuidv4(),
+      eventId: tourId,
+      eventType: "tour",
+      playerId,
+      title,
+      description,
+      roundId,
+      mediaType,
+      mediaUrl,
+      timestamp: new Date().toISOString(),
+    };
+
+    return this.addTourHighlight(tourId, highlight);
   },
 
   detectAchievements: (
@@ -1245,57 +1454,10 @@ const eventService = {
     });
   },
 
-  // Create a highlight with media (image or video)
-  createHighlight: (
-    tournamentId: string,
-    playerId: string,
-    title: string,
-    mediaType: "image" | "video",
-    description?: string,
-    roundId?: string,
-    mediaUrl?: string
-  ): Tournament | null => {
-    const events = eventService.getAllEvents();
-    const result = findTournamentInEvents(events, tournamentId);
-
-    if (!result) return null;
-
-    const { tournament } = result;
-
-    // Create new highlight
-    const newHighlight: Highlight = {
-      id: uuidv4(),
-      tournamentId,
-      playerId,
-      roundId,
-      title,
-      description,
-      mediaUrl,
-      mediaType,
-      timestamp: new Date().toISOString(),
-    };
-
-    // Add highlight to tournament
-    const updatedTournament = {
-      ...tournament,
-      highlights: [...(tournament.highlights || []), newHighlight],
-    };
-
-    const updatedEvents = updateTournamentInEvents(
-      events,
-      tournamentId,
-      updatedTournament
-    );
-    localStorage.setItem(EVENTS_KEY, JSON.stringify(updatedEvents));
-
-    return updatedTournament;
-  },
-
   // Get all highlights for a tournament
-  getTournamentHighlights: (tournamentId: string): Highlight[] => {
-    const tournament = eventService.getTournamentById(tournamentId);
-    if (!tournament || !tournament.highlights) return [];
-    return tournament.highlights;
+  getTournamentHighlights(tournamentId: string): Highlight[] {
+    const tournament = this.getTournamentById(tournamentId);
+    return tournament?.highlights || [];
   },
 
   // Update player scores for a round
@@ -2562,6 +2724,8 @@ const eventService = {
   // Update a standalone round event
   updateRoundEvent: (id: string, data: Partial<Round>): Round | null => {
     const events = eventService.getAllEvents();
+    // TODO: Check if the event is a standalone round or part of a tournament/tour
+    // If it's part of a tournament or tour, we should update the round in the respective tournament/tour
     const index = events.findIndex((e) => e.type === "round" && e.id === id);
 
     if (index === -1) return null;

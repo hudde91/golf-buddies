@@ -76,6 +76,7 @@ const Home: React.FC = () => {
             </Box>
           </Grid>
 
+          {/* TODO: If a user is logged in and have active events then it should be displayed in like a news feed format so that the user can easy see them and click on them to navigate to them. */}
           <Grid item xs={12} md={6}>
             <Box
               sx={{

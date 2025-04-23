@@ -29,7 +29,7 @@ import { roundFormats } from "../../services/eventService";
 import { useStyles } from "../../styles/hooks/useStyles";
 import FriendInviteList from "../FriendInviteList";
 import { Friend } from "../../services/friendsService";
-import CourseFormDialog from "./CourseFormDialog";
+import CourseFormDialog from "../course/CourseFormDialog";
 import {
   GolfCourse,
   fetchGolfCourses,
