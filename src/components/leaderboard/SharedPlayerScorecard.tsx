@@ -15,7 +15,7 @@ import {
   useTheme,
   alpha,
 } from "@mui/material";
-import { Tournament, Player, Round } from "../../types/event";
+import { Tournament, Player, Round, Tour } from "../../types/event";
 import { useStyles } from "../../styles/hooks/useStyles";
 import {
   calculateSectionTotal,
@@ -23,11 +23,12 @@ import {
   formatScoreToPar,
   getScoreColor,
   getScoreClass,
-} from "./roundsTab/scorecardUtils";
+} from "../leaderboard/scorecardUtils";
 
 interface PlayerScorecardProps {
   player: Player;
-  tournament: Tournament;
+  event: Tournament | Tour;
+  eventType: "tournament" | "tour";
   showAllRounds?: boolean; // Optional prop to show all rounds or just first one
   currentPlayingHole?: number; // Optional prop to highlight the current hole being played
 }
@@ -61,9 +62,10 @@ const a11yProps = (index: number) => {
   };
 };
 
-const PlayerScorecard: React.FC<PlayerScorecardProps> = ({
+const SharedPlayerScorecard: React.FC<PlayerScorecardProps> = ({
   player,
-  tournament,
+  event,
+  eventType,
   showAllRounds = true, // Default to showing all rounds
   currentPlayingHole,
 }) => {
@@ -71,9 +73,11 @@ const PlayerScorecard: React.FC<PlayerScorecardProps> = ({
   const styles = useStyles();
 
   // Sort rounds by date for consistent tab order
-  const sortedRounds = [...tournament.rounds].sort(
-    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-  );
+  const sortedRounds = event.rounds
+    ? [...event.rounds].sort(
+        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+      )
+    : [];
 
   // If showAllRounds is false, only show the first round
   const displayRounds = showAllRounds ? sortedRounds : [sortedRounds[0]];
@@ -88,7 +92,7 @@ const PlayerScorecard: React.FC<PlayerScorecardProps> = ({
   };
 
   // Calculate tournament totals for the player
-  const tournamentTotal = sortedRounds.reduce((total, round) => {
+  const totalScore = sortedRounds.reduce((total, round) => {
     const roundTotal = calculateTotal(player.id, round);
     return total + roundTotal;
   }, 0);
@@ -107,10 +111,12 @@ const PlayerScorecard: React.FC<PlayerScorecardProps> = ({
     }
   };
 
-  // Calculate total par for the tournament
-  const totalTournamentPar = tournament.rounds.reduce((total, round) => {
-    return total + (round.courseDetails?.par || 0);
-  }, 0);
+  // Calculate total par for the event
+  const totalPar = event.rounds
+    ? event.rounds.reduce((total, round) => {
+        return total + (round.courseDetails?.par || 0);
+      }, 0)
+    : 0;
 
   // Function to determine if a hole needs highlighting (is being played)
   const isCurrentlyPlayingHole = (holeNum: number): boolean => {
@@ -162,7 +168,7 @@ const PlayerScorecard: React.FC<PlayerScorecardProps> = ({
             <Typography variant="h6">Scorecard</Typography>
           </Box>
 
-          {tournament.status === "completed" && (
+          {event.status === "completed" && (
             <Box
               sx={{
                 display: "flex",
@@ -175,17 +181,14 @@ const PlayerScorecard: React.FC<PlayerScorecardProps> = ({
                 variant="body1"
                 sx={{ mr: 1, fontWeight: "bold", whiteSpace: "nowrap" }}
               >
-                Tournament Total: {tournamentTotal}
+                {eventType === "tournament" ? "Tournament" : "Tour"} Total:{" "}
+                {totalScore}
               </Typography>
 
-              {totalTournamentPar > 0 && (
+              {totalPar > 0 && (
                 <Chip
-                  label={formatScoreToPar(tournamentTotal, totalTournamentPar)}
-                  color={
-                    tournamentTotal <= totalTournamentPar
-                      ? "success"
-                      : "default"
-                  }
+                  label={formatScoreToPar(totalScore, totalPar)}
+                  color={totalScore <= totalPar ? "success" : "default"}
                   size="small"
                 />
               )}
@@ -418,7 +421,7 @@ const PlayerScorecard: React.FC<PlayerScorecardProps> = ({
       })}
       {showAllRounds &&
         sortedRounds.length > 0 &&
-        tournament.status === "completed" && (
+        event.status === "completed" && (
           <Box
             sx={{
               mt: 3,
@@ -469,4 +472,4 @@ const PlayerScorecard: React.FC<PlayerScorecardProps> = ({
   );
 };
 
-export default PlayerScorecard;
+export default SharedPlayerScorecard;

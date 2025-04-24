@@ -1,9 +1,8 @@
-// src/styles/patterns/tournamentScorecard.ts
 import { Theme } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import { feedback } from "../components/feedback";
 
-export const tournamentScorecard = {
+export const scorecard = {
   scorecardHeader: {
     container: {
       display: "flex",

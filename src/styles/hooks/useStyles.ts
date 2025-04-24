@@ -22,7 +22,7 @@ import {
   profileCard,
   tournamentCard,
   tournamentLeaderboard,
-  tournamentScorecard,
+  scorecard,
   bottomNavigation,
 } from "../patterns";
 import { getStatusColor } from "../patterns/tournamentCard";
@@ -339,8 +339,8 @@ export const useStyles = () => {
       formStyles: tournamentCard.formStyles,
     },
 
-    tournamentScorecard: {
-      scoreCell: tournamentScorecard.scoreCell,
+    scorecard: {
+      scoreCell: scorecard.scoreCell,
     },
 
     tournamentRounds: {

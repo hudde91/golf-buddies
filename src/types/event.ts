@@ -105,7 +105,7 @@ export interface Tour extends BaseEvent {
   createdAt: string;
   tournaments: Tournament[]; // Keep for backward compatibility
   rounds: Round[];
-  players?: Player[];
+  players: Player[];
   teams?: Team[]; // Optional shared teams across tournaments
   invitations?: string[];
   isTeamEvent?: boolean;

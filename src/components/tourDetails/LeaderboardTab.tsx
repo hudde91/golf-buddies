@@ -45,7 +45,6 @@ const LeaderboardTab: React.FC<LeaderboardTabProps> = ({
         </Box>
       ) : (
         <Paper elevation={0} sx={styles.card.glass}>
-          {/* Leaderboard Header */}
           <Box sx={styles.tables.leaderboard.header}>
             <Grid container>
               <Grid item xs={1} sx={{ textAlign: "center" }}>
@@ -76,13 +75,11 @@ const LeaderboardTab: React.FC<LeaderboardTabProps> = ({
             </Grid>
           </Box>
 
-          {/* Leaderboard Rows */}
           {leaderboard.map((player, index) => {
             const tournamentCount = Object.keys(
               player.tournamentResults
             ).length;
 
-            // Use the getPositionStyle helper to determine styling based on position
             const positionStyle = styles.getPositionStyle(index);
 
             return (

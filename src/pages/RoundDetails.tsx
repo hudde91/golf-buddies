@@ -47,7 +47,7 @@ import {
   calculateTotal,
   formatScoreToPar,
   getScoreColor,
-} from "../components/tournamentDetails/leaderboardTab/scorecardUtils";
+} from "../components/leaderboard/scorecardUtils";
 
 const RoundDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();

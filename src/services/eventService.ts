@@ -2373,6 +2373,61 @@ const eventService = {
       })
       .sort((a, b) => a.total - b.total);
   },
+  // Calculate tour tournament leaderboard
+  getTourTeamLeaderboard: (
+    tourId: string
+  ): {
+    teamId: string;
+    teamName: string;
+    teamColor: string;
+    playerCount: number;
+    total: number;
+    roundTotals: { [roundId: string]: number };
+  }[] => {
+    const tour = eventService.getTourById(tourId);
+    if (!tour) return [];
+
+    return tour
+      .teams!.map((team) => {
+        const roundTotals: { [roundId: string]: number } = {};
+        const teamPlayers = tour.players.filter((p) => p.teamId === team.id);
+
+        tour.rounds.forEach((round) => {
+          // For match play formats, use points
+          if (round.format.includes("Match Play") && round.matchResults) {
+            roundTotals[round.id] = teamPlayers.reduce((total, player) => {
+              const matchResult = round.matchResults?.[player.id];
+              return total + (matchResult?.points || 0);
+            }, 0);
+          } else {
+            // For stroke play formats, use scores
+            roundTotals[round.id] = teamPlayers.reduce((total, player) => {
+              const playerScores = round.scores[player.id];
+              if (!playerScores) return total;
+
+              const playerTotal = playerScores.reduce(
+                (sum, hole) => sum + (hole.score || 0),
+                0
+              );
+              return total + playerTotal;
+            }, 0);
+          }
+        });
+
+        return {
+          teamId: team.id,
+          teamName: team.name,
+          teamColor: team.color,
+          playerCount: teamPlayers.length,
+          total: Object.values(roundTotals).reduce(
+            (sum, score) => sum + score,
+            0
+          ),
+          roundTotals,
+        };
+      })
+      .sort((a, b) => a.total - b.total);
+  },
 
   // Update match results for match play formats
   updateMatchResults: (

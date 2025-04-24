@@ -18,7 +18,7 @@ import { Tournament } from "../../../types/event";
 import tournamentService from "../../../services/eventService";
 import { useStyles } from "../../../styles/hooks/useStyles";
 import { useTheme } from "@mui/material";
-import PlayerScorecard from "../PlayerScorecard";
+import SharedPlayerScorecard from "../../leaderboard/SharedPlayerScorecard";
 
 interface TournamentLeaderboardProps {
   tournament: Tournament;
@@ -285,9 +285,10 @@ const TournamentLeaderboard: React.FC<TournamentLeaderboardProps> = ({
                           }}
                         >
                           {playerObj && (
-                            <PlayerScorecard
+                            <SharedPlayerScorecard
                               player={playerObj}
-                              tournament={tournament}
+                              event={tournament}
+                              eventType="tournament"
                             />
                           )}
                         </Box>
