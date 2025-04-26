@@ -22,50 +22,7 @@ const EVENTS_KEY = "events";
 const API_BASE_URL =
   "https://golf-buddies-epfddeddfqdhbtgy.westeurope-01.azurewebsites.net/api";
 
-// export const useGetEventById = (clerkId: string) => {
-//   return useQuery({
-//     queryKey: ["event", clerkId],
-//     queryFn: async () => {
-//       const response = await axios.get(`${API_BASE_URL}/events/${clerkId}`);
-//       return response.data;
-//     },
-//     enabled: !!clerkId, // Only run the query if clerkId is provided
-//   });
-// };
-
-// export const useGetUserEvents = (userId: string) => {
-//   return useQuery({
-//     queryKey: ["userEvents", userId],
-//     queryFn: async () => {
-//       const response = await axios.get(
-//         `${API_BASE_URL}/event/${userId}/events`
-//       );
-//       return response.data;
-//     },
-//     enabled: !!userId, // Only run the query if userId is provided
-//   });
-// };
-
-// Enhanced getEventById with fallback to local storage
-// export const getEventById = async (id: string): Promise<Event | null> => {
-//   try {
-//     // Try to get from API first
-//     const response = await axios.get(`${API_BASE_URL}/events/${id}`);
-//     return response.data;
-//   } catch (error) {
-//     console.warn("API fetch failed, falling back to local storage:", error);
-
-//     // Fall back to local storage
-//     try {
-//       const events = eventService.getAllEvents();
-//       return events.find((e) => e.id === id) || null;
-//     } catch (fallbackError) {
-//       console.error("Local storage fallback also failed:", fallbackError);
-//       return null;
-//     }
-//   }
-// };
-
+// TODO: `${API_BASE_URL}/event/${eventId}` does not exist, replace useGetEventById with useGetUserEvents
 export const useGetEventById = (eventId: string) => {
   return useQuery({
     queryKey: ["event", eventId],
@@ -94,7 +51,6 @@ export const useGetEventById = (eventId: string) => {
   });
 };
 
-// Similarly enhanced useGetUserEvents
 export const useGetUserEvents = (userId: string) => {
   return useQuery({
     queryKey: ["userEvents", userId],
@@ -129,14 +85,18 @@ const createGameplayAPI = async (
         headers: {
           "Content-Type": "application/json",
         },
-
         body: JSON.stringify({
-          type,
-          // Remove below once Rasmus updates service
           location: "",
-          hostName: "",
           imageUrl: "",
-          ...data,
+          isPrivate: false,
+          hostName: data.userName,
+          tourType: data.scoringType,
+          startdate: data.startDate,
+          enddate: data.endDate,
+          eventType: type,
+          description: data.description,
+          name: data.userName,
+          // ...data,
         }),
       }
     );
@@ -151,32 +111,6 @@ const createGameplayAPI = async (
     throw error;
   }
 };
-
-// Available round formats
-export const roundFormats = [
-  "Stroke Play",
-  "Match Play",
-  "Four-ball",
-  "Foursomes",
-  "Singles Match Play",
-  "Better Ball",
-  "Scramble",
-  "Modified Stableford",
-  "Skins Game",
-];
-
-// Available team colors
-export const teamColors = [
-  "#1976d2", // Blue
-  "#dc004e", // Red
-  "#388e3c", // Green
-  "#f57c00", // Orange
-  "#9c27b0", // Purple
-  "#00796b", // Teal
-  "#ffc107", // Amber
-  "#607d8b", // Blue-gray
-  "#d32f2f", // Deep red
-];
 
 const getEventStatus = (
   startDate: string,
@@ -318,22 +252,14 @@ const getRoundLeaderboard = (
 
 const eventService = {
   // Get all events
+  // This is a legacy function that uses local storage
+  // TODO: Replace with API call, use useQuery for fetching like useGetUserEvents
+  // the url is https://golf-buddies-epfddeddfqdhbtgy.westeurope-01.azurewebsites.net/api/event/getallevents
   getAllEvents: (): Event[] => {
     const eventsJson = localStorage.getItem(EVENTS_KEY);
     if (!eventsJson) return [];
     return JSON.parse(eventsJson);
   },
-
-  // Get event by ID - using the API now
-  // getEventById: async (id: string): Promise<Event | null> => {
-  //   try {
-  //     const response = await axios.get(`${API_BASE_URL}/events/${id}`);
-  //     return response.data;
-  //   } catch (error) {
-  //     console.error("Error fetching event by ID:", error);
-  //     return null;
-  //   }
-  // },
 
   // Legacy getEventById for when you need the synchronous version
   getEventByIdSync: (id: string): Event | null => {
@@ -479,8 +405,8 @@ const eventService = {
       const currentUser: Player = {
         id: userId,
         name: userName,
-        email: "", // We may need to add this from the user object if available
-        avatarUrl: "", // We may need to add this from the user object if available
+        email: "",
+        avatarUrl: "",
         teamId: "",
         bio: "",
         question1: "",
@@ -1140,6 +1066,7 @@ const eventService = {
     return eventService.updateRound(tournamentId, roundId, { playerGroups });
   },
 
+  // TODO: Replace with backend API, can use useGetUserEvents and return all the tours for that user
   getAllTours(): Tour[] {
     const toursData = localStorage.getItem("tours");
     return toursData ? JSON.parse(toursData) : [];

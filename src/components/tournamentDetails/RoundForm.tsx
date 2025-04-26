@@ -23,9 +23,8 @@ import {
 } from "@mui/material";
 import InfoIcon from "@mui/icons-material/Info";
 import { RoundFormData } from "../../types/event";
-import { roundFormats } from "../../services/eventService";
 import { useStyles } from "../../styles/hooks/useStyles";
-import { formatDescriptions } from "../util";
+import { formatDescriptions, roundFormats } from "../util";
 
 interface RoundFormProps {
   onSubmit: (data: RoundFormData) => void;

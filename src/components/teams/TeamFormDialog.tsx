@@ -21,7 +21,6 @@ import {
   Star as StarIcon,
   StarBorder as StarBorderIcon,
 } from "@mui/icons-material";
-import { teamColors } from "../../services/eventService";
 import { useStyles } from "../../styles";
 import { Team, TeamFormData, Player } from "../../types/event";
 
@@ -37,6 +36,18 @@ interface TeamFormDialogProps {
   onSubmit: () => void;
   isMobile: boolean;
 }
+
+const teamColors = [
+  "#1976d2", // Blue
+  "#dc004e", // Red
+  "#388e3c", // Green
+  "#f57c00", // Orange
+  "#9c27b0", // Purple
+  "#00796b", // Teal
+  "#ffc107", // Amber
+  "#607d8b", // Blue-gray
+  "#d32f2f", // Deep red
+];
 
 const TeamFormDialog: React.FC<TeamFormDialogProps> = ({
   open,

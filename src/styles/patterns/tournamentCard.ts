@@ -2,7 +2,7 @@ import { Theme } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 
 export const getStatusColor = (status: string, theme: Theme) => {
-  switch (status.toLowerCase()) {
+  switch (status?.toLowerCase()) {
     case "upcoming":
       return theme.palette.info.main;
     case "active":

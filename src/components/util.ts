@@ -49,3 +49,15 @@ export const formatDescriptions: Record<string, string> = {
   "Skins Game":
     "Players compete for each hole. If a player wins a hole outright, they win the 'skin' for that hole.",
 };
+
+export const roundFormats = [
+  "Stroke Play",
+  "Match Play",
+  "Four-ball",
+  "Foursomes",
+  "Singles Match Play",
+  "Better Ball",
+  "Scramble",
+  "Modified Stableford",
+  "Skins Game",
+];

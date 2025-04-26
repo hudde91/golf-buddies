@@ -1,4 +1,3 @@
-// src/components/shared/players/PlayerProfileDialog.tsx
 import React from "react";
 import {
   Dialog,

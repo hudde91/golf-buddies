@@ -23,7 +23,6 @@ const shouldUpdateStatuses = (): boolean => {
   );
 };
 
-// Function to fetch events directly using fetch API instead of React Query
 const fetchUserEvents = async (userId: string) => {
   try {
     const response = await fetch(`${API_BASE_URL}/event/${userId}/events`);

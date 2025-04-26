@@ -25,7 +25,6 @@ import {
 import InfoIcon from "@mui/icons-material/Info";
 import AddIcon from "@mui/icons-material/Add";
 import { RoundFormData } from "../../types/event";
-import { roundFormats } from "../../services/eventService";
 import { useStyles } from "../../styles/hooks/useStyles";
 import FriendInviteList from "../FriendInviteList";
 import { Friend } from "../../services/friendsService";
@@ -35,7 +34,7 @@ import {
   fetchGolfCourses,
   createGolfCourse,
 } from "../../services/golfCourseService";
-import { formatDescriptions } from "../util";
+import { formatDescriptions, roundFormats } from "../util";
 
 interface RoundFormProps {
   onSubmit: (data: RoundFormData & { inviteFriends: string[] }) => void;

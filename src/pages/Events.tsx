@@ -538,7 +538,9 @@ const Events: React.FC = () => {
 
   // Filter events based on status
   const activeEvents = events.filter(
-    (event) => event.status?.toLowerCase() === "active"
+    (event) => event
+    // Revert back this once we have status in backend
+    // (event) => event.status?.toLowerCase() === "active"
   );
 
   const upcomingEvents = events.filter(
