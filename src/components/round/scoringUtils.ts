@@ -1,7 +1,7 @@
-import { Player } from "../../types/event";
+import { Round, Player } from "../../types/event";
 
 /**
- * Calculates total score for a player
+ * Calculates total score for a player in a round
  * @param playerId The player's ID
  * @param scores The scores object from the round
  */
@@ -20,7 +20,8 @@ export const calculateTotalScore = (
  * Calculates score to par for a player
  * @param playerId The player's ID
  * @param scores The scores object from the round
- * @param courseDetails The course details containing par information
+ * @param coursePar The overall course par
+ * @param courseHoles Number of holes in the course
  */
 export const calculateScoreToPar = (
   playerId: string,
@@ -73,6 +74,35 @@ export const getScoreToParColor = (scoreToPar: number | null): string => {
   if (scoreToPar === null || scoreToPar === 0) return "#2e7d32"; // Green for even par
   if (scoreToPar < 0) return "#d32f2f"; // Red for under par
   return "#0288d1"; // Blue for over par
+};
+
+/**
+ * Calculate total score for a specific section of holes in a round
+ */
+export const calculateSectionTotal = (
+  playerId: string,
+  round: Round,
+  holeNumbers: number[]
+): number => {
+  if (!round.scores[playerId]) return 0;
+
+  return holeNumbers.reduce((total, holeNum) => {
+    const holeIndex = holeNum - 1;
+    const score = round.scores[playerId]?.[holeIndex]?.score;
+    return total + (score !== undefined ? score : 0);
+  }, 0);
+};
+
+/**
+ * Calculate total score for all holes in a round
+ */
+export const calculateTotal = (playerId: string, round: Round): number => {
+  if (!round.scores[playerId]) return 0;
+
+  return round.scores[playerId].reduce(
+    (total, holeScore) => total + (holeScore?.score || 0),
+    0
+  );
 };
 
 /**
@@ -132,4 +162,23 @@ export const findFirstIncompleteHole = (
   }
 
   return 1; // Default to first hole if all are complete
+};
+
+/**
+ * Get the CSS class for a score based on relation to par
+ */
+export const getScoreClass = (
+  score?: number,
+  par?: number
+): string | undefined => {
+  if (score === undefined || par === undefined) return undefined;
+
+  const diff = score - par;
+
+  if (diff <= -2) return "eagle"; // Double under par or better
+  if (diff === -1) return "birdie"; // One under par
+  if (diff === 1) return "bogey"; // One over par
+  if (diff >= 2) return "double-bogey"; // Two or more over par
+
+  return undefined; // Par (no special class)
 };

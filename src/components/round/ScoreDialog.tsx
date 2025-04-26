@@ -286,7 +286,9 @@ const ScoreDialog: React.FC<ScoreDialogProps> = ({
                         src={player.avatarUrl}
                         alt={player.name}
                         sx={{ width: 40, height: 40, mr: 2 }}
-                      />
+                      >
+                        {player.name ? player.name[0].toUpperCase() : "P"}
+                      </Avatar>
                       <Box>
                         <Typography
                           variant="subtitle1"

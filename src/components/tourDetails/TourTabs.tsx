@@ -2,12 +2,13 @@ import React from "react";
 import { Box, Tabs, Tab } from "@mui/material";
 import { PlayerGroup, Team, TeamFormData, Tour } from "../../types/event";
 import TournamentsTab from "./TournamentsTab";
-import RoundsTab from "./RoundsTab";
 import LeaderboardTab from "./LeaderboardTab";
 import PlayersTab from "./PlayersTab";
 import { useStyles } from "../../styles/hooks/useStyles";
 import SharedHighlightsTab from "../highlights/SharedHighlightsTab";
 import TeamManagement from "../teams/TeamManagement";
+import RoundTab from "../round/RoundTab";
+import { useNavigate } from "react-router-dom";
 
 interface TourTabsProps {
   tour: Tour;
@@ -41,7 +42,6 @@ const TourTabs: React.FC<TourTabsProps> = ({
   onAddTournament,
   onAddRound,
   navigateToTournament,
-  navigateToRound,
   onDeleteRound,
   onUpdatePlayerGroups,
   onSelectRound,
@@ -51,6 +51,7 @@ const TourTabs: React.FC<TourTabsProps> = ({
   onAssignPlayer,
 }) => {
   const styles = useStyles();
+  const navigate = useNavigate();
 
   return (
     <Box sx={styles.card.glass}>
@@ -83,15 +84,20 @@ const TourTabs: React.FC<TourTabsProps> = ({
         aria-labelledby="tour-tab-0"
       >
         {tabValue === 0 && (
-          <RoundsTab
-            tour={tour}
+          <RoundTab
+            rounds={tour.rounds}
+            players={tour.players}
             isCreator={isCreator}
             selectedRoundId={selectedRoundId}
-            onAddRound={onAddRound}
-            navigateToRound={navigateToRound}
-            onDeleteRound={onDeleteRound}
             onSelectRound={onSelectRound}
+            onDeleteRound={onDeleteRound}
             onUpdatePlayerGroups={onUpdatePlayerGroups}
+            onAddRound={onAddRound}
+            onNavigateToGroup={(roundId, groupId) =>
+              navigate(`/tours/${tour.id}/rounds/${roundId}/groups/${groupId}`)
+            }
+            parentType="tour"
+            parentId={tour.id}
           />
         )}
       </div>

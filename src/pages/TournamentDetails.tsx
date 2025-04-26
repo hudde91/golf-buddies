@@ -22,7 +22,6 @@ import { Tournament, RoundFormData, Player, PlayerGroup } from "../types/event";
 import TournamentHeader from "../components/tournamentDetails/TournamentHeader";
 import TournamentInfo from "../components/tournamentDetails/TournamentInfo";
 import LeaderboardTab from "../components/tournamentDetails/leaderboardTab/LeaderboardTab";
-import RoundsTab from "../components/tournamentDetails/roundsTab/RoundsTab";
 import TournamentDialogs from "../components/tournamentDetails/TournamentDialogs";
 import NotFoundView from "../components/tournamentDetails/NotFoundView";
 
@@ -33,6 +32,7 @@ import MobileBottomNavigation from "../components/tournamentDetails/MobileBottom
 import PlayersTab from "../components/players/PlayersTab";
 import SharedHighlightsTab from "../components/highlights/SharedHighlightsTab";
 import TeamManagement from "../components/teams/TeamManagement";
+import RoundTab from "../components/round/RoundTab";
 
 const TAB_INDICES = {
   leaderboard: 0,
@@ -516,14 +516,23 @@ const TournamentDetail: React.FC = () => {
           >
             {tabValue === 1 && (
               <Box sx={styles.tabs.panel}>
-                <RoundsTab
-                  tournament={tournament}
+                <RoundTab
+                  rounds={tournament.rounds}
+                  players={tournament.players}
                   isCreator={isCreator}
                   selectedRoundId={selectedRoundId}
                   onSelectRound={handleSelectRound}
                   onDeleteRound={handleDeleteRound}
-                  onAddRound={dialogHandlers.addRound.open}
                   onUpdatePlayerGroups={handleUpdatePlayerGroups}
+                  // onAddRound={handleAddRound}
+                  onNavigateToGroup={(roundId, groupId) =>
+                    navigate(
+                      `/tournaments/${tournament.id}/rounds/${roundId}/groups/${groupId}`
+                    )
+                  }
+                  parentType="tournament"
+                  parentId={tournament.id}
+                  onAddRound={dialogHandlers.addRound.open}
                 />
               </Box>
             )}
@@ -583,6 +592,7 @@ const TournamentDetail: React.FC = () => {
       </Box>
 
       {isMobile && tournament && (
+        // TODO: Add a new MobileBottomNavigation specific for tournaments
         <MobileBottomNavigation
           activeTab={tabValue}
           teamCount={tournament.teams.length}

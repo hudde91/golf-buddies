@@ -28,16 +28,14 @@ import NotFound from "./pages/NotFound";
 import Loading from "./components/Loading";
 import SplashScreen from "./components/splashScreen/SplashScreen";
 import BackgroundService from "./services/backgroundService";
-import GroupDetailPageContainer from "./components/tournamentDetails/roundsTab/GroupPage/GroupDetailPageContainer";
 import Friends from "./pages/Friends";
 import RoundDetails from "./pages/RoundDetails";
-import RoundGroupDetailPage from "./components/round/RoundGroupDetailPage";
 import { QueryProvider } from "./QueryProvider";
 import EventDetailsRouter from "./components/EventDetailsRouter";
 import SignUpHandler from "./components/SignUpHandler";
 import { EventsAPIProvider } from "./EventsAPIProvider";
+import GroupDetailsContainer from "./components/round/GroupDetailsContainer";
 
-// Error Boundary Component
 class ErrorBoundary extends React.Component<
   { children: React.ReactNode },
   { hasError: boolean; error: Error | null; errorInfo: ErrorInfo | null }
@@ -260,7 +258,16 @@ const AppContent: React.FC = () => {
                     path="/tournaments/:tournamentId/rounds/:roundId/groups/:groupId"
                     element={
                       <ProtectedRoute>
-                        <GroupDetailPageContainer />
+                        <GroupDetailsContainer containerType="tournament" />
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  <Route
+                    path="/tours/:tourId/rounds/:roundId/groups/:groupId"
+                    element={
+                      <ProtectedRoute>
+                        <GroupDetailsContainer containerType="tour" />
                       </ProtectedRoute>
                     }
                   />
@@ -278,7 +285,7 @@ const AppContent: React.FC = () => {
                     path="/rounds/:roundId/groups/:groupId"
                     element={
                       <ProtectedRoute>
-                        <RoundGroupDetailPage />
+                        <GroupDetailsContainer containerType="standalone" />
                       </ProtectedRoute>
                     }
                   />

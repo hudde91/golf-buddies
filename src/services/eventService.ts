@@ -129,6 +129,7 @@ const createGameplayAPI = async (
         headers: {
           "Content-Type": "application/json",
         },
+
         body: JSON.stringify({
           type,
           // Remove below once Rasmus updates service
