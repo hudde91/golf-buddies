@@ -26,9 +26,10 @@ import {
   ExpandLess as ExpandLessIcon,
   GolfCourse as GolfCourseIcon,
 } from "@mui/icons-material";
-import { Round, Player } from "../../types/event";
+import { Round, Player, HoleScore } from "../../types/event";
 import PlayerScorecard from "../tournamentDetails/PlayerScorecard";
 import { useStyles } from "../../styles/hooks/useStyles";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import eventService from "../../services/eventService";
 
 import ScoreDialog from "./ScoreDialog";
@@ -47,39 +48,50 @@ const RoundGroupDetailPage: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { roundId, groupId } = useParams<{
     roundId: string;
     groupId: string;
   }>();
 
-  const [round, setRound] = useState<Round | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchRound = async () => {
-      setLoading(true);
+  // Fetch round data using React Query
+  const {
+    data: round,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["round", roundId],
+    queryFn: async () => {
       if (!roundId) {
-        navigate("/events");
-        return;
+        throw new Error("Round ID is required");
       }
-
-      try {
-        const roundData = eventService.getRoundById(roundId);
-        if (!roundData) {
-          navigate("/events");
-          return;
-        }
-        setRound(roundData);
-      } catch (error) {
-        console.error("Error fetching round:", error);
-        navigate("/events");
-      } finally {
-        setLoading(false);
+      const data = await eventService.getRoundById(roundId);
+      if (!data) {
+        throw new Error("Round not found");
       }
-    };
+      return data;
+    },
+    enabled: !!roundId,
+    onError: (err) => {
+      console.error("Error fetching round:", err);
+      navigate("/events");
+    },
+  });
 
-    fetchRound();
-  }, [roundId, navigate]);
+  // Create a mutation for updating round scores
+  const updateRoundMutation = useMutation({
+    mutationFn: async (data: { roundId: string; updatedRound: Round }) => {
+      return await eventService.updateRoundEvent(
+        data.roundId,
+        data.updatedRound
+      );
+    },
+    onSuccess: (updatedRound) => {
+      // Invalidate and refetch the round data after a successful update
+      queryClient.invalidateQueries({ queryKey: ["round", roundId] });
+    },
+  });
 
   // Get the group from the round data
   const group = round?.playerGroups?.find((g) => g.id === groupId);
@@ -156,26 +168,14 @@ const RoundGroupDetailPage: React.FC = () => {
       },
     };
 
-    // Update the round with the completely new object
-    try {
-      const updatedRound = eventService.updateRoundEvent(
-        roundId,
-        completeRound
-      );
-
-      if (updatedRound) {
-        // Make sure the state update happens
-        console.log("Round updated successfully");
-        setRound(updatedRound);
-      } else {
-        console.error("Failed to update round: no updated round returned");
-      }
-    } catch (error) {
-      console.error("Error updating round scores:", error);
-    }
+    // Update the round with the mutation
+    updateRoundMutation.mutate({
+      roundId,
+      updatedRound: completeRound,
+    });
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <Box
         sx={{
@@ -190,12 +190,14 @@ const RoundGroupDetailPage: React.FC = () => {
     );
   }
 
-  if (!round || !group) {
+  if (isError || !round || !group) {
     return (
       <Container maxWidth="lg" disableGutters={isMobile}>
         <Box sx={{ mt: 4, textAlign: "center" }}>
           <Typography variant="h5" color="error">
-            Group or round not found
+            {isError
+              ? `Error loading round: ${(error as Error).message}`
+              : "Group or round not found"}
           </Typography>
           <Button
             variant="contained"
@@ -548,6 +550,29 @@ const RoundGroupDetailPage: React.FC = () => {
         onSave={handleSaveScore}
         totalHoles={holeCount}
       />
+
+      {/* Loading indicator when scores are being saved */}
+      {updateRoundMutation.isPending && (
+        <Box
+          sx={{
+            position: "fixed",
+            bottom: 16,
+            right: 16,
+            zIndex: 2000,
+            bgcolor: theme.palette.primary.main,
+            color: theme.palette.primary.contrastText,
+            px: 2,
+            py: 1,
+            borderRadius: 2,
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+          }}
+        >
+          <CircularProgress size={20} color="inherit" />
+          <Typography variant="body2">Saving score...</Typography>
+        </Box>
+      )}
     </Box>
   );
 };

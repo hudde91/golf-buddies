@@ -1,93 +1,79 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useUser } from "@clerk/clerk-react";
-import eventService from "../../../../services/eventService";
+import {
+  useGetTournamentById,
+  useUpdateRoundScores,
+} from "../../../../services/eventService";
 import Loading from "../../../Loading";
 import NotFound from "../../../../pages/NotFound";
 import GroupDetailPage from "./GroupDetailPage";
+import { HoleScore } from "../../../../types/event";
 
 const GroupDetailPageContainer: React.FC = () => {
-  const [loading, setLoading] = useState(true);
-  const [tournament, setTournament] = useState<any>(null);
   const { tournamentId, roundId, groupId } = useParams<{
     tournamentId: string;
     roundId: string;
     groupId: string;
   }>();
   const navigate = useNavigate();
-  const { user } = useUser();
 
+  // Fetch tournament data using React Query
+  const {
+    data: tournament,
+    isLoading,
+    isError,
+    error,
+  } = useGetTournamentById(tournamentId || "");
+
+  // Set up mutation for updating scores
+  const updateScoresMutation = useUpdateRoundScores();
+
+  // Check if round and group exist
   useEffect(() => {
-    if (!tournamentId || !user) return;
-
-    const fetchTournament = async () => {
-      setLoading(true);
-      try {
-        // Fetch tournament data from your service
-        const tournamentData = await eventService.getTournamentById(
-          tournamentId
-        );
-
-        if (tournamentData) {
-          setTournament(tournamentData);
-
-          const round = tournamentData.rounds.find(
-            (r: any) => r.id === roundId
-          );
-          if (!round) {
-            console.error("Round not found");
-            navigate(`/tournaments/${tournamentId}`);
-            return;
-          }
-
-          const group = round.playerGroups?.find((g: any) => g.id === groupId);
-          if (!group) {
-            console.error("Group not found");
-            navigate(`/tournaments/${tournamentId}`);
-            return;
-          }
-        } else {
-          // Tournament not found
-          navigate("/events");
-        }
-      } catch (error) {
-        console.error("Error fetching tournament data:", error);
-        navigate("/events");
-      } finally {
-        setLoading(false);
+    if (!isLoading && tournament && roundId) {
+      const round = tournament.rounds.find((r) => r.id === roundId);
+      if (!round) {
+        console.error("Round not found");
+        navigate(`/tournaments/${tournamentId}`);
+        return;
       }
-    };
 
-    fetchTournament();
-  }, [tournamentId, roundId, groupId, user, navigate]);
+      const group = round.playerGroups?.find((g) => g.id === groupId);
+      if (!group) {
+        console.error("Group not found");
+        navigate(`/tournaments/${tournamentId}`);
+        return;
+      }
+    }
+  }, [tournament, roundId, groupId, tournamentId, navigate, isLoading]);
 
   // Handle score updates
   const handleUpdateScores = async (
     roundId: string,
     playerId: string,
-    scores: any[]
+    scores: HoleScore[]
   ) => {
     if (!tournamentId) return;
 
     try {
-      // Update scores in the tournament data
-      const updatedTournament = await eventService.updatePlayerScores(
+      updateScoresMutation.mutate({
         tournamentId,
         roundId,
         playerId,
-        scores
-      );
-
-      if (updatedTournament) {
-        setTournament(updatedTournament);
-      }
+        scores,
+      });
     } catch (error) {
       console.error("Error updating scores:", error);
     }
   };
 
-  if (loading) {
+  if (isLoading) {
     return <Loading />;
+  }
+
+  if (isError) {
+    console.error("Error fetching tournament:", error);
+    return <NotFound />;
   }
 
   if (!tournament) {

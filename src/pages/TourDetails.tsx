@@ -12,12 +12,13 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { ArrowBack as ArrowBackIcon } from "@mui/icons-material";
-import eventService, {
-  addTeamToTour,
-  assignPlayerToTourTeam,
-  deleteTourTeam,
-  getTourTeamLeaderboard,
-  updateTourTeam,
+import {
+  useGetEventById,
+  useUpdateEvent,
+  useDeleteEvent,
+  useAddRoundToTour,
+  useAddTournamentToTour,
+  useUpdatePlayerGroups,
 } from "../services/eventService";
 import {
   Tour,
@@ -38,138 +39,64 @@ import { colors, useStyles } from "../styles";
 import MobileTourBottomNavigation from "../components/tourDetails/MobileTourBottomNavigation";
 import SharedPlayerCard from "../components/SharedPlayerCard";
 import PlayerProfileDialog from "../components/players/PlayerProfileDialog";
-import friendsService from "../services/friendsService";
+import { useGetAcceptedFriends } from "../services/friendsService";
 import TeamManagement from "../components/teams/TeamManagement";
 
 const TourDetails: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id = "" } = useParams<{ id: string }>();
   const { user, isLoaded } = useUser();
   const navigate = useNavigate();
   const theme = useTheme();
   const styles = useStyles();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const [tour, setTour] = useState<Tour | null>(null);
-  const [leaderboard, setLeaderboard] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [tabValue, setTabValue] = useState(0);
   const [openAddTournament, setOpenAddTournament] = useState(false);
-  const [openAddRound, setOpenAddRound] = useState(false); // New state for add round dialog
+  const [openAddRound, setOpenAddRound] = useState(false);
   const [openEditTour, setOpenEditTour] = useState(false);
-  const [isCreator, setIsCreator] = useState(false);
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
   const [profileDialogOpen, setProfileDialogOpen] = useState(false);
-  const [friends, setFriends] = useState<any[]>([]);
-  const [teamLeaderboard, setTeamLeaderboard] = useState<any[]>([]);
+  const [selectedRoundId, setSelectedRoundId] = useState<string | null>(null);
 
-  const [selectedRoundId, setSelectedRoundId] = useState<string | null>(
-    tour?.rounds && tour.rounds.length > 0 ? tour.rounds[0].id : null
+  // React Query hooks
+  const {
+    data: event,
+    isLoading: isEventLoading,
+    error: eventError,
+  } = useGetEventById(id);
+  const { data: friends, isLoading: friendsLoading } = useGetAcceptedFriends(
+    user?.id || ""
   );
+  const { mutate: updateEvent } = useUpdateEvent();
+  const { mutate: deleteEvent } = useDeleteEvent();
+  const { mutate: addRoundToTour } = useAddRoundToTour();
+  const { mutate: addTournamentToTour } = useAddTournamentToTour();
+  const { mutate: updatePlayerGroups } = useUpdatePlayerGroups();
+
+  // Derived state
+  const tour = event && event.type === "tour" ? (event as Tour) : null;
+  const isCreator = tour ? tour.createdBy === user?.id : false;
+  const roundCount = tour?.rounds?.length || 0;
+  const tournamentCount = tour?.tournaments?.length || 0;
+  const playerCount = tour?.players?.length || 0;
+  const teamCount = tour?.teams?.length || 0;
+  const hasTeams = Boolean(tour?.teams && tour.teams.length > 0);
+
+  // Calculate leaderboard data
+  const leaderboard = tour ? calculateTourLeaderboard(tour) : [];
+  const teamLeaderboard =
+    tour && hasTeams ? calculateTeamLeaderboard(tour) : [];
+
+  // Set selected round ID when tour data is loaded
+  useEffect(() => {
+    if (tour?.rounds && tour.rounds.length > 0 && !selectedRoundId) {
+      setSelectedRoundId(tour.rounds[0].id);
+    }
+  }, [tour, selectedRoundId]);
 
   const handleSelectRound = (roundId: string) => {
     setSelectedRoundId(roundId);
   };
-
-  useEffect(() => {
-    if (!isLoaded || !user || !id) return;
-
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        // Fetch tour data
-        const fetchedEvent = await eventService.getEventById(id);
-
-        if (fetchedEvent && fetchedEvent.type === "tour") {
-          const tourData = fetchedEvent as Tour;
-          if (!tourData.rounds) {
-            tourData.rounds = [];
-          }
-
-          // Initialize teams if it doesn't exist
-          if (!tourData.teams) {
-            tourData.teams = [];
-          }
-
-          setTour(tourData);
-          setIsCreator(tourData.createdBy === user.id);
-
-          const tourLeaderboard = eventService.getTourLeaderboard(id);
-          setLeaderboard(tourLeaderboard);
-
-          // Get team leaderboard if teams exist
-          if (tourData.teams && tourData.teams.length > 0) {
-            const teamLeaderboard = getTourTeamLeaderboard(id);
-            setTeamLeaderboard(teamLeaderboard);
-          }
-
-          try {
-            const fetchedFriends = await friendsService.getAcceptedFriends(
-              user.id
-            );
-            setFriends(fetchedFriends || []);
-          } catch (friendsError) {
-            console.error("Error fetching friends:", friendsError);
-            setFriends([]);
-          }
-        } else {
-          navigate("/events");
-        }
-
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Error fetching tour data:", error);
-        navigate("/events");
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [id, user, isLoaded, navigate]);
-
-  useEffect(() => {
-    if (!isLoaded || !user || !id) return;
-
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        // Fetch tour data
-        const fetchedEvent = await eventService.getEventById(id);
-
-        if (fetchedEvent && fetchedEvent.type === "tour") {
-          const tourData = fetchedEvent as Tour;
-          if (!tourData.rounds) {
-            tourData.rounds = [];
-          }
-
-          setTour(tourData);
-          setIsCreator(tourData.createdBy === user.id);
-
-          const tourLeaderboard = eventService.getTourLeaderboard(id);
-          setLeaderboard(tourLeaderboard);
-
-          try {
-            const fetchedFriends = await friendsService.getAcceptedFriends(
-              user.id
-            );
-            setFriends(fetchedFriends || []);
-          } catch (friendsError) {
-            console.error("Error fetching friends:", friendsError);
-            setFriends([]);
-          }
-        } else {
-          navigate("/events");
-        }
-
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Error fetching tour data:", error);
-        navigate("/events");
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [id, user, isLoaded, navigate]);
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -199,7 +126,9 @@ const TourDetails: React.FC = () => {
     setOpenEditTour(false);
   };
 
-  const handleTournamentFormSubmit = (data: TournamentFormData) => {
+  const handleTournamentFormSubmit = (
+    data: TournamentFormData & { inviteFriends?: string[] }
+  ) => {
     if (!user || !tour) return;
 
     const currentUser: Player = {
@@ -210,21 +139,20 @@ const TourDetails: React.FC = () => {
       teamId: "",
     };
 
-    const updatedEvent = eventService.addTournamentToTour(
-      id!,
-      data,
-      currentUser
-    );
-
-    if (updatedEvent) {
-      setTour(updatedEvent as Tour);
-    }
+    addTournamentToTour({
+      tourId: id,
+      tournamentData: data,
+      currentUser,
+    });
 
     setOpenAddTournament(false);
   };
 
-  const handleRoundFormSubmit = (data: RoundFormData) => {
+  const handleRoundFormSubmit = (
+    data: RoundFormData & { inviteFriends?: string[] }
+  ) => {
     if (!user || !tour) return;
+
     const currentUser: Player = {
       id: user.id,
       name: `${user.firstName} ${user.lastName}`.trim() || "Unknown User",
@@ -233,109 +161,13 @@ const TourDetails: React.FC = () => {
       teamId: "",
     };
 
-    // Add a new function to your event service to handle adding a round to a tour
-    const updatedEvent = eventService.addRoundToTour(id!, data, currentUser);
-
-    if (updatedEvent) {
-      setTour(updatedEvent as Tour);
-    }
+    addRoundToTour({
+      tourId: id,
+      roundData: data,
+      currentUser,
+    });
 
     setOpenAddRound(false);
-  };
-
-  // In the useEffect that fetches tour data
-  useEffect(() => {
-    if (!isLoaded || !user || !id) return;
-
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const fetchedEvent = await eventService.getEventById(id);
-
-        if (fetchedEvent && fetchedEvent.type === "tour") {
-          const tourData = fetchedEvent as Tour;
-          if (!tourData.rounds) {
-            tourData.rounds = [];
-          }
-
-          // Initialize teams if it doesn't exist
-          if (!tourData.teams) {
-            tourData.teams = [];
-          }
-
-          setTour(tourData);
-          setIsCreator(tourData.createdBy === user.id);
-
-          const tourLeaderboard = eventService.getTourLeaderboard(id);
-          setLeaderboard(tourLeaderboard);
-
-          // Get team leaderboard if teams exist
-          if (tourData.teams && tourData.teams.length > 0) {
-            const teamLeaderboard = getTourTeamLeaderboard(id);
-            setTeamLeaderboard(teamLeaderboard);
-          }
-
-          // ... (rest of existing code)
-        }
-      } catch (error) {
-        // ... (error handling)
-      }
-    };
-
-    fetchData();
-  }, [id, user, isLoaded, navigate]);
-
-  // Add team management handlers
-  const handleAddTeam = (teamData: TeamFormData) => {
-    if (!id) return;
-
-    const updatedEvent = addTeamToTour(id, teamData);
-    if (updatedEvent) {
-      setTour(updatedEvent as Tour);
-
-      // Update team leaderboard
-      const updatedTeamLeaderboard = getTourTeamLeaderboard(id);
-      setTeamLeaderboard(updatedTeamLeaderboard);
-    }
-  };
-
-  const handleUpdateTeam = (teamId: string, teamData: Partial<Team>) => {
-    if (!id) return;
-
-    const updatedEvent = updateTourTeam(id, teamId, teamData);
-    if (updatedEvent) {
-      setTour(updatedEvent as Tour);
-
-      // Update team leaderboard
-      const updatedTeamLeaderboard = getTourTeamLeaderboard(id);
-      setTeamLeaderboard(updatedTeamLeaderboard);
-    }
-  };
-
-  const handleDeleteTeam = (teamId: string) => {
-    if (!id) return;
-
-    const updatedEvent = deleteTourTeam(id, teamId);
-    if (updatedEvent) {
-      setTour(updatedEvent as Tour);
-
-      // Update team leaderboard
-      const updatedTeamLeaderboard = getTourTeamLeaderboard(id);
-      setTeamLeaderboard(updatedTeamLeaderboard);
-    }
-  };
-
-  const handleAssignPlayerToTeam = (playerId: string, teamId?: string) => {
-    if (!id) return;
-
-    const updatedEvent = assignPlayerToTourTeam(id, playerId, teamId);
-    if (updatedEvent) {
-      setTour(updatedEvent as Tour);
-
-      // Update team leaderboard
-      const updatedTeamLeaderboard = getTourTeamLeaderboard(id);
-      setTeamLeaderboard(updatedTeamLeaderboard);
-    }
   };
 
   const handleEditTourSubmit = (data: any) => {
@@ -349,13 +181,10 @@ const TourDetails: React.FC = () => {
       description: data.description,
     };
 
-    const updatedEvent = eventService.updateEvent(id!, {
-      ...updatedTour,
+    updateEvent({
+      eventId: id,
+      updates: updatedTour,
     });
-
-    if (updatedEvent) {
-      setTour(updatedEvent as Tour);
-    }
 
     setOpenEditTour(false);
   };
@@ -366,18 +195,10 @@ const TourDetails: React.FC = () => {
         "Are you sure you want to delete this tour? This action cannot be undone."
       )
     ) {
-      eventService.deleteEvent(id!);
+      deleteEvent(id);
       navigate("/events");
     }
   };
-
-  const handleBackToEvents = () => {
-    navigate("/events");
-  };
-
-  if (isLoading || !isLoaded) {
-    return <LoadingState />;
-  }
 
   const handleDeleteRound = (roundId: string) => {
     if (
@@ -385,9 +206,17 @@ const TourDetails: React.FC = () => {
         "Are you sure you want to delete this round? This action cannot be undone."
       )
     ) {
-      const updatedEvent = eventService.deleteRoundFromTour(id!, roundId);
-      if (updatedEvent) {
-        setTour(updatedEvent as Tour);
+      // We need to update the tour by removing the round
+      if (tour) {
+        const updatedTour = {
+          ...tour,
+          rounds: tour.rounds.filter((round) => round.id !== roundId),
+        };
+
+        updateEvent({
+          eventId: id,
+          updates: updatedTour,
+        });
       }
     }
   };
@@ -396,17 +225,266 @@ const TourDetails: React.FC = () => {
     roundId: string,
     playerGroups: PlayerGroup[]
   ) => {
-    const updatedEvent = eventService.updateTourRoundPlayerGroups(
-      id!,
+    updatePlayerGroups({
+      eventId: id,
       roundId,
-      playerGroups
-    );
-    if (updatedEvent) {
-      setTour(updatedEvent as Tour);
-    }
+      playerGroups,
+    });
   };
 
-  if (!tour) {
+  const handleBackToEvents = () => {
+    navigate("/events");
+  };
+
+  // Team management handlers
+  const handleAddTeam = (teamData: TeamFormData) => {
+    if (!tour) return;
+
+    // Add the team to the existing teams array
+    const updatedTeams = [
+      ...(tour.teams || []),
+      {
+        id: Math.random().toString(36).substring(2, 9), // Temporary ID, will be replaced by the server
+        name: teamData.name,
+        color: teamData.color,
+        players: [],
+      },
+    ];
+
+    updateEvent({
+      eventId: id,
+      updates: {
+        ...tour,
+        teams: updatedTeams,
+      },
+    });
+  };
+
+  const handleUpdateTeam = (teamId: string, teamData: Partial<Team>) => {
+    if (!tour || !tour.teams) return;
+
+    // Update the specific team
+    const updatedTeams = tour.teams.map((team) =>
+      team.id === teamId ? { ...team, ...teamData } : team
+    );
+
+    updateEvent({
+      eventId: id,
+      updates: {
+        ...tour,
+        teams: updatedTeams,
+      },
+    });
+  };
+
+  const handleDeleteTeam = (teamId: string) => {
+    if (!tour || !tour.teams) return;
+
+    // Remove the team
+    const updatedTeams = tour.teams.filter((team) => team.id !== teamId);
+
+    // Also remove team assignments from players
+    const updatedPlayers = tour.players?.map((player) =>
+      player.teamId === teamId ? { ...player, teamId: "" } : player
+    );
+
+    updateEvent({
+      eventId: id,
+      updates: {
+        ...tour,
+        teams: updatedTeams,
+        players: updatedPlayers,
+      },
+    });
+  };
+
+  const handleAssignPlayerToTeam = (playerId: string, teamId?: string) => {
+    if (!tour || !tour.players) return;
+
+    // Update the player's team assignment
+    const updatedPlayers = tour.players.map((player) =>
+      player.id === playerId ? { ...player, teamId: teamId || "" } : player
+    );
+
+    updateEvent({
+      eventId: id,
+      updates: {
+        ...tour,
+        players: updatedPlayers,
+      },
+    });
+  };
+
+  // Helper function to calculate tour leaderboard
+  function calculateTourLeaderboard(tour: Tour) {
+    // Create a simple leaderboard calculation for tours
+    // This is a basic implementation - you might need to adjust based on your scoring system
+    const playerScores: Record<
+      string,
+      {
+        playerId: string;
+        playerName: string;
+        totalPoints: number;
+        tournamentResults: Record<string, number>;
+      }
+    > = {};
+
+    // Process tournaments
+    tour.tournaments?.forEach((tournament) => {
+      // Add tournament results to player scores
+      tournament.players?.forEach((player) => {
+        if (!playerScores[player.id]) {
+          playerScores[player.id] = {
+            playerId: player.id,
+            playerName: player.name,
+            totalPoints: 0,
+            tournamentResults: {},
+          };
+        }
+
+        // Add tournament points (simplified calculation)
+        const playerTotalScore =
+          tournament.rounds?.reduce((total, round) => {
+            const playerScores = round.scores[player.id] || [];
+            const roundScore = playerScores.reduce(
+              (sum, hole) => sum + (hole.score || 0),
+              0
+            );
+            return total + roundScore;
+          }, 0) || 0;
+
+        playerScores[player.id].tournamentResults[tournament.id] =
+          playerTotalScore;
+        playerScores[player.id].totalPoints += playerTotalScore;
+      });
+    });
+
+    // Process individual rounds not part of tournaments
+    tour.rounds?.forEach((round) => {
+      Object.entries(round.scores || {}).forEach(([playerId, scores]) => {
+        // Find player name
+        const player = tour.players?.find((p) => p.id === playerId);
+        if (!player) return;
+
+        if (!playerScores[playerId]) {
+          playerScores[playerId] = {
+            playerId,
+            playerName: player.name,
+            totalPoints: 0,
+            tournamentResults: {},
+          };
+        }
+
+        // Calculate round score
+        const roundScore = scores.reduce(
+          (sum, hole) => sum + (hole.score || 0),
+          0
+        );
+        playerScores[playerId].totalPoints += roundScore;
+      });
+    });
+
+    // Convert to array and sort
+    return Object.values(playerScores).sort(
+      (a, b) => a.totalPoints - b.totalPoints
+    );
+  }
+
+  // Helper function to calculate team leaderboard
+  function calculateTeamLeaderboard(tour: Tour) {
+    if (!tour.teams || tour.teams.length === 0) return [];
+
+    // Create team score tracking
+    const teamScores: Record<
+      string,
+      {
+        teamId: string;
+        teamName: string;
+        teamColor: string;
+        playerCount: number;
+        totalPoints: number;
+        tournamentResults: Record<string, number>;
+      }
+    > = {};
+
+    // Initialize teams
+    tour.teams.forEach((team) => {
+      teamScores[team.id] = {
+        teamId: team.id,
+        teamName: team.name,
+        teamColor: team.color || "#ffffff",
+        playerCount: 0,
+        totalPoints: 0,
+        tournamentResults: {},
+      };
+    });
+
+    // Count players per team
+    tour.players?.forEach((player) => {
+      if (player.teamId && teamScores[player.teamId]) {
+        teamScores[player.teamId].playerCount++;
+      }
+    });
+
+    // Calculate team scores from tournaments
+    tour.tournaments?.forEach((tournament) => {
+      // Group players by team
+      const teamPlayers: Record<string, Player[]> = {};
+
+      tournament.players?.forEach((player) => {
+        if (player.teamId) {
+          if (!teamPlayers[player.teamId]) {
+            teamPlayers[player.teamId] = [];
+          }
+          teamPlayers[player.teamId].push(player);
+        }
+      });
+
+      // Calculate team scores for this tournament
+      Object.entries(teamPlayers).forEach(([teamId, players]) => {
+        if (!teamScores[teamId]) return;
+
+        let teamTournamentScore = 0;
+
+        // Sum player scores
+        players.forEach((player) => {
+          const playerTournamentScore =
+            tournament.rounds?.reduce((total, round) => {
+              const playerRoundScores = round.scores[player.id] || [];
+              const roundScore = playerRoundScores.reduce(
+                (sum, hole) => sum + (hole.score || 0),
+                0
+              );
+              return total + roundScore;
+            }, 0) || 0;
+
+          teamTournamentScore += playerTournamentScore;
+        });
+
+        // Average by number of players if needed
+        if (players.length > 0) {
+          teamTournamentScore = teamTournamentScore / players.length;
+        }
+
+        teamScores[teamId].tournamentResults[tournament.id] =
+          teamTournamentScore;
+        teamScores[teamId].totalPoints += teamTournamentScore;
+      });
+    });
+
+    // Convert to array and sort
+    return Object.values(teamScores).sort(
+      (a, b) => a.totalPoints - b.totalPoints
+    );
+  }
+
+  // Loading state
+  if (isEventLoading || !isLoaded) {
+    return <LoadingState />;
+  }
+
+  // Error state
+  if (eventError || !tour) {
     return (
       <Container maxWidth="lg">
         <Box sx={{ mt: 4, textAlign: "center" }}>
@@ -423,13 +501,6 @@ const TourDetails: React.FC = () => {
       </Container>
     );
   }
-
-  // Calculate counts for badge indicators in mobile nav
-  const roundCount = tour.rounds?.length || 0;
-  const tournamentCount = tour.tournaments.length || 0;
-  const playerCount = tour.players?.length || 0;
-  const teamCount = tour.teams?.length || 0;
-  const hasTeams = Boolean(tour.teams && tour.teams.length > 0);
 
   return (
     <Box
@@ -563,7 +634,7 @@ const TourDetails: React.FC = () => {
                           variant="body2"
                           sx={{ color: alpha(theme.palette.common.white, 0.7) }}
                         >
-                          Players: {Object.keys(round.scores).length}
+                          Players: {Object.keys(round.scores || {}).length}
                         </Typography>
                       </Box>
                     ))
@@ -864,12 +935,11 @@ const TourDetails: React.FC = () => {
         <RoundForm
           onSubmit={handleRoundFormSubmit}
           onCancel={handleAddRoundClose}
-          friends={friends}
-          loadingFriends={isLoading}
+          friends={friends || []}
+          loadingFriends={friendsLoading}
         />
       </Dialog>
 
-      {/* Edit Tour Dialog */}
       <Dialog
         open={openEditTour}
         onClose={handleEditTourClose}
@@ -904,20 +974,7 @@ const TourDetails: React.FC = () => {
       <PlayerProfileDialog
         open={profileDialogOpen}
         player={selectedPlayer}
-        event={{
-          ...tour,
-          // startDate: tour.startDate,
-          // endDate: tour.endDate,
-          // rounds: [],
-          // location: "",
-          // format: "",
-          // players: tour.players || [],
-          // teams: tour.teams || [],
-          // invitations: [],
-          // isTeamEvent: true,
-          // scoringType: "individual",
-          // status: tour.status || "active",
-        }}
+        event={tour}
         onClose={() => setProfileDialogOpen(false)}
       />
     </Box>

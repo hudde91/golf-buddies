@@ -1,12 +1,13 @@
 import React from "react";
 import { Grid, Typography, Box, Divider } from "@mui/material";
-import { Tournament, Round } from "../../types/event";
+import { Tournament, Round, Tour } from "../../types/event";
 import InvitationCard from "./InvitationCard";
 import RoundInvitationCard from "./RoundInvitationCard";
 import InvitationEmptyState from "./InvitationEmptyState";
 
 interface InvitationListProps {
-  invitations: Tournament[];
+  tourInvitations: Tour[];
+  tournamentInvitations: Tournament[];
   roundInvitations: Round[];
   onAcceptInvitation: (tournamentId: string) => void;
   onDeclineInvitation: (tournamentId: string) => void;
@@ -15,14 +16,18 @@ interface InvitationListProps {
 }
 
 const InvitationList: React.FC<InvitationListProps> = ({
-  invitations,
+  tourInvitations,
+  tournamentInvitations,
   roundInvitations,
   onAcceptInvitation,
   onDeclineInvitation,
   onAcceptRound,
   onDeclineRound,
 }) => {
-  const hasInvitations = invitations.length > 0 || roundInvitations.length > 0;
+  const hasInvitations =
+    tourInvitations.length > 0 ||
+    tournamentInvitations.length > 0 ||
+    roundInvitations.length > 0;
 
   if (!hasInvitations) {
     return <InvitationEmptyState />;
@@ -30,16 +35,38 @@ const InvitationList: React.FC<InvitationListProps> = ({
 
   return (
     <Box>
-      {invitations.length > 0 && (
+      {tourInvitations.length > 0 && (
+        <>
+          <Typography variant="h5" sx={{ mb: 2 }}>
+            Tour Invitations
+          </Typography>
+          <Grid container spacing={3}>
+            {tourInvitations.map((tour) => (
+              <Grid item xs={12} key={tour.id}>
+                <InvitationCard
+                  event={tour}
+                  onAccept={onAcceptInvitation}
+                  onDecline={onDeclineInvitation}
+                />
+              </Grid>
+            ))}
+          </Grid>
+        </>
+      )}
+      {tourInvitations.length > 0 && tournamentInvitations.length > 0 && (
+        <Divider sx={{ my: 4 }} />
+      )}
+
+      {tournamentInvitations.length > 0 && (
         <>
           <Typography variant="h5" sx={{ mb: 2 }}>
             Tournament Invitations
           </Typography>
           <Grid container spacing={3}>
-            {invitations.map((tournament) => (
+            {tournamentInvitations.map((tournament) => (
               <Grid item xs={12} key={tournament.id}>
                 <InvitationCard
-                  tournament={tournament}
+                  event={tournament}
                   onAccept={onAcceptInvitation}
                   onDecline={onDeclineInvitation}
                 />
@@ -49,7 +76,7 @@ const InvitationList: React.FC<InvitationListProps> = ({
         </>
       )}
 
-      {invitations.length > 0 && roundInvitations.length > 0 && (
+      {tournamentInvitations.length > 0 && roundInvitations.length > 0 && (
         <Divider sx={{ my: 4 }} />
       )}
 
@@ -57,7 +84,7 @@ const InvitationList: React.FC<InvitationListProps> = ({
         <>
           <Typography
             variant="h5"
-            sx={{ mb: 2, mt: invitations.length > 0 ? 4 : 0 }}
+            sx={{ mb: 2, mt: tournamentInvitations.length > 0 ? 4 : 0 }}
           >
             Round Invitations
           </Typography>

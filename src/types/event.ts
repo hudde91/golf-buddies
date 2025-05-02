@@ -124,6 +124,12 @@ export interface Tour extends BaseEvent {
 
 export type Event = Tournament | Tour | Round;
 
+export interface UserInvitations {
+  tournaments: Tournament[];
+  rounds: Round[];
+  tours: Tour[];
+}
+
 export interface TournamentFormData {
   name: string;
   startDate: string;

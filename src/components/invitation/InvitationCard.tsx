@@ -14,17 +14,17 @@ import {
   CalendarToday as CalendarIcon,
   LocationOn as LocationIcon,
 } from "@mui/icons-material";
-import { Tournament } from "../../types/event";
+import { Tournament, Tour } from "../../types/event";
 import { useStyles } from "../../styles/hooks";
 
 interface InvitationCardProps {
-  tournament: Tournament;
+  event: Tour | Tournament;
   onAccept: (tournamentId: string) => void;
   onDecline: (tournamentId: string) => void;
 }
 
 const InvitationCard: React.FC<InvitationCardProps> = ({
-  tournament,
+  event,
   onAccept,
   onDecline,
 }) => {
@@ -38,7 +38,7 @@ const InvitationCard: React.FC<InvitationCardProps> = ({
             <EmailIcon />
           </Box>
           <Typography variant="h6" sx={styles.text.heading.card}>
-            Invitation: {tournament.name}
+            Invitation: {event.name}
           </Typography>
         </Box>
 
@@ -49,27 +49,31 @@ const InvitationCard: React.FC<InvitationCardProps> = ({
             <Box sx={styles.infoItem.base}>
               <CalendarIcon fontSize="small" />
               <Typography variant="body2">
-                {new Date(tournament.startDate).toLocaleDateString()}
-                {tournament.startDate !== tournament.endDate &&
-                  ` to ${new Date(tournament.endDate).toLocaleDateString()}`}
+                {new Date(event.startDate).toLocaleDateString()}
+                {event.startDate !== event.endDate &&
+                  ` to ${new Date(event.endDate).toLocaleDateString()}`}
               </Typography>
             </Box>
 
-            <Box sx={styles.infoItem.base}>
-              <LocationIcon fontSize="small" />
-              <Typography variant="body2">{tournament.location}</Typography>
-            </Box>
+            {event.hasOwnProperty("location") && (
+              <Box sx={styles.infoItem.base}>
+                <LocationIcon fontSize="small" />
+                <Typography variant="body2">
+                  {(event as Tournament).location}
+                </Typography>
+              </Box>
+            )}
           </Grid>
 
           <Grid item xs={12} sm={6}>
             <Box sx={styles.layout.flex.column}>
               <Typography variant="body2" sx={styles.text.body.primary}>
-                <strong>Players:</strong> {tournament.players.length}
+                <strong>Players:</strong> {event.players.length}
               </Typography>
               <Typography variant="body2" sx={styles.text.body.primary}>
                 <strong>Created by:</strong>{" "}
-                {tournament.players.find((p) => p.id === tournament.createdBy)
-                  ?.name || "Unknown"}
+                {event.players.find((p) => p.id === event.createdBy)?.name ||
+                  "Unknown"}
               </Typography>
             </Box>
           </Grid>
@@ -79,14 +83,14 @@ const InvitationCard: React.FC<InvitationCardProps> = ({
         <Button
           color="primary"
           variant="contained"
-          onClick={() => onAccept(tournament.id)}
+          onClick={() => onAccept(event.id)}
           sx={{ ...styles.button.primary, ...styles.button.accept }}
         >
           Accept
         </Button>
         <Button
           variant="outlined"
-          onClick={() => onDecline(tournament.id)}
+          onClick={() => onDecline(event.id)}
           sx={styles.button.danger}
         >
           Decline

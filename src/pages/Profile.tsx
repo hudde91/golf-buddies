@@ -10,10 +10,7 @@ import {
   Typography,
   CircularProgress,
 } from "@mui/material";
-import profileService, {
-  useGetUserByClerkId,
-  useUpdateUser,
-} from "../services/profileService";
+import { useGetUserByClerkId, useUpdateUser } from "../services/profileService";
 import { UserProfile, Achievement } from "../types";
 import ProfileHeader from "../components/profile/ProfileHeader";
 import BioSection from "../components/profile/BioSection";

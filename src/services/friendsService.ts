@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query";
 import { v4 as uuidv4 } from "uuid";
 
 export interface Friend {
@@ -7,6 +8,16 @@ export interface Friend {
   status: "pending" | "accepted" | "rejected";
   createdAt: string;
 }
+
+export const useGetAcceptedFriends = (userId: string) => {
+  return useQuery({
+    queryKey: ["acceptedFriends", userId],
+    queryFn: async () => {
+      return await friendsService.getAcceptedFriends(userId);
+    },
+    enabled: !!userId, // Only run the query if userId is provided
+  });
+};
 
 export const friendsService = {
   getFriends: (userId: string): Friend[] => {

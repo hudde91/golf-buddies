@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useUser } from "@clerk/clerk-react";
 import {
   Container,
@@ -37,8 +37,16 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import UpdateIcon from "@mui/icons-material/Update";
 
-import eventService, { useGetUserEvents } from "../services/eventService";
-import friendsService, { Friend } from "../services/friendsService";
+import {
+  useGetUserEvents,
+  useGetUserInvitations,
+  useCreateTournament,
+  useCreateTour,
+  useCreateRound,
+  useAcceptInvitation,
+  useDeclineInvitation,
+} from "../services/eventService";
+import { useGetAcceptedFriends } from "../services/friendsService";
 import { Event, Tournament, Player, Tour, Round } from "../types/event";
 import TournamentForm from "../components/tournament/TournamentForm";
 import TourForm from "../components/tour/TourForm";
@@ -55,57 +63,40 @@ const Events: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  // Get user events from the backend with React Query
-  const {
-    data: userEvents,
-    isLoading: isEventsLoading,
-    refetch: refetchEvents,
-  } = useGetUserEvents(user?.id || "");
-
-  const [events, setEvents] = useState<Event[]>([]);
-  const [invitations, setInvitations] = useState<Tournament[]>([]);
-  const [roundInvitations, setRoundInvitations] = useState<Round[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [tabValue, setTabValue] = useState(0);
   const [openNewEvent, setOpenNewEvent] = useState(false);
   const [eventType, setEventType] = useState<
     "tournament" | "tour" | "round" | null
   >(null);
-  const [friends, setFriends] = useState<Friend[]>([]);
-  const [loadingFriends, setLoadingFriends] = useState(true);
-  const [submitLoading, setSubmitLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!isLoaded || !user) return;
+  // React Query hooks
+  const { data: userEvents, isLoading: isEventsLoading } = useGetUserEvents(
+    user?.id || ""
+  );
+  const { data: userInvitations, isLoading: isInvitationsLoading } =
+    useGetUserInvitations(user?.primaryEmailAddress?.emailAddress || "");
+  const { data: friends, isLoading: friendsLoading } = useGetAcceptedFriends(
+    user?.id || ""
+  );
 
-    const fetchData = async () => {
-      setIsLoading(true);
+  const { mutate: createTournament, isPending: isCreatingTournament } =
+    useCreateTournament();
+  const { mutate: createTour, isPending: isCreatingTour } = useCreateTour();
+  const { mutate: createRound, isPending: isCreatingRound } = useCreateRound();
+  const { mutate: acceptInvitation } = useAcceptInvitation();
+  const { mutate: declineInvitation } = useDeclineInvitation();
 
-      // Get all invitations (tournaments, tours, rounds)
-      const userInvitationsAll = eventService.getUserInvitations(
-        user.primaryEmailAddress?.emailAddress || ""
-      );
+  // Type assertion for better type safety
+  const tourInvitations: Tour[] = userInvitations?.tours || [];
+  const tournamentInvitations: Tournament[] =
+    userInvitations?.tournaments || [];
+  const roundInvitations: Round[] = userInvitations?.rounds || [];
 
-      // Load friends for round creation
-      const userFriends = friendsService.getAcceptedFriends(user.id);
-
-      setInvitations(userInvitationsAll.tournaments);
-      setRoundInvitations(userInvitationsAll.rounds || []);
-      setFriends(userFriends);
-      setLoadingFriends(false);
-      setIsLoading(false);
-    };
-
-    fetchData();
-  }, [user, isLoaded]);
-
-  // Update local state when userEvents data changes
-  useEffect(() => {
-    if (userEvents) {
-      setEvents(userEvents);
-    }
-  }, [userEvents]);
+  const totalInvitations =
+    tourInvitations.length +
+    tournamentInvitations.length +
+    roundInvitations.length;
 
   // Event handlers
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
@@ -125,204 +116,150 @@ const Events: React.FC = () => {
     setEventType(null);
   };
 
-  const handleTournamentSubmit = async (tournamentData: any) => {
+  const handleTournamentSubmit = (tournamentData: any) => {
     if (!user) return;
-    setSubmitLoading(true);
     setErrorMessage(null);
 
     const currentUser: Player = {
       id: user.id,
       name: user.fullName || "Unknown User",
       email: user.primaryEmailAddress?.emailAddress || "",
-      avatarUrl: user.imageUrl || undefined,
+      avatarUrl: user.imageUrl || "",
+      teamId: "",
     };
 
-    try {
-      console.log("Creating tournament...");
-      const newEvent = await eventService.createTournament(
+    createTournament(
+      {
         tournamentData,
-        currentUser
-      );
-      console.log("Tournament created:", newEvent);
+        currentUser,
+      },
+      {
+        onSuccess: (newEvent) => {
+          console.log("Tournament created:", newEvent);
+          setOpenNewEvent(false);
+          setEventType(null);
 
-      setEvents((prev) => [...prev, newEvent]);
-      setOpenNewEvent(false);
-      setEventType(null);
-
-      // Refresh events from server
-      refetchEvents();
-    } catch (error) {
-      console.error("Failed to create tournament:", error);
-      setErrorMessage("Failed to create tournament. Please try again.");
-    } finally {
-      setSubmitLoading(false);
-    }
+          // Optionally navigate to the new tournament
+          navigate(`/tournaments/${newEvent.id}`);
+        },
+        onError: (error) => {
+          console.error("Failed to create tournament:", error);
+          setErrorMessage("Failed to create tournament. Please try again.");
+        },
+      }
+    );
   };
 
-  const handleTourSubmit = async (tourData: any) => {
+  const handleTourSubmit = (tourData: any) => {
     if (!user) return;
-    setSubmitLoading(true);
     setErrorMessage(null);
 
-    try {
-      console.log("Creating tour...");
-      const newEvent = await eventService.createTour(
+    createTour(
+      {
         tourData,
-        user.id,
-        user.fullName || "Unknown User"
-      );
-      console.log("Tour created:", newEvent);
+        userId: user.id,
+        userName: user.fullName || "Unknown User",
+      },
+      {
+        onSuccess: (newEvent) => {
+          console.log("Tour created:", newEvent);
+          setOpenNewEvent(false);
+          setEventType(null);
 
-      setEvents((prev) => [...prev, newEvent]);
-      setOpenNewEvent(false);
-      setEventType(null);
-
-      // Refresh events from server
-      refetchEvents();
-    } catch (error) {
-      console.error("Failed to create tour:", error);
-      setErrorMessage("Failed to create tour. Please try again.");
-    } finally {
-      setSubmitLoading(false);
-    }
+          // Optionally navigate to the new tour
+          navigate(`/tours/${newEvent.id}`);
+        },
+        onError: (error) => {
+          console.error("Failed to create tour:", error);
+          setErrorMessage("Failed to create tour. Please try again.");
+        },
+      }
+    );
   };
 
-  const handleRoundSubmit = async (roundData: any) => {
+  const handleRoundSubmit = (roundData: any) => {
     if (!user) return;
-    setSubmitLoading(true);
     setErrorMessage(null);
 
     const currentUser: Player = {
       id: user.id,
       name: user.fullName || "Unknown User",
       email: user.primaryEmailAddress?.emailAddress || "",
-      avatarUrl: user.imageUrl || undefined,
+      avatarUrl: user.imageUrl || "",
+      teamId: "",
     };
 
-    try {
-      console.log("Creating round...");
+    createRound(
+      {
+        roundData,
+        currentUser,
+      },
+      {
+        onSuccess: (newEvent) => {
+          console.log("Round created:", newEvent);
+          setOpenNewEvent(false);
+          setEventType(null);
 
-      const newEvent = await eventService.createRound(roundData, currentUser);
-      console.log("Round created:", newEvent);
-
-      setEvents((prev) => [...prev, newEvent]);
-      setOpenNewEvent(false);
-      setEventType(null);
-
-      // Refresh events from server
-      refetchEvents();
-
-      // Optionally navigate to the new round
-      navigate(`/rounds/${newEvent.id}`);
-    } catch (error) {
-      console.error("Failed to create round:", error);
-      setErrorMessage("Failed to create round. Please try again.");
-    } finally {
-      setSubmitLoading(false);
-    }
+          // Navigate to the new round
+          navigate(`/rounds/${newEvent.id}`);
+        },
+        onError: (error) => {
+          console.error("Failed to create round:", error);
+          setErrorMessage("Failed to create round. Please try again.");
+        },
+      }
+    );
   };
 
   const handleViewEvent = (eventId: string, eventType: string) => {
     if (eventType === "round") {
       navigate(`/rounds/${eventId}`);
+    } else if (eventType === "tournament") {
+      navigate(`/tournaments/${eventId}`);
     } else {
-      navigate(`/events/${eventId}`);
+      navigate(`/tours/${eventId}`);
     }
   };
 
-  const handleAcceptInvitation = (tournamentId: string) => {
+  const handleAcceptInvitation = (eventId: string) => {
     if (!user) return;
 
     const currentUser: Player = {
       id: user.id,
       name: user.fullName || "Unknown User",
       email: user.primaryEmailAddress?.emailAddress || "",
-      avatarUrl: user.imageUrl || undefined,
+      avatarUrl: user.imageUrl || "",
+      teamId: "",
     };
 
-    const acceptedEvent = eventService.acceptInvitation(
-      tournamentId,
-      currentUser
-    );
-
-    if (acceptedEvent) {
-      const updatedInvitations = invitations.filter(
-        (t) => t.id !== tournamentId
-      );
-      setInvitations(updatedInvitations);
-
-      // Check if the event is already in our events list
-      if (!events.some((e) => e.id === acceptedEvent.id)) {
-        setEvents([...events, acceptedEvent]);
-      }
-
-      // Refresh events from server
-      refetchEvents();
-    }
+    acceptInvitation({
+      eventId,
+      player: currentUser,
+    });
   };
 
-  const handleDeclineInvitation = (tournamentId: string) => {
+  const handleDeclineInvitation = (eventId: string) => {
     if (!user) return;
 
-    eventService.declineInvitation(
-      tournamentId,
-      user.primaryEmailAddress?.emailAddress || ""
-    );
-
-    // Update state
-    const updatedInvitations = invitations.filter((t) => t.id !== tournamentId);
-    setInvitations(updatedInvitations);
+    declineInvitation({
+      eventId,
+      userEmail: user.primaryEmailAddress?.emailAddress || "",
+    });
   };
 
-  const handleAcceptRound = (roundId: string) => {
-    if (!user) return;
-
-    const currentUser: Player = {
-      id: user.id,
-      name: user.fullName || "Unknown User",
-      email: user.primaryEmailAddress?.emailAddress || "",
-      avatarUrl: user.imageUrl || undefined,
-    };
-
-    const acceptedEvent = eventService.acceptRoundInvitation(
-      roundId,
-      currentUser
-    );
-
-    if (acceptedEvent) {
-      const updatedInvitations = roundInvitations.filter(
-        (r) => r.id !== roundId
-      );
-      setRoundInvitations(updatedInvitations);
-
-      // Check if the event is already in our events list
-      if (!events.some((e) => e.id === acceptedEvent.id)) {
-        setEvents([...events, acceptedEvent]);
-      }
-
-      // Refresh events from server
-      refetchEvents();
-    }
-  };
-
-  const handleDeclineRound = (roundId: string) => {
-    if (!user) return;
-
-    eventService.declineRoundInvitation(
-      roundId,
-      user.primaryEmailAddress?.emailAddress || ""
-    );
-
-    // Update state
-    const updatedInvitations = roundInvitations.filter((r) => r.id !== roundId);
-    setRoundInvitations(updatedInvitations);
-  };
+  // Use same handlers for round invitations for now
+  const handleAcceptRound = handleAcceptInvitation;
+  const handleDeclineRound = handleDeclineInvitation;
 
   const handleCloseError = () => {
     setErrorMessage(null);
   };
 
-  if (isLoading || isEventsLoading || !isLoaded) {
+  const isLoading = isEventsLoading || isInvitationsLoading || !isLoaded;
+  const isSubmitLoading =
+    isCreatingTournament || isCreatingTour || isCreatingRound;
+
+  if (isLoading) {
     return <LoadingState />;
   }
 
@@ -330,15 +267,17 @@ const Events: React.FC = () => {
     // Extract the common data based on event type
     const name = event.name;
     const description = event.description || "No description";
-    const status = event.status!;
+    const status = event.status || "active";
 
     // Get players array based on event type
     const players =
       event.type === "tournament"
-        ? event.players
+        ? (event as Tournament).players
         : event.type === "tour"
-        ? event.players || []
-        : event.players || [];
+        ? (event as Tour).players || []
+        : event.type === "round"
+        ? (event as Round).players || []
+        : [];
 
     // Get date and location based on event type
     const date =
@@ -534,20 +473,16 @@ const Events: React.FC = () => {
     );
   };
 
-  const totalInvitations = invitations.length + roundInvitations.length;
-
   // Filter events based on status
-  const activeEvents = events.filter(
-    (event) => event
-    // Revert back this once we have status in backend
-    // (event) => event.status?.toLowerCase() === "active"
+  const activeEvents = (userEvents || []).filter(
+    (event) => !event.status || event.status.toLowerCase() === "active"
   );
 
-  const upcomingEvents = events.filter(
+  const upcomingEvents = (userEvents || []).filter(
     (event) => event.status?.toLowerCase() === "upcoming"
   );
 
-  const completedEvents = events.filter(
+  const completedEvents = (userEvents || []).filter(
     (event) => event.status?.toLowerCase() === "completed"
   );
 
@@ -707,7 +642,8 @@ const Events: React.FC = () => {
             {tabValue === 3 && (
               <Box sx={styles.tabs.panel}>
                 <InvitationList
-                  invitations={invitations}
+                  tourInvitations={tourInvitations}
+                  tournamentInvitations={tournamentInvitations}
                   roundInvitations={roundInvitations}
                   onAcceptInvitation={handleAcceptInvitation}
                   onDeclineInvitation={handleDeclineInvitation}
@@ -866,26 +802,22 @@ const Events: React.FC = () => {
           <TournamentForm
             onSubmit={handleTournamentSubmit}
             onCancel={handleEventFormClose}
-            // isSubmitting={submitLoading}
           />
         ) : eventType === "round" ? (
           <RoundForm
             onSubmit={handleRoundSubmit}
             onCancel={handleEventFormClose}
-            friends={friends}
-            loadingFriends={loadingFriends}
-            // isSubmitting={submitLoading}
+            friends={friends || []}
+            loadingFriends={friendsLoading}
           />
         ) : (
           <TourForm
             onSubmit={handleTourSubmit}
             onCancel={handleEventFormClose}
-            // isSubmitting={submitLoading}
           />
         )}
       </Dialog>
 
-      {/* Error Snackbar */}
       <Snackbar
         open={!!errorMessage}
         autoHideDuration={6000}
