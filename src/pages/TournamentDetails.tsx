@@ -17,8 +17,22 @@ import {
   MilitaryTech as AchievementIcon,
   ArrowBack as ArrowBackIcon,
 } from "@mui/icons-material";
-import tournamentService from "../services/eventService";
-import { Tournament, RoundFormData, Player, PlayerGroup } from "../types/event";
+import {
+  useGetTournamentById,
+  useUpdateTournament,
+  useDeleteTournament,
+  useAddRoundToTournament,
+  useInvitePlayersToEvent,
+  useUpdatePlayerGroups,
+} from "../services/eventService";
+import {
+  Tournament,
+  RoundFormData,
+  Player,
+  PlayerGroup,
+  Team,
+  TeamFormData,
+} from "../types/event";
 import TournamentHeader from "../components/tournamentDetails/TournamentHeader";
 import TournamentInfo from "../components/tournamentDetails/TournamentInfo";
 import LeaderboardTab from "../components/tournamentDetails/leaderboardTab/LeaderboardTab";
@@ -83,7 +97,7 @@ const CaptainBadge: React.FC<{
 };
 
 const TournamentDetail: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id = "" } = useParams<{ id: string }>();
   const { user, isLoaded } = useUser();
   const navigate = useNavigate();
   const location = useLocation();
@@ -95,8 +109,18 @@ const TournamentDetail: React.FC = () => {
   const queryParams = new URLSearchParams(location.search);
   const tabParam = queryParams.get("tab");
 
-  const [tournament, setTournament] = useState<Tournament | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const {
+    data: tournament,
+    isLoading: isTournamentLoading,
+    error: tournamentError,
+  } = useGetTournamentById(id);
+
+  const { mutate: updateTournament } = useUpdateTournament();
+  const { mutate: deleteTournament } = useDeleteTournament();
+  const { mutate: addRoundToTournament } = useAddRoundToTournament();
+  const { mutate: invitePlayers } = useInvitePlayersToEvent();
+  const { mutate: updatePlayerGroups } = useUpdatePlayerGroups();
+
   const [selectedRoundId, setSelectedRoundId] = useState<string | null>(null);
 
   // Set initial tab value based on URL parameter
@@ -136,27 +160,14 @@ const TournamentDetail: React.FC = () => {
     return tournament.players.find((p) => p.id === team.captain) || null;
   };
 
+  // Set selected round when tournament data is loaded
   useEffect(() => {
-    if (!id || !isLoaded) return;
-
-    const fetchTournament = () => {
-      setIsLoading(true);
-      const tournamentData = tournamentService.getTournamentById(id);
-
-      if (tournamentData) {
-        setTournament(tournamentData);
-
-        // If there are rounds, set the first round as selected
-        if (tournamentData.rounds.length > 0) {
-          setSelectedRoundId(tournamentData.rounds[0].id);
-        }
+    if ((tournament?.rounds?.length ?? 0) > 0 && !selectedRoundId) {
+      if (tournament && tournament.rounds.length > 0) {
+        setSelectedRoundId(tournament.rounds[0].id);
       }
-
-      setIsLoading(false);
-    };
-
-    fetchTournament();
-  }, [id, isLoaded]);
+    }
+  }, [tournament, selectedRoundId]);
 
   // Update tab when URL changes
   useEffect(() => {
@@ -185,37 +196,51 @@ const TournamentDetail: React.FC = () => {
   };
 
   const handleAddRound = (data: RoundFormData) => {
-    if (!id) return;
+    if (!tournament || !user) return;
 
-    const updatedTournament = tournamentService.addRound(id, data);
-    if (updatedTournament) {
-      setTournament(updatedTournament);
+    const currentUser: Player = {
+      id: user.id,
+      name: `${user.firstName} ${user.lastName}`.trim() || "Unknown User",
+      email: user.primaryEmailAddress?.emailAddress || "",
+      avatarUrl: user.imageUrl || "",
+      teamId: "",
+    };
 
-      const newRoundId =
-        updatedTournament.rounds[updatedTournament.rounds.length - 1].id;
-      setSelectedRoundId(newRoundId);
-      setTabValue(1); // Switch to Rounds tab
-      navigate(`/tournaments/${id}?tab=rounds`, { replace: true });
-    }
+    addRoundToTournament({
+      tournamentId: id,
+      roundData: data,
+      currentUser: currentUser,
+    });
 
     setOpenAddRoundDialog(false);
   };
 
   const handleDeleteRound = (roundId: string) => {
-    if (!id || !window.confirm("Are you sure you want to delete this round?"))
+    if (
+      !tournament ||
+      !window.confirm("Are you sure you want to delete this round?")
+    )
       return;
 
-    const updatedTournament = tournamentService.deleteRound(id, roundId);
-    if (updatedTournament) {
-      setTournament(updatedTournament);
+    // Update tournament by removing the round
+    const updatedRounds = tournament.rounds.filter(
+      (round) => round.id !== roundId
+    );
 
-      // If the deleted round was selected, select another one
-      if (selectedRoundId === roundId) {
-        if (updatedTournament.rounds.length > 0) {
-          setSelectedRoundId(updatedTournament.rounds[0].id);
-        } else {
-          setSelectedRoundId(null);
-        }
+    updateTournament({
+      tournamentId: id,
+      updates: {
+        ...tournament,
+        rounds: updatedRounds,
+      },
+    });
+
+    // If the deleted round was selected, select another one
+    if (selectedRoundId === roundId) {
+      if (updatedRounds.length > 0) {
+        setSelectedRoundId(updatedRounds[0].id);
+      } else {
+        setSelectedRoundId(null);
       }
     }
   };
@@ -225,32 +250,24 @@ const TournamentDetail: React.FC = () => {
   };
 
   const handleDeleteTournament = () => {
-    if (
-      !id ||
-      !window.confirm("Are you sure you want to delete this tournament?")
-    )
+    if (!window.confirm("Are you sure you want to delete this tournament?"))
       return;
 
-    tournamentService.deleteTournament(id);
+    deleteTournament(id);
     navigate("/events");
   };
 
-  const handleUpdateTournament = (data: any) => {
-    if (!id) return;
-
-    tournamentService.updateTournament(id, data);
-
-    // Refresh tournament data
-    const updatedTournament = tournamentService.getTournamentById(id);
-    if (updatedTournament) {
-      setTournament(updatedTournament);
-    }
+  const handleUpdateTournament = (data: Partial<Tournament>) => {
+    updateTournament({
+      tournamentId: id,
+      updates: data,
+    });
 
     setOpenEditTournamentDialog(false);
   };
 
   const handleInvitePlayers = () => {
-    if (!tournament || !id) return;
+    if (!id) return;
 
     const emails = emailsToInvite
       .split(",")
@@ -270,59 +287,88 @@ const TournamentDetail: React.FC = () => {
       return;
     }
 
-    tournamentService.invitePlayersToTournament(id, emails);
-
-    // Refresh tournament data
-    const updatedTournament = tournamentService.getTournamentById(id);
-    if (updatedTournament) {
-      setTournament(updatedTournament);
-    }
+    invitePlayers({
+      eventId: id,
+      emails: emails,
+    });
 
     setOpenInviteDialog(false);
   };
 
-  const handleAddTeam = (teamData: any) => {
-    if (!id) return;
+  const handleAddTeam = (teamData: TeamFormData) => {
+    if (!tournament) return;
 
-    const updatedTournament = tournamentService.addTeam(id, teamData);
-    if (updatedTournament) {
-      setTournament(updatedTournament);
-    }
+    // Create a new team object with an ID
+    const newTeam: Team = {
+      id: `team-${Date.now()}`, // Temporary ID that will be replaced by the server
+      name: teamData.name,
+      color: teamData.color,
+      captain: teamData.captain,
+    };
+
+    // Update the tournament with the new team
+    updateTournament({
+      tournamentId: id,
+      updates: {
+        ...tournament,
+        teams: [...tournament.teams, newTeam],
+      },
+    });
   };
 
-  const handleUpdateTeam = (teamId: string, teamData: any) => {
-    if (!id) return;
+  const handleUpdateTeam = (teamId: string, teamData: Partial<Team>) => {
+    if (!tournament) return;
 
-    const updatedTournament = tournamentService.updateTeam(
-      id,
-      teamId,
-      teamData
+    // Update the specific team
+    const updatedTeams = tournament.teams.map((team) =>
+      team.id === teamId ? { ...team, ...teamData } : team
     );
-    if (updatedTournament) {
-      setTournament(updatedTournament);
-    }
+
+    updateTournament({
+      tournamentId: id,
+      updates: {
+        ...tournament,
+        teams: updatedTeams,
+      },
+    });
   };
 
   const handleDeleteTeam = (teamId: string) => {
-    if (!id) return;
+    if (!tournament) return;
 
-    const updatedTournament = tournamentService.deleteTeam(id, teamId);
-    if (updatedTournament) {
-      setTournament(updatedTournament);
-    }
+    // Remove the team
+    const updatedTeams = tournament.teams.filter((team) => team.id !== teamId);
+
+    // Also update players who were on this team
+    const updatedPlayers = tournament.players.map((player) =>
+      player.teamId === teamId ? { ...player, teamId: undefined } : player
+    );
+
+    updateTournament({
+      tournamentId: id,
+      updates: {
+        ...tournament,
+        teams: updatedTeams,
+        players: updatedPlayers,
+      },
+    });
   };
 
   const handleAssignPlayerToTeam = (playerId: string, teamId?: string) => {
-    if (!id) return;
+    if (!tournament) return;
 
-    const updatedTournament = tournamentService.assignPlayerToTeam(
-      id,
-      playerId,
-      teamId
+    // Update the player's team
+    const updatedPlayers = tournament.players.map((player) =>
+      player.id === playerId ? { ...player, teamId } : player
     );
-    if (updatedTournament) {
-      setTournament(updatedTournament);
-    }
+
+    updateTournament({
+      tournamentId: id,
+      updates: {
+        ...tournament,
+        players: updatedPlayers,
+      },
+    });
   };
 
   const dialogHandlers = {
@@ -344,18 +390,14 @@ const TournamentDetail: React.FC = () => {
     roundId: string,
     playerGroups: PlayerGroup[]
   ) => {
-    const updatedTournament = tournamentService.updateTournamentPlayerGroups(
-      tournament?.id!,
+    updatePlayerGroups({
+      eventId: id,
       roundId,
-      playerGroups
-    );
-
-    if (updatedTournament) {
-      setTournament(updatedTournament);
-    }
+      playerGroups,
+    });
   };
 
-  if (isLoading || !isLoaded) {
+  if (isTournamentLoading || !isLoaded) {
     return (
       <Box sx={styles.feedback.loading.container}>
         <CircularProgress sx={styles.feedback.loading.icon} />
@@ -366,7 +408,7 @@ const TournamentDetail: React.FC = () => {
     );
   }
 
-  if (!tournament) {
+  if (tournamentError || !tournament) {
     return <NotFoundView onBackClick={handleBackClick} />;
   }
 
@@ -524,7 +566,6 @@ const TournamentDetail: React.FC = () => {
                   onSelectRound={handleSelectRound}
                   onDeleteRound={handleDeleteRound}
                   onUpdatePlayerGroups={handleUpdatePlayerGroups}
-                  // onAddRound={handleAddRound}
                   onNavigateToGroup={(roundId, groupId) =>
                     navigate(
                       `/tournaments/${tournament.id}/rounds/${roundId}/groups/${groupId}`
@@ -592,7 +633,6 @@ const TournamentDetail: React.FC = () => {
       </Box>
 
       {isMobile && tournament && (
-        // TODO: Add a new MobileBottomNavigation specific for tournaments
         <MobileBottomNavigation
           activeTab={tabValue}
           teamCount={tournament.teams.length}

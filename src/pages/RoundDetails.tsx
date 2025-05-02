@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
 import {
@@ -35,12 +35,16 @@ import {
   ChevronRight as ChevronRightIcon,
 } from "@mui/icons-material";
 import { v4 as uuidv4 } from "uuid";
-import eventService from "../services/eventService";
-import friendsService from "../services/friendsService";
+import {
+  useGetEventById,
+  useUpdateEvent,
+  useDeleteEvent,
+  useInvitePlayersToEvent,
+} from "../services/eventService";
+import { useGetAcceptedFriends } from "../services/friendsService";
 import { Round, RoundFormData, PlayerGroup, Player } from "../types/event";
 import RoundForm from "../components/round/RoundForm";
 import PlayerScorecard from "../components/tournamentDetails/PlayerScorecard";
-import { Friend } from "../services/friendsService";
 import { useStyles } from "../styles/hooks/useStyles";
 import FriendsSelectionDialog from "../components/FriendsSelectionDialog";
 import {
@@ -50,57 +54,31 @@ import {
 } from "../components/leaderboard/scorecardUtils";
 
 const RoundDetails: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id = "" } = useParams<{ id: string }>();
   const { user, isLoaded } = useUser();
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const styles = useStyles();
 
-  const [round, setRound] = useState<Round | null>(null);
-  const [loading, setLoading] = useState(true);
+  const {
+    data: event,
+    isLoading: isEventLoading,
+    error: eventError,
+  } = useGetEventById(id);
+
+  // Cast the event to Round type if it exists and is a round
+  const round = event && event.type === "round" ? (event as Round) : null;
+
+  const { data: friends = [], isLoading: isFriendsLoading } =
+    useGetAcceptedFriends(user?.id || "");
+  const { mutate: updateEvent } = useUpdateEvent();
+  const { mutate: deleteEvent } = useDeleteEvent();
+  const { mutate: invitePlayers } = useInvitePlayersToEvent();
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openFriendsDialog, setOpenFriendsDialog] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const [friends, setFriends] = useState<Friend[]>([]);
-  const [loadingFriends, setLoadingFriends] = useState(true);
-
-  useEffect(() => {
-    if (!id || !isLoaded || !user) return;
-
-    const fetchRound = async () => {
-      setLoading(true);
-      try {
-        const roundData = await eventService.getRoundById(id);
-
-        if (roundData) {
-          setRound(roundData);
-        } else {
-          navigate("/events");
-        }
-      } catch (error) {
-        console.error("Error fetching round data:", error);
-        navigate("/events");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchRound();
-
-    const fetchFriends = async () => {
-      setLoadingFriends(true);
-      if (user) {
-        const userFriends = friendsService.getAcceptedFriends(user.id);
-        setFriends(userFriends);
-        setLoadingFriends(false);
-      }
-    };
-
-    fetchRound();
-    fetchFriends();
-  }, [id, isLoaded, user, navigate]);
 
   const handleEditRound = () => {
     setOpenEditDialog(true);
@@ -111,20 +89,24 @@ const RoundDetails: React.FC = () => {
   };
 
   const handleUpdateRound = (
-    data: RoundFormData & { inviteFriends: string[] }
+    data: RoundFormData & { inviteFriends?: string[] }
   ) => {
-    if (!id) return;
+    if (!round) return;
 
-    // Update the round
-    const updatedRound = eventService.updateRoundEvent(id, data);
+    updateEvent({
+      eventId: id,
+      updates: {
+        ...round,
+        ...data,
+      },
+    });
 
     // If there are new invitations, send them
     if (data.inviteFriends && data.inviteFriends.length > 0) {
-      eventService.invitePlayersToRound(id, data.inviteFriends);
-    }
-
-    if (updatedRound) {
-      setRound(updatedRound);
+      invitePlayers({
+        eventId: id,
+        emails: data.inviteFriends,
+      });
     }
 
     setOpenEditDialog(false);
@@ -135,9 +117,7 @@ const RoundDetails: React.FC = () => {
   };
 
   const handleConfirmDelete = () => {
-    if (!id) return;
-
-    eventService.deleteRoundEvent(id);
+    deleteEvent(id);
     navigate("/events");
   };
 
@@ -168,19 +148,22 @@ const RoundDetails: React.FC = () => {
     const newPlayers: Player[] = friendIds
       .map((friendId) => {
         const friend = friends.find((f) => f.id === friendId);
-        return {
-          id: friend?.id || "",
-          name: friend?.name || "",
-          email: friend?.email || "",
-        };
+        return friend
+          ? {
+              id: friend.id,
+              name: friend.name,
+              email: friend.email,
+              // avatarUrl: friend.avatarUrl,
+            }
+          : null;
       })
-      .filter((player) => player.id !== "");
+      .filter((player): player is Player => player !== null);
 
     // Get the existing players in the round
     const existingPlayers = round.players || [];
 
     // Update the existing group with new player IDs
-    const updatedGroups = round.playerGroups!.map((group) => {
+    const updatedGroups = (round.playerGroups || []).map((group) => {
       if (group.id === groupId) {
         return {
           ...group,
@@ -191,33 +174,35 @@ const RoundDetails: React.FC = () => {
     });
 
     // Update round with new players and updated groups
-    const updatedRound = {
-      ...round,
-      players: [...existingPlayers, ...newPlayers],
-      playerGroups: updatedGroups,
-    };
-
-    // In a real app, you would call an API to update the round
-    const savedRound = eventService.updateRoundEvent(roundId, updatedRound);
-    if (savedRound) {
-      setRound(savedRound);
-    }
+    updateEvent({
+      eventId: roundId,
+      updates: {
+        ...round,
+        players: [...existingPlayers, ...newPlayers],
+        playerGroups: updatedGroups,
+      },
+    });
   };
 
   const handleCreateNewGroup = async (name: string, playerIds: string[]) => {
     if (!round) return;
 
+    // Create player objects from selected friends
     const newPlayers: Player[] = playerIds
       .map((playerId) => {
         const friend = friends.find((f) => f.id === playerId);
-        return {
-          id: friend?.id || "",
-          name: friend?.name || "",
-          email: friend?.email || "",
-        };
+        return friend
+          ? {
+              id: friend.id,
+              name: friend.name,
+              email: friend.email,
+              // avatarUrl: friend.avatarUrl,
+            }
+          : null;
       })
-      .filter((player) => player.id !== "");
+      .filter((player): player is Player => player !== null);
 
+    // Create a new group
     const newGroup: PlayerGroup = {
       id: uuidv4(),
       name,
@@ -225,25 +210,21 @@ const RoundDetails: React.FC = () => {
     };
 
     // Update round with new players and new group
-    const updatedRound = {
-      ...round,
-      players: [...(round.players || []), ...newPlayers],
-      playerGroups: [...round.playerGroups!, newGroup],
-    };
-
-    // In a real app, you would call an API to update the round
-    const savedRound = eventService.updateRoundEvent(round.id, updatedRound);
-    if (savedRound) {
-      setRound(savedRound);
-    }
+    updateEvent({
+      eventId: id,
+      updates: {
+        ...round,
+        players: [...(round.players || []), ...newPlayers],
+        playerGroups: [...(round.playerGroups || []), newGroup],
+      },
+    });
   };
 
   const handleNavigateToGroup = (roundId: string, groupId: string) => {
-    // Navigate to the group detail page
     navigate(`/rounds/${roundId}/groups/${groupId}`);
   };
 
-  if (loading || !isLoaded) {
+  if (isEventLoading || !isLoaded) {
     return (
       <Box sx={styles.feedback.loading.container}>
         <CircularProgress sx={styles.feedback.loading.icon} />
@@ -254,7 +235,7 @@ const RoundDetails: React.FC = () => {
     );
   }
 
-  if (!round) {
+  if (eventError || !round) {
     return (
       <Container>
         <Box sx={{ mt: 4, textAlign: "center" }}>
@@ -275,11 +256,7 @@ const RoundDetails: React.FC = () => {
   }
 
   // Initialize empty player groups if needed
-  if (!round.playerGroups) {
-    round.playerGroups = [];
-  }
-
-  console.log("Round Details:", round);
+  const playerGroups = round.playerGroups || [];
 
   return (
     <Box sx={styles.layout.page.withBackground}>
@@ -460,7 +437,7 @@ const RoundDetails: React.FC = () => {
           </Box>
 
           <Grid container spacing={2}>
-            {round.playerGroups.map((group) => (
+            {playerGroups.map((group) => (
               <Grid item xs={12} sm={6} md={6} lg={4} key={group.id}>
                 <Card
                   variant="outlined"
@@ -579,7 +556,7 @@ const RoundDetails: React.FC = () => {
                       }}
                     >
                       {group.playerIds.map((playerId) => {
-                        const player = round.players!.find(
+                        const player = round.players?.find(
                           (p) => p.id === playerId
                         );
                         if (!player) return null;
@@ -721,7 +698,7 @@ const RoundDetails: React.FC = () => {
           onSubmit={handleUpdateRound}
           onCancel={handleCloseEditDialog}
           friends={friends}
-          loadingFriends={loadingFriends}
+          loadingFriends={isFriendsLoading}
         />
       </Dialog>
 
@@ -729,7 +706,7 @@ const RoundDetails: React.FC = () => {
         open={openFriendsDialog}
         onClose={handleCloseFriendsDialog}
         friends={friends}
-        loadingFriends={loadingFriends}
+        loadingFriends={isFriendsLoading}
         currentPlayers={round.players || []}
         playerGroups={round.playerGroups || []}
         roundId={round.id}
